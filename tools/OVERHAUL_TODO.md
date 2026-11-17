@@ -19,3 +19,4 @@ v1.1.0 は完了（2560f9c）。
 - v1.1 のバグ修正：body の data-bg に closest がヒットして data-act ボタン（つづきから・ガチャ・ボックス等）が反応しなかった → button[data-bg] に限定
 - 残り：C2（日本地図タップ・理科の図）、C9（学習指導要領の監査＋不足単元）、C10（版上げ・SW・live）
 - C9 済み：tools/curriculum.json（310項目）→ tools/audit.js → coverage.json.audit。前 291/310（tools/audit-before-v12.txt）→ 後 310/310。q-gaps.js 追加
+- 修正：画面遷移アニメ中の横はみ出しでページが縮小される問題（overflow-x clip）。test_v12 52/52

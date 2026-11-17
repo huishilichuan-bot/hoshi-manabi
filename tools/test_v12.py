@@ -140,7 +140,9 @@ try:
     pg.locator('[data-q="quit"]').first.tap(); pg.wait_for_timeout(300)
     # ステップマップ
     pg.locator('.tab[data-tab="study"]').tap(); pg.wait_for_timeout(300)
-    pg.locator('.subj[data-subj="math"]').tap(); pg.wait_for_timeout(300); pg.locator('.grade[data-grade="3"]').tap(); pg.wait_for_timeout(300)
+    pg.locator('.subj[data-subj="math"]').tap(); pg.wait_for_timeout(60)
+    ok("画面遷移中も横にはみ出さない（縮小されない）", E("document.documentElement.scrollWidth <= innerWidth"), E("[document.documentElement.scrollWidth, innerWidth]"))
+    pg.wait_for_timeout(240); pg.locator('.grade[data-grade="3"]').tap(); pg.wait_for_timeout(300)
     pg.locator('[data-unit="0"]').tap(); pg.wait_for_timeout(500)
     ok("ステップマップ（道・現在地・ボス）", pg.locator(".smap").count() == 1 and pg.locator(".map-node.cur").count() == 1 and pg.locator(".map-node.boss").count() == 1 and pg.locator(".smap-path").count() == 1)
     ok("戻るボタンに前の画面名", "算数小3" in pg.inner_text("#back-btn"), pg.inner_text("#back-btn"))

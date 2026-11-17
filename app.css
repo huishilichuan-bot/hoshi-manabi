@@ -598,3 +598,6 @@ body.combo-flash::after { content: ""; position: fixed; inset: 0; z-index: 85; p
 .cp-char .char, .me-card .char, .mn-here .char { min-height: 0 !important; background: none !important; border: 0 !important; box-shadow: none !important; padding: 0 !important; flex: none; }
 .tapfig svg, .qz-q svg.qfig { max-height: 50vh; width: auto; max-width: 100%; margin: 0 auto; }
 .work.big-l .mt-item.L { font-size: 32px; line-height: 1; padding-top: 6px; padding-bottom: 6px; }
+/* 画面遷移のスライド中に横へはみ出してページが縮小されないように */
+html, body { overflow-x: hidden; }
+#main, .quiz-layer { overflow-x: clip; }
