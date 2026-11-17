@@ -9,7 +9,7 @@ v1.1.0 は完了（2560f9c）。
 - [x] C7 英語音声（読み上げボタン・リスニング問題）
 - [x] C8 ボス問題（単元の最後、HPバー、見た目だけのごほうび）
 - [x] C9 学習指導要領の監査（tools/curriculum.json → coverage.json に不足）→ 不足単元を追加（理科小6・社会小6/中1・英語小6 ほか）
-- [ ] C10 v1.2.0（SW キャッシュ）・screenshots/v12・Actions・ライブ確認・報告
+- [x] C10 v1.2.0（SW キャッシュ）・screenshots/v12・Actions・ライブ確認・報告
 - [x] C11 ネイティブアプリ風の仕上げ（下タブ＋アイコン5つ／上バー＋戻る／画面遷移アニメ／safe-area／スプラッシュ／押した感／読み込み表示／デザインシステム／standalone PWA meta／選択・ズーム防止／設定画面（音オンオフ・音量・名前））＋ before/after スクショ（screenshots/v12/before-*.png, after-*.png）
   - 参考にしたパターン：Duolingo（ステップの道・コンボ・ハートなしの励まし）、Quizlet（カード合わせ）、Khan Academy Kids（大きいタップ領域・キャラ）、スタディサプリ（単元→ステップ）、iOS（タブバー・大見出し・シート）
 
@@ -20,3 +20,4 @@ v1.1.0 は完了（2560f9c）。
 - 残り：C2（日本地図タップ・理科の図）、C9（学習指導要領の監査＋不足単元）、C10（版上げ・SW・live）
 - C9 済み：tools/curriculum.json（310項目）→ tools/audit.js → coverage.json.audit。前 291/310（tools/audit-before-v12.txt）→ 後 310/310。q-gaps.js 追加
 - 修正：画面遷移アニメ中の横はみ出しでページが縮小される問題（overflow-x clip）。test_v12 52/52
+- C10 済み：b72b807 Actions success、公開版 v1.2.0・SWキャッシュ hoshi-manabi-v1.2.0 を確認
