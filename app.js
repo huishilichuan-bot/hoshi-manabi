@@ -220,12 +220,12 @@
     h += '<section class="today2"><div class="t2-ring">' + ringSvg(n, STARS_TO_UNLOCK) + '<div class="t2-num"><b>' + n + '</b><small>/' + STARS_TO_UNLOCK + '</small></div></div><div class="t2-r"><div class="t2-k">今日の⭐</div>' +
       (need ? '<div class="t2-big">ゲームまで あと <b>' + need + "</b> 個</div>" : '<div class="t2-big ok">🎮 ゲーム解放中！</div>') +
       '<div class="t2-stars">' + Array.from({ length: STARS_TO_UNLOCK }, (_, i) => '<span class="t2s ' + (i < n ? "on" : "") + '" style="--i:' + i + '">★</span>').join("") + (n > STARS_TO_UNLOCK ? '<span class="t2-more">+' + (n - STARS_TO_UNLOCK) + "</span>" : "") + "</div></div></section>";
+    if ((state.wrongBox || []).length) h += '<button type="button" class="box-card" data-act="box"><span class="bx-i">📦</span><span class="grow"><b>まちがえた問題ボックス</b><small>' + state.wrongBox.length + " 問 ・ 正解すると消えるよ</small></span><span class=\"go\">▶</span></button>";
     if (state.last) {
       const L = state.last, st = findStep(L.s, L.g, L.u, L.st);
       if (st) h += '<button type="button" class="cont2" data-act="cont">' + HMIcons.icon(L.s, subjById(L.s).c, 46) + '<span class="grow"><b>つづきから学ぶ</b><span class="small">' + esc(subjName(L.s, L.g) + " " + gradeName(L.g) + " ／ " + st.unit.n + " ／ " + st.step.n) + '</span></span><span class="go">▶</span></button>';
     }
     h += '<div class="sec2">教科</div><div class="quick2">' + SUBJ.map((s, i) => '<button type="button" class="qb2" data-subj="' + s.id + '" style="--sc:' + s.c + ";--i:" + i + '">' + HMIcons.icon(s.id, s.c, 52) + "<b>" + esc(s.n) + "</b><small>" + (s.id === "life" ? "小1・小2" : s.id === "math" || s.id === "ja" ? "小1〜中3" : "小3〜中3") + "</small></button>").join("") + "</div>";
-    if ((state.wrongBox || []).length) h += '<button type="button" class="box-card" data-act="box"><span class="bx-i">📦</span><span class="grow"><b>まちがえた問題ボックス</b><small>' + state.wrongBox.length + " 問 ・ 正解すると消えるよ</small></span><span class=\"go\">▶</span></button>";
     if (pullsLeft()) h += '<button type="button" class="gacha2" data-act="gacha"><span class="g2-box">🎁</span><span class="grow"><b>ガチャを ' + pullsLeft() + ' 回ひけます</b><span class="small">新しいなかまに会いに行こう</span></span><span class="go">▶</span></button>';
     h += '<p class="foot">なかま ' + Object.keys(state.chars).length + "/" + GCArt.CHARACTERS.length + " ・ v" + VERSION + "</p>";
     return h;
@@ -270,8 +270,8 @@
       const u = S()[top.s][top.g][top.u], tk = dayRec(today()).steps, sb = subjById(top.s);
       const n = u.steps.length, info = u.steps.map((st, si) => { const k = stepKey(top.s, top.g, top.u, si), p = state.progress[k]; return { st, si, p, star: !!tk[k], done: !!(p && p.passed) }; });
       let cur = info.findIndex((x) => !x.done); const allDone = cur < 0;
-      const X = [50, 76, 50, 24], GAP = 104, H = (n + 1) * GAP + 60, bk = "boss|" + top.s + "|" + top.g + "|" + u.n, won = !!(state.bossWins || {})[bk];
-      const pos = (i) => [X[i % 4], 46 + i * GAP];
+      const X = [50, 76, 50, 24], GAP = 108, H = (n + 1) * GAP + 90, bk = "boss|" + top.s + "|" + top.g + "|" + u.n, won = !!(state.bossWins || {})[bk];
+      const pos = (i) => [X[i % 4], 70 + i * GAP];
       let path = "", pathDone = "";
       for (let i = 0; i < n; i++) { const [x1, y1] = pos(i), [x2, y2] = pos(i + 1); const seg = "M" + x1 + " " + y1 + " C" + x1 + " " + (y1 + GAP / 2) + " " + x2 + " " + (y2 - GAP / 2) + " " + x2 + " " + y2 + " "; path += seg; if (info[i].done && (i + 1 >= n || info[i + 1].done || i + 1 === cur)) pathDone += seg; }
       const done = info.filter((x) => x.done).length;
@@ -300,7 +300,7 @@
     $("#quiz").hidden = false; document.body.classList.add("in-quiz");
     if (opt.noCard) showQ(); else showCard();
   }
-  function curList() { return Q.mode === "main" ? Q.qs : Q.retry; }
+  function curList() { return Q.mode === "retry" ? Q.retry : Q.qs; }
   function showQ() {
     const list = curList(), q = list[Q.i];
     Q.answered = false; Q.input = "";
@@ -961,8 +961,8 @@
     const gm = t.closest("[data-game]"); if (gm) { openGameMenu(gm.dataset.game); return; }
     const ga = t.closest("[data-g]"); if (ga) { if (ga.dataset.g === "rates") openRates(); else doGacha(+ga.dataset.g); return; }
     const ch = t.closest("[data-char]"); if (ch) { openChar(ch.dataset.char); return; }
-    const bg = t.closest("[data-bg]"); if (bg) { state.look.bg = bg.dataset.bg; save(); render(); return; }
-    const mr = t.closest("[data-maru]"); if (mr) { state.look.maru = mr.dataset.maru; save(); render(); bigMaru(); return; }
+    const bg = t.closest("button[data-bg]"); if (bg) { state.look.bg = bg.dataset.bg; save(); render(); return; }
+    const mr = t.closest("button[data-maru]"); if (mr) { state.look.maru = mr.dataset.maru; save(); render(); bigMaru(); return; }
     const ti = t.closest("[data-title]"); if (ti) { state.look.title = ti.dataset.title; save(); render(); return; }
     const rd = t.closest("[data-rep-del]"); if (rd) { state.reports.splice(+rd.dataset.repDel, 1); save(); render(); return; }
     const ac = t.closest("[data-act]");

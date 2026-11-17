@@ -592,3 +592,7 @@ body.combo-flash::after { content: ""; position: fixed; inset: 0; z-index: 85; p
 .be-crown { position: absolute; top: -26px; left: 50%; transform: translateX(-50%); font-size: 46px; animation: spPop .8s var(--ease-ios) both; }
 .be-t { font-size: 24px; font-weight: 900; margin: 8px 0 4px; }
 .be-prize { margin: 10px auto 0; max-width: 320px; padding: 10px 14px; border-radius: 16px; background: #fff9db; color: #7a5a00; font-weight: 700; font-size: 14px; }
+.mn-here { position: absolute; top: -18px; right: 4px; width: 42px; height: 42px; display: block; background: none; padding: 0; border: 0; box-shadow: none; filter: drop-shadow(0 3px 4px rgba(0,0,0,.2)); }
+.mn-here .char { background: none !important; box-shadow: none !important; border: 0 !important; padding: 0 !important; }
+.mn-here .char svg { width: 42px; height: 42px; }
+.cp-char .char, .me-card .char, .mn-here .char { min-height: 0 !important; background: none !important; border: 0 !important; box-shadow: none !important; padding: 0 !important; flex: none; }
