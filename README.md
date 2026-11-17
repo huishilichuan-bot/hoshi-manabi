@@ -16,4 +16,4 @@ node tools/verify.js 40     # 問題の自動検証（算数・数学は独立�
 python3 -m http.server 8080 # ローカルで確認
 ```
 
-データは localStorage（キー `hoshimanabi`、schema 1）に保存。サービスワーカーのキャッシュ名は `hoshi-manabi-v1.0.0`。
+データは localStorage（キー `hoshimanabi`、schema 1）に保存。サービスワーカーのキャッシュ名は `hoshi-manabi-v1.0.1`。

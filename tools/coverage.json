@@ -76,49 +76,49 @@
    "subj": "生活",
    "grade": "小1",
    "units": 5,
-   "steps": 8,
-   "perPass": 40,
-   "uniq": 40
+   "steps": 10,
+   "perPass": 52,
+   "uniq": 52
   },
   {
    "subj": "生活",
    "grade": "小2",
    "units": 5,
-   "steps": 7,
-   "perPass": 35,
-   "uniq": 35
+   "steps": 9,
+   "perPass": 47,
+   "uniq": 47
   },
   {
    "subj": "理科",
    "grade": "小3",
-   "units": 7,
-   "steps": 11,
-   "perPass": 55,
-   "uniq": 55
+   "units": 8,
+   "steps": 13,
+   "perPass": 67,
+   "uniq": 67
   },
   {
    "subj": "理科",
    "grade": "小4",
    "units": 8,
-   "steps": 9,
-   "perPass": 45,
-   "uniq": 45
+   "steps": 11,
+   "perPass": 57,
+   "uniq": 57
   },
   {
    "subj": "理科",
    "grade": "小5",
    "units": 8,
-   "steps": 8,
-   "perPass": 40,
-   "uniq": 40
+   "steps": 10,
+   "perPass": 52,
+   "uniq": 52
   },
   {
    "subj": "理科",
    "grade": "小6",
-   "units": 8,
-   "steps": 9,
-   "perPass": 45,
-   "uniq": 45
+   "units": 9,
+   "steps": 10,
+   "perPass": 51,
+   "uniq": 51
   },
   {
    "subj": "理科",
@@ -148,9 +148,9 @@
    "subj": "社会",
    "grade": "小3",
    "units": 4,
-   "steps": 4,
-   "perPass": 20,
-   "uniq": 21
+   "steps": 6,
+   "perPass": 32,
+   "uniq": 33
   },
   {
    "subj": "社会",
@@ -164,9 +164,9 @@
    "subj": "社会",
    "grade": "小5",
    "units": 4,
-   "steps": 5,
-   "perPass": 25,
-   "uniq": 26
+   "steps": 9,
+   "perPass": 49,
+   "uniq": 50
   },
   {
    "subj": "社会",
@@ -196,9 +196,9 @@
    "subj": "社会",
    "grade": "中3",
    "units": 4,
-   "steps": 5,
-   "perPass": 25,
-   "uniq": 25
+   "steps": 9,
+   "perPass": 49,
+   "uniq": 49
   },
   {
    "subj": "国語",
@@ -316,23 +316,23 @@
    "subj": "英語",
    "grade": "中2",
    "units": 3,
-   "steps": 5,
-   "perPass": 40,
-   "uniq": 102
+   "steps": 7,
+   "perPass": 52,
+   "uniq": 114
   },
   {
    "subj": "英語",
    "grade": "中3",
    "units": 3,
-   "steps": 5,
-   "perPass": 40,
-   "uniq": 72
+   "steps": 6,
+   "perPass": 46,
+   "uniq": 78
   }
  ],
  "tot": {
-  "units": 259,
-  "steps": 633,
-  "perPass": 4747,
-  "uniq": 68091
+  "units": 261,
+  "steps": 657,
+  "perPass": 4891,
+  "uniq": 68235
  }
 }

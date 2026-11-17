@@ -1,7 +1,7 @@
 /* ほしまなび — 勉強して⭐を集める学習アプリ（小1〜中3）。課金・お金の機能はありません。 */
 (() => {
   "use strict";
-  const VERSION = "1.0.0";
+  const VERSION = "1.0.1";
   const KEY = "hoshimanabi";
   const SCHEMA = 1;
   const $ = (s, r = document) => r.querySelector(s);
