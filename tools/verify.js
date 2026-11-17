@@ -108,6 +108,33 @@ function check(q, where) {
     // 正解の数値と選択肢の√の値が同じでないか
     if (A && A.fl != null) for (const o of q.o) { const B = parseAns(o.replace(/cm$/, "")); if (B && valEq(A, B)) return fail("√の値が同じ選択肢"); }
   }
+  // 並べかえ：項目が重複なし、正解の文字＝正しい順、数の並べかえは値で独立に確かめる
+  if (q.t === "ord") {
+    if (!Array.isArray(q.items) || q.items.length < 3) return fail("並べかえの項目が足りない");
+    if (new Set(q.items).size !== q.items.length) return fail("並べかえの項目が重複");
+    if (q.a !== q.items.join(" → ")) return fail("並べかえの答えの文字がちがう");
+    if (q.vals) { if (q.vals.length !== q.items.length) return fail("vals の数"); for (let i = 1; i < q.vals.length; i++) { const d = q.vals[i] - q.vals[i - 1]; if (q.dir === "desc" ? !(d < 0) : !(d > 0)) return fail("並べかえの値の順がちがう"); } stats.ord = (stats.ord || 0) + 1; }
+    if (q.valExpr) { const v = q.items.map((it, i) => { try { return qf(evalBoth(q.valExpr[i]).ex); } catch (e) { return NaN; } }); for (let i = 1; i < v.length; i++) if (!(q.dir === "desc" ? v[i] < v[i - 1] : v[i] > v[i - 1])) return fail("並べかえの値（式）の順がちがう"); stats.ordx = (stats.ordx || 0) + 1; }
+  }
+  // 線でつなぐ・カード合わせ：左右とも重複なし、全カードの文字も重複なし、組の検算
+  if (q.t === "match" || q.t === "pair") {
+    if (!Array.isArray(q.pairs) || q.pairs.length < 3) return fail("組が足りない");
+    const L = q.pairs.map((p) => String(p[0])), R = q.pairs.map((p) => String(p[1]));
+    if (new Set(L).size !== L.length || new Set(R).size !== R.length) return fail("組の文字が重複");
+    if (q.t === "pair" && new Set(L.concat(R)).size !== L.length * 2) return fail("カードの文字が重複");
+    if (q.pchk) { for (let i = 0; i < q.pairs.length; i++) { let v; try { v = evalBoth(String(q.pchk[i])); } catch (e) { return fail("組の検算式が読めない"); } const B = parseAns(R[i]); if (!B || !valEq({ v: v.ex, fl: v.fl, pi: false }, B)) return fail("組の検算がちがう " + L[i] + "→" + R[i]); for (let j = 0; j < R.length; j++) if (j !== i) { const C = parseAns(R[j]); if (C && valEq({ v: v.ex, fl: v.fl, pi: false }, C)) return fail("組の答えが2つある " + L[i]); } } stats.pairchk = (stats.pairchk || 0) + 1; }
+  }
+  // 図をタップ：正解の場所が図にある・場所の名前が重複しない
+  if (q.t === "tap") {
+    if (!q.svg || !Array.isArray(q.hits) || q.hits.length < 2) return fail("タップ問題の図がない");
+    const ids = q.hits.map((h) => h[0]); if (new Set(ids).size !== ids.length) return fail("タップ場所が重複");
+    if (new Set(q.hits.map((h) => h[1])).size !== ids.length) return fail("タップ場所の名前が重複");
+    for (const id of ids) if (!q.svg.includes('data-hit="' + id + '"')) return fail("図にタップ場所がない " + id);
+    const hit = q.hits.find((h) => h[0] === q.ans); if (!hit) return fail("正解の場所がない"); if (hit[1] !== q.a) return fail("正解の名前がちがう");
+    stats.tap = (stats.tap || 0) + 1;
+  }
+  if (q.say != null && (!/^[A-Za-z0-9 ,.'?!-]+$/.test(q.say))) return fail("読み上げ文が英語でない");
+  if (q.sayIsAnswer && q.say !== q.a) return fail("聞きとりの答えと音声がちがう");
   // 連立方程式：クラメルの公式で独立に解く
   if (q.sys) { const [[a, b, e], [c, d, f]] = q.sys; const D = a * d - b * c; if (D === 0) return fail("連立が解けない"); const x = qd(Q(e * d - b * f), Q(D)), y = qd(Q(a * f - e * c), Q(D)); const want = q.want === "y" ? y : x; if (!A || !qeq(A.v, want)) return fail("連立の解がちがう"); stats.sys = (stats.sys || 0) + 1; }
   // バンク問題：解説に正解が書かれているか（2つ目の根拠との照合）
@@ -126,6 +153,7 @@ function langCheck(q, where) {
   const fail = (m) => problems.push(where + " :: " + m + " :: " + q.q);
   if (q.kj) { const rs = allKJ.filter((w) => w[0] === q.kj).map((w) => w[1]); if (!rs.includes(q.a)) fail("読みが表とちがう"); for (const o of q.o) if (rs.includes(o)) fail("まちがい選択肢も正しい読み"); }
   if (q.kjw) { for (const o of q.o) if (allKJ.some((w) => w[0] === o && w[1] === q.kjw)) fail("まちがい選択肢も同じ読みの漢字: " + o); if (!allKJ.some((w) => w[0] === q.a && w[1] === q.kjw)) fail("書きの正解が表とちがう"); }
+  if (q.kjpair) { for (const [k, y] of q.pairs) if (!allKJ.some((w) => w[0] === k && w[1] === y)) fail("カードの読みが表とちがう " + k); for (const [k] of q.pairs) for (const [, y2] of q.pairs) if (allKJ.some((w) => w[0] === k && w[1] === y2) && !q.pairs.some((p) => p[0] === k && p[1] === y2)) fail("別の組み合わせも正しい " + k + y2); }
   if (q.en && typeof q.q === "string") {
     LANG.eng++;
     const m = q.q.match(/^(.*?) \( \) .* every day\.$/);

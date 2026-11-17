@@ -110,6 +110,7 @@
     if (kind === "star") return tone([[784, 0, 0.16], [988, 0.12, 0.16], [1175, 0.24, 0.18], [1568, 0.38, 0.5]]);
     if (kind === "fanfare") return tone([[784, 0, 0.18], [988, 0.12, 0.18], [1175, 0.24, 0.2], [1568, 0.38, 0.5]]);
     if (kind === "soft") return tone([[660, 0, 0.18]]);
+    if (kind === "tap") return tone([[880, 0, 0.06]], "sine", 0.08);
     if (kind === "block") return tone([[220, 0, 0.12]], "square", 0.06);
     if (kind && kind.startsWith("r")) { const r = +kind.slice(1); const base = [523, 587, 659, 784, 880, 988, 1175]; const ns = []; for (let i = 0; i <= Math.min(6, r + 1); i++) ns.push([base[i] * (r >= 4 ? 1.5 : 1), i * 0.09, 0.3]); if (r >= 4) ns.push([2093, ns.length * 0.09, 0.8]); return tone(ns, r >= 5 ? "triangle" : "sine"); }
     return tone([[1568, 0, 0.09], [2093, 0.07, 0.32]]);
@@ -252,7 +253,7 @@
   const bar = (d, t) => '<span class="pbar"><i style="width:' + (t ? Math.round((d / t) * 100) : 0) + '%"></i></span>';
 
   // ---------- クイズ ----------
-  let Q = null;
+  let Q = null, onAnswered = null;
   function startStep(s, g, ui, si, opt = {}) {
     const f = findStep(s, g, ui, si); if (!f) return;
     let qs;
@@ -274,6 +275,7 @@
     if (q.pass) h += '<details class="passage"' + (Q.passOpen ? " open" : "") + '><summary>📄 文章を読む</summary><div class="ptext">' + esc(q.pass).replace(/\n/g, "<br>") + "</div></details>";
     h += '<div class="qz-q">' + q.q + "</div>";
     if (q.t === "ch") h += '<div class="opts">' + (q.opts || [q.a].concat(q.o)).map((o, i) => '<button type="button" class="opt" data-opt="' + i + '">' + esc(o) + "</button>").join("") + "</div>";
+    else if (q.t === "ord" || q.t === "match" || q.t === "pair" || q.t === "tap") h += workHtml(q);
     else h += '<div class="num-in"><div class="ans-box" id="ans-box"><span id="ans-val" class="num"></span><span class="caret"></span>' + (q.unit ? '<span class="ans-unit">' + esc(q.unit) + "</span>" : "") + "</div>" + keypad(q) + "</div>";
     h += '</div><div class="qz-foot" id="qz-foot"></div>';
     const el = $("#quiz");
@@ -281,6 +283,69 @@
     el.scrollTop = 0;
     Q.shownAt = performance.now();
     const pd = $(".passage", el); if (pd) pd.addEventListener("toggle", () => (Q.passOpen = pd.open));
+    if (Q.work) renderWork();
+  }
+  // ---------- 新しい問題形式（並べかえ・線でつなぐ・カード合わせ・図をタップ） ----------
+  const PAIR_COL = ["#ff6b6b", "#4dabf7", "#51cf66", "#fcc419", "#cc5de8", "#ff922b"];
+  const rshuf = (a) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  function workHtml(q) {
+    Q.work = null;
+    if (q.t === "tap") return '<div class="tapfig">' + q.svg + '</div><p class="small muted center">図の中をタップしてこたえよう</p>';
+    const n = q.t === "ord" ? q.items.length : q.pairs.length;
+    let order = rshuf([...Array(n).keys()]); if (n > 1) for (let k = 0; k < 6 && order.every((v, i) => v === i); k++) order = rshuf(order);
+    if (q.t === "ord") Q.work = { pick: [], pool: order };
+    else if (q.t === "match") Q.work = { right: order, sel: null, link: {} };
+    else { const cards = rshuf([...Array(n).keys()].flatMap((i) => [[i, 0], [i, 1]])); Q.work = { cards, sel: null, mate: {} }; }
+    const hint = q.t === "ord" ? "タップした順にならぶよ（もう一度タップでもどす）" : q.t === "match" ? "左→右の順にタップして線でつなごう" : "同じ組になるカードを2まいずつタップしよう";
+    return '<div class="work work-' + q.t + '" id="work"></div><p class="small muted center">' + hint + '</p><button type="button" class="btn primary block" data-q="submit" id="work-ok" disabled>こたえる</button>';
+  }
+  function workDone() { const w = Q.work, q = curList()[Q.i]; if (!w) return false; if (q.t === "ord") return w.pick.length === q.items.length; if (q.t === "match") return Object.keys(w.link).length === q.pairs.length; return Object.keys(w.mate).length === w.cards.length; }
+  function renderWork() {
+    const q = curList()[Q.i], w = Q.work, box = $("#work"); if (!box || !w) return;
+    let h = "";
+    if (q.t === "ord") {
+      h += '<div class="ord-slots">' + q.items.map((_, k) => { const i = w.pick[k]; return '<button type="button" class="ord-slot ' + (i != null ? "on" : "") + '" data-os="' + k + '"><span class="ord-n">' + (k + 1) + "</span>" + (i != null ? esc(q.items[i]) : "") + "</button>"; }).join("") + "</div>";
+      h += '<div class="ord-pool">' + w.pool.map((i) => w.pick.includes(i) ? '<span class="ord-chip ghost"></span>' : '<button type="button" class="ord-chip" data-ow="' + i + '">' + esc(q.items[i]) + "</button>").join("") + "</div>";
+    } else if (q.t === "match") {
+      const used = new Set(Object.values(w.link));
+      h += '<div class="mt-cols"><div class="mt-col">' + q.pairs.map((p, i) => '<button type="button" class="mt-item L ' + (w.sel === i ? "sel " : "") + (w.link[i] != null ? "on" : "") + '" data-ml="' + i + '" style="--pc:' + (w.link[i] != null ? PAIR_COL[i % 6] : "transparent") + '">' + esc(p[0]) + "</button>").join("") + '</div><div class="mt-col">' + w.right.map((j) => { const li = Object.keys(w.link).find((k) => w.link[k] === j); return '<button type="button" class="mt-item R ' + (used.has(j) ? "on" : "") + '" data-mr="' + j + '" style="--pc:' + (li != null ? PAIR_COL[li % 6] : "transparent") + '">' + esc(q.pairs[j][1]) + "</button>"; }).join("") + '</div><svg class="mt-lines" id="mt-lines"></svg></div>';
+    } else {
+      h += '<div class="pc-grid">' + w.cards.map((c, k) => { const m = w.mate[k]; const g = m != null ? Math.min(k, m) : null; const gi = g != null ? Object.keys(w.mate).map(Number).filter((x) => x < w.mate[x]).sort((a, b) => a - b).indexOf(g) : -1; return '<button type="button" class="pc-card ' + (w.sel === k ? "sel " : "") + (m != null ? "on" : "") + '" data-pc="' + k + '" style="--pc:' + (gi >= 0 ? PAIR_COL[gi % 6] : "transparent") + '">' + esc(q.pairs[c[0]][c[1]]) + "</button>"; }).join("") + "</div>";
+    }
+    box.innerHTML = h;
+    if (q.t === "match") drawLinks();
+    const ok = $("#work-ok"); if (ok) ok.disabled = !workDone() || Q.answered;
+  }
+  function drawLinks(result) {
+    const svg = $("#mt-lines"), w = Q.work; if (!svg) return; const r0 = svg.getBoundingClientRect(); let h = "";
+    for (const [i, j] of Object.entries(w.link)) { const a = $('[data-ml="' + i + '"]').getBoundingClientRect(), b = $('[data-mr="' + j + '"]').getBoundingClientRect(); const col = result ? (+i === j ? "#2fb36a" : "#e5383b") : PAIR_COL[i % 6]; h += '<line x1="' + (a.right - r0.left) + '" y1="' + (a.top + a.height / 2 - r0.top) + '" x2="' + (b.left - r0.left) + '" y2="' + (b.top + b.height / 2 - r0.top) + '" stroke="' + col + '" stroke-width="4" stroke-linecap="round"/>'; }
+    svg.innerHTML = h;
+  }
+  function workClick(t) {
+    const q = curList()[Q.i], w = Q.work; if (!w || Q.answered) return false;
+    let e;
+    if ((e = t.closest("[data-ow]"))) { w.pick.push(+e.dataset.ow); sound("tap"); }
+    else if ((e = t.closest("[data-os]"))) { const k = +e.dataset.os; if (w.pick[k] == null) return true; w.pick.splice(k, 1); }
+    else if ((e = t.closest("[data-ml]"))) { const i = +e.dataset.ml; if (w.link[i] != null) { delete w.link[i]; w.sel = null; } else w.sel = w.sel === i ? null : i; }
+    else if ((e = t.closest("[data-mr]"))) { const j = +e.dataset.mr; const owner = Object.keys(w.link).find((k) => w.link[k] === j); if (owner != null) delete w.link[owner]; else if (w.sel != null) { w.link[w.sel] = j; w.sel = null; sound("tap"); } else { toast("先に左をえらんでね"); return true; } }
+    else if ((e = t.closest("[data-pc]"))) { const k = +e.dataset.pc; if (w.mate[k] != null) { const m = w.mate[k]; delete w.mate[k]; delete w.mate[m]; w.sel = null; } else if (w.sel == null) w.sel = k; else if (w.sel === k) w.sel = null; else { w.mate[k] = w.sel; w.mate[w.sel] = k; w.sel = null; sound("tap"); } }
+    else return false;
+    renderWork(); return true;
+  }
+  function workResult() {
+    const q = curList()[Q.i], w = Q.work;
+    if (q.t === "ord") { const text = w.pick.map((i) => q.items[i]).join(" → "); return { ok: text === q.items.join(" → "), text }; }
+    if (q.t === "match") { const ok = q.pairs.every((_, i) => w.link[i] === i); return { ok, text: q.pairs.map((p, i) => p[0] + "－" + (w.link[i] != null ? q.pairs[w.link[i]][1] : "？")).join("、") }; }
+    const ok = w.cards.every((c, k) => w.cards[w.mate[k]][0] === c[0]); return { ok, text: Object.keys(w.mate).map(Number).filter((k) => k < w.mate[k]).map((k) => q.pairs[w.cards[k][0]][w.cards[k][1]] + "－" + q.pairs[w.cards[w.mate[k]][0]][w.cards[w.mate[k]][1]]).join("、") };
+  }
+  function workShowResult(q, given) {
+    const box = $("#work");
+    if (q.t === "tap") { $$("[data-hit]").forEach((el) => { if (el.dataset.hit === q.ans) el.classList.add("hit-ok"); else if (el.dataset.hit === given) el.classList.add("hit-ng"); }); return; }
+    if (!box) return; box.classList.add("done");
+    if (q.t === "ord") $$(".ord-slot").forEach((el, k) => el.classList.add(q.items[Q.work.pick[k]] === q.items[k] ? "right" : "wrong"));
+    if (q.t === "match") { $$(".mt-item.L").forEach((el) => { const i = +el.dataset.ml; el.classList.add(Q.work.link[i] === i ? "right" : "wrong"); }); drawLinks(true); }
+    if (q.t === "pair") $$(".pc-card").forEach((el) => { const k = +el.dataset.pc, c = Q.work.cards[k]; el.classList.add(Q.work.cards[Q.work.mate[k]][0] === c[0] ? "right" : "wrong"); });
+    const ok = $("#work-ok"); if (ok) ok.hidden = true;
   }
   function keypad(q) {
     const keys = ["7", "8", "9", "4", "5", "6", "1", "2", "3", "0", ".", "/"];
@@ -309,8 +374,10 @@
     const q = curList()[Q.i];
     if (Q.answered) return;
     if (tooFast()) return;
-    let ok;
+    let ok, gtext = given;
     if (q.t === "ch") ok = given === q.a;
+    else if (q.t === "tap") { ok = given === q.ans; const hl = (q.hits || []).find((x) => x[0] === given); gtext = hl ? hl[1] : given; }
+    else if (given && typeof given === "object") { ok = given.ok; gtext = given.text; }
     else {
       const j = judgeNum(given, q.a);
       if (j.empty) { toast("答えを入れてね"); return; }
@@ -318,12 +385,14 @@
       ok = j.ok;
     }
     Q.answered = true;
-    if (Q.mode === "main") Q.results.push({ q, ok, given });
-    else { Q.retryRes.push({ q, ok, given }); if (ok) Q.retryCorrect++; }
+    if (Q.mode === "main") Q.results.push({ q, ok, given: gtext });
+    else if (Q.mode === "retry") { Q.retryRes.push({ q, ok, given: gtext }); if (ok) Q.retryCorrect++; }
+    if (typeof onAnswered === "function") onAnswered(q, ok);
     if (ok && Q.mode === "main") Q.baseCorrect++;
     // 画面
     if (q.t === "ch") $$(".opt").forEach((b) => { const v = (q.opts || [q.a].concat(q.o))[+b.dataset.opt]; b.disabled = true; if (v === q.a) b.classList.add("right"); else if (v === given) b.classList.add("wrong"); });
-    else { const box = $("#ans-box"); box.classList.add(ok ? "right" : "wrong"); $$(".key").forEach((k) => (k.disabled = true)); }
+    else if (q.t === "num") { const box = $("#ans-box"); box.classList.add(ok ? "right" : "wrong"); $$(".key").forEach((k) => (k.disabled = true)); }
+    else workShowResult(q, given);
     if (ok) { bigMaru(); burstAt(innerWidth / 2, innerHeight * 0.42, 22); sound("pikon"); haptic(15); } else { sound("miss"); haptic([20, 40, 20]); }
     let f = '<div class="fb ' + (ok ? "ok" : "ng") + '">';
     f += ok ? '<div class="fb-h">⭕ 正解！</div>' : '<div class="fb-h">✖ ざんねん</div><div class="fb-a">正解：<b>' + esc(q.a) + (q.unit && q.t !== "ch" ? esc(q.unit) : "") + "</b></div>";
@@ -656,6 +725,7 @@
     // クイズ
     if (t.closest("#quiz")) {
       const o = t.closest("[data-opt]"); if (o && Q) { const q = curList()[Q.i]; answer((q.opts || [q.a].concat(q.o))[+o.dataset.opt]); return; }
+      if (Q && !Q.answered) { const hit = t.closest("[data-hit]"); if (hit && curList()[Q.i].t === "tap") { answer(hit.dataset.hit); return; } if (workClick(t)) return; }
       const k = t.closest("[data-key]");
       if (k && Q && !Q.answered) {
         const v = k.dataset.key;
@@ -668,7 +738,8 @@
       }
       const a = t.closest("[data-q]"); if (!a || !Q) return;
       const act = a.dataset.q;
-      if (act === "next") next();
+      if (act === "submit") { if (!Q.answered && workDone()) answer(workResult()); }
+      else if (act === "next") next();
       else if (act === "ex") { const w = $(".ex-wrap"); w.hidden = !w.hidden; a.textContent = w.hidden ? "💡 解説を見る" : "解説をとじる"; }
       else if (act === "report") reportQ();
       else if (act === "retry") startRetry();

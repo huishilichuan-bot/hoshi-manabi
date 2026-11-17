@@ -386,3 +386,33 @@ button { -webkit-tap-highlight-color: transparent; }
 .cg-btn.hand { background: linear-gradient(160deg, #ff922b, #e8590c); }
 .game-layer canvas { border-radius: 14px; }
 .game-layer .res-card .btn.primary { background: linear-gradient(135deg, #5b4ce0, #8b5cf6); color: #fff; }
+/* ===== v1.2 新しい問題形式 ===== */
+.work { margin: 12px 0 8px; }
+.ord-slots { display: flex; flex-direction: column; gap: 8px; }
+.ord-slot { display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 8px 12px; border-radius: 14px; border: 2px dashed rgba(91,76,224,.35); background: rgba(255,255,255,.7); text-align: left; font-weight: 800; font-size: 16px; color: var(--ink, #1b1d3a); transition: transform .15s, background .2s; }
+.ord-slot.on { border-style: solid; background: #fff; box-shadow: 0 4px 12px rgba(60,50,140,.12); animation: slotIn .3s cubic-bezier(.2,1.6,.4,1); }
+@keyframes slotIn { from { transform: scale(.9); } }
+.ord-n { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; flex-shrink: 0; color: #fff; font-size: 14px; background: linear-gradient(135deg, #5b4ce0, #8b5cf6); }
+.ord-pool { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 14px; }
+.ord-chip { min-height: 46px; padding: 8px 14px; border-radius: 14px; border: 0; font-weight: 800; font-size: 16px; color: #fff; background: linear-gradient(135deg, #ff922b, #f76707); box-shadow: 0 4px 0 #c25200; }
+.ord-chip:active { transform: translateY(3px); box-shadow: 0 1px 0 #c25200; }
+.ord-chip.ghost { background: rgba(0,0,0,.06); box-shadow: none; min-width: 60px; }
+.ord-slot.right, .mt-item.right, .pc-card.right { border-color: #2fb36a !important; background: #e6fcf5 !important; }
+.ord-slot.wrong, .mt-item.wrong, .pc-card.wrong { border-color: #e5383b !important; background: #fff0f0 !important; }
+.mt-cols { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 0 46px; }
+.mt-col { display: flex; flex-direction: column; gap: 10px; position: relative; z-index: 2; }
+.mt-item { min-height: 50px; padding: 8px 10px; border-radius: 14px; border: 3px solid var(--pc, transparent); background: #fff; font-weight: 800; font-size: 15px; color: var(--ink, #1b1d3a); box-shadow: 0 4px 12px rgba(60,50,140,.12); transition: transform .12s; }
+.mt-item.sel { transform: scale(1.04); border-color: #5b4ce0; box-shadow: 0 0 0 4px rgba(91,76,224,.25); }
+.mt-lines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; overflow: visible; }
+.pc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.pc-card { min-height: 72px; padding: 8px 6px; border-radius: 16px; border: 3px solid var(--pc, transparent); background: linear-gradient(160deg, #fff, #f1f0ff); font-weight: 800; font-size: 15px; color: var(--ink, #1b1d3a); box-shadow: 0 5px 0 rgba(91,76,224,.25), 0 8px 16px rgba(60,50,140,.12); transition: transform .15s; }
+.pc-card.sel { transform: translateY(-4px) rotate(-2deg); border-color: #5b4ce0; }
+.pc-card.on { transform: scale(.97); }
+.tapfig { margin: 10px auto; max-width: 360px; }
+.tapfig svg { width: 100%; height: auto; display: block; touch-action: manipulation; }
+[data-hit] { cursor: pointer; transition: opacity .15s; }
+[data-hit]:active { opacity: .7; }
+.hit-ok { animation: hitOk .8s ease 2; fill: #51cf66 !important; stroke: #2b8a3e !important; }
+.hit-ng { fill: #ff8787 !important; }
+@keyframes hitOk { 50% { opacity: .5; } }
+.qfig { display: block; margin: 10px auto 0; max-width: 100%; height: auto; }
