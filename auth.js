@@ -59,32 +59,43 @@ function jaError(e) {
 }
 
 // ---------- 同期 ----------
-const S = { fb: null, user: null, status: "off", savedAt: 0, lastPush: 0, timer: null, dirty: false, applying: false, paused: false, ready: false };
+// 書きこみを少なくする（無料枠のため）：クラウドに保存するのは
+//  ① ステップの終わり ② アプリをかくした／とじたとき ③ ガチャ・ボス勝利のあと（まとめて）だけ。
+//  ①③は前の保存から3分以内なら、3分たったときに1回にまとめる。内容が前回の保存と同じなら書かない。
+const MIN_GAP = 180000, RETRY_MS = 60000, HASH_KEY = "hoshimanabi-cloudhash";
+const S = { fb: null, user: null, status: "off", savedAt: 0, lastPush: 0, timer: null, dirty: false, applying: false, paused: false, ready: false, lastHash: "", writes: 0, busy: false };
 function setStatus(st) { S.status = st; refreshSection(); }
-function schedule(delay) {
+function strHash(t) { t = String(t || ""); let h = 0x811c9dc5; for (let i = 0; i < t.length; i++) { h ^= t.charCodeAt(i); h = Math.imul(h, 0x01000193); } return (h >>> 0).toString(36) + ":" + t.length; }
+function hashOf(st) { const o = Object.assign({}, st); delete o.updatedAt; return strHash(JSON.stringify(o)); }
+function schedule(ms, why) {
   if (!S.user || S.timer) return;
-  const wait = delay != null ? delay : Math.max(0, 30000 - (Date.now() - S.lastPush));
-  S.timer = setTimeout(() => { S.timer = null; push(); }, wait);
+  S.timer = setTimeout(() => { S.timer = null; push(why || "timer"); }, Math.max(0, ms));
 }
-async function push(force) {
+async function push(why) {
   if (!S.user || S.paused || !S.ready) return;
-  if (!S.dirty && !force) return;
-  if (!force && Date.now() - S.lastPush < 5000) { schedule(5000); return; }
+  const auto = why === "step" || why === "milestone";
+  if (auto && Date.now() - S.lastPush < MIN_GAP) { schedule(S.lastPush + MIN_GAP - Date.now(), "timer"); return; }
+  if (S.busy) { S.again = true; return; }
+  const st = APP().exportState(), h = hashOf(st);
+  if (h === S.lastHash) { S.dirty = false; if (S.status !== "saved") setStatus(S.savedAt ? "saved" : S.status === "syncing" ? "saved" : S.status); return; }
   clearTimeout(S.timer); S.timer = null;
   const uid = S.user.uid;
+  S.busy = true;
   try {
-    S.dirty = false; S.lastPush = Date.now(); setStatus("saving");
-    await S.fb.setDoc(uid, { data: window.HMMerge.slimForCloud(APP().exportState()), updatedAt: Date.now(), v: 1 });
-    S.savedAt = Date.now(); setStatus("saved");
+    S.lastPush = Date.now(); setStatus("saving");
+    const data = window.HMMerge.slimForCloud(st);
+    await S.fb.setDoc(uid, { data, updatedAt: Date.now(), v: 1 });
+    S.writes++; S.lastHash = h; try { localStorage.setItem(HASH_KEY, uid + "|" + h + "|" + strHash(data)); } catch (e) {}
+    S.dirty = hashOf(APP().exportState()) !== h; S.savedAt = Date.now(); setStatus("saved");
   } catch (e) {
     S.dirty = true; setStatus(navigator.onLine === false || /unavailable|network/.test((e && e.code) || "") ? "offline" : "error");
-    schedule(60000);
-  }
+    schedule(RETRY_MS, "retry");
+  } finally { S.busy = false; if (S.again) { S.again = false; if (S.dirty) push("retry"); } }
 }
 window.HMSync = {
-  dirty() { if (!S.user || S.applying) return; S.dirty = true; schedule(); },
-  flush: () => push(true),
-  status: () => ({ status: S.status, user: S.user, savedAt: S.savedAt, dirty: S.dirty, lastPush: S.lastPush }),
+  dirty() { if (!S.user || S.applying) return; S.dirty = true; },
+  flush: (why) => push(why || "hidden"),
+  status: () => ({ status: S.status, user: S.user, savedAt: S.savedAt, dirty: S.dirty, lastPush: S.lastPush, writes: S.writes, timer: !!S.timer }),
 };
 async function onSignedIn(user) {
   S.user = user; S.ready = false; setStatus("syncing");
@@ -99,17 +110,22 @@ async function onSignedIn(user) {
     if (merged) APP().importState(merged);
     S.applying = false;
     localStorage.setItem(OWNER_KEY, user.uid);
+    // 前回この端末から保存したときから、クラウドも端末も変わっていなければ書かない（起動のたびに書かない）
+    const cur = hashOf(APP().exportState()), stored = (localStorage.getItem(HASH_KEY) || "").split("|");
+    S.lastHash = stored[0] === user.uid && stored[1] === cur && doc && strHash(doc.data) === stored[2] ? cur : cloud ? hashOf(cloud) : "";
     S.ready = true;
-    await push(true);
+    await push("signin");
   } catch (e) {
     S.applying = false; S.ready = !!localStorage.getItem(OWNER_KEY) && localStorage.getItem(OWNER_KEY) === user.uid;
     setStatus(navigator.onLine === false || /unavailable|network|offline/.test((e && e.code) || "") ? "offline" : "error");
     setTimeout(() => { if (S.user && !S.ready) onSignedIn(S.user); }, 60000);
   }
 }
-window.addEventListener("hm-step-end", () => { if (S.dirty) push(false); });
-document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden" && S.dirty) push(true); });
-window.addEventListener("online", () => { if (S.user && !S.ready) onSignedIn(S.user); else if (S.dirty) push(true); });
+window.addEventListener("hm-step-end", () => push("step"));
+window.addEventListener("hm-milestone", () => push("milestone"));
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "hidden") push("hidden"); });
+window.addEventListener("pagehide", () => push("hidden"));
+window.addEventListener("online", () => { if (S.user && !S.ready) onSignedIn(S.user); else if (S.dirty) push("retry"); });
 
 // ---------- 画面 ----------
 const G_LOGO = '<svg class="g-logo" viewBox="0 0 48 48" width="20" height="20" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>';
@@ -199,7 +215,7 @@ function sectionHtml() {
   let h = '<div class="sec">アカウント</div>';
   if (S.user) {
     const ini = (S.user.email || "?").slice(0, 1).toUpperCase();
-    h += '<div class="acct-card"><div class="acct-row"><span class="acct-av">' + esc(ini) + '</span><div class="grow"><b class="acct-mail">' + esc(S.user.email) + '</b><small>' + (S.user.provider === "google.com" ? "Google でログイン中" : "メールアドレスでログイン中") + '</small></div></div><div class="acct-sync" id="acct-sync">' + statusLine() + '</div><div class="acct-btns"><button type="button" class="btn" data-acct="sync">今すぐ保存</button><button type="button" class="btn" data-acct="logout">ログアウト</button></div><button type="button" class="link-btn acct-del" data-acct="delete">アカウントを削除する</button></div>';
+    h += '<div class="acct-card"><div class="acct-row"><span class="acct-av">' + esc(ini) + '</span><div class="grow"><b class="acct-mail">' + esc(S.user.email) + '</b><small>' + (S.user.provider === "google.com" ? "Google でログイン中" : "メールアドレスでログイン中") + '</small></div></div><div class="acct-sync" id="acct-sync">' + statusLine() + '</div><div class="acct-btns"><button type="button" class="btn" data-acct="logout">ログアウト</button></div><button type="button" class="link-btn acct-del" data-acct="delete">アカウントを削除する</button></div>';
   } else {
     h += '<div class="acct-card guest"><div class="acct-row"><span class="acct-av g">👤</span><div class="grow"><b>ゲストで使っています</b><small>記録はこの端末の中だけに保存されています</small></div></div><p class="small">ログインすると、記録をクラウドに保存して、ほかの端末でもつづきから使えるよ。</p><button type="button" class="btn primary block" data-acct="login">ログイン・新規登録</button></div>';
   }
@@ -208,7 +224,7 @@ function sectionHtml() {
 function refreshSection() { const el = document.getElementById("acct-sec"); if (el) el.innerHTML = sectionHtml(); }
 async function logout() {
   if (!confirm("ログアウトしますか？\n（この端末の記録はのこります。クラウドの記録は、またログインすると使えます）")) return;
-  try { if (S.dirty) await push(true); await S.fb.signOut(); APP().toast("ログアウトしました"); } catch (e) { APP().toast(jaError(e)); }
+  try { await push("hidden"); await S.fb.signOut(); APP().toast("ログアウトしました"); } catch (e) { APP().toast(jaError(e)); }
 }
 async function deleteAccount() {
   const sh = APP().openSheet('<h2>アカウントを削除</h2><p>クラウドに保存した記録とアカウントが消えます。<b>もとにはもどせません。</b><br>この端末の中の記録はのこります。</p><div class="actions"><button type="button" class="btn danger block" id="del-go">削除する</button><button type="button" class="btn block" id="del-no">やめる</button></div>', { label: "アカウントを削除" });
@@ -224,12 +240,12 @@ async function doDelete() {
     localStorage.removeItem(OWNER_KEY); S.paused = false; APP().toast("アカウントを削除しました");
   } catch (e) {
     if (/requires-recent-login/.test(e.code || "")) return reauthThenDelete();
-    S.paused = false; S.dirty = true; push(true); APP().toast(jaError(e));
+    S.paused = false; S.lastHash = ""; push("retry"); APP().toast(jaError(e));
   }
 }
 function reauthThenDelete() {
   const google = S.user.provider === "google.com"; let okd = false;
-  const sh = APP().openSheet('<h2>もう一度ログイン</h2><p class="small">安全のため、削除の前にもう一度ログインしてね。</p>' + (google ? '<button type="button" class="gsi-btn" id="ra-g">' + G_LOGO + "<span>Googleで続ける</span></button>" : '<label class="au-field"><span>パスワード</span><input class="au-in" id="ra-pw" type="password" autocomplete="current-password"></label><div class="au-err" id="ra-err" hidden></div><button type="button" class="btn primary block" id="ra-go">確認して削除</button>') + '<button type="button" class="btn block" id="ra-no" style="margin-top:8px">やめる</button>', { label: "もう一度ログイン", onClose: () => { if (!okd && S.paused) { S.paused = false; S.dirty = true; push(true); } } });
+  const sh = APP().openSheet('<h2>もう一度ログイン</h2><p class="small">安全のため、削除の前にもう一度ログインしてね。</p>' + (google ? '<button type="button" class="gsi-btn" id="ra-g">' + G_LOGO + "<span>Googleで続ける</span></button>" : '<label class="au-field"><span>パスワード</span><input class="au-in" id="ra-pw" type="password" autocomplete="current-password"></label><div class="au-err" id="ra-err" hidden></div><button type="button" class="btn primary block" id="ra-go">確認して削除</button>') + '<button type="button" class="btn block" id="ra-no" style="margin-top:8px">やめる</button>', { label: "もう一度ログイン", onClose: () => { if (!okd && S.paused) { S.paused = false; S.lastHash = ""; push("retry"); } } });
   const go = async (fn) => { try { await fn(); okd = true; APP().closeSheet(true); await doDelete(); } catch (e) { const er = $("#ra-err", sh); if (er) { er.hidden = false; er.textContent = jaError(e); } else APP().toast(jaError(e)); } };
   if (google) $("#ra-g", sh).addEventListener("click", () => go(() => S.fb.reauthGoogle()));
   else $("#ra-go", sh).addEventListener("click", () => go(() => S.fb.reauthEmail($("#ra-pw", sh).value)));
@@ -255,7 +271,6 @@ document.addEventListener("click", (e) => {
   if (c) {
     const k = c.dataset.acct;
     if (k === "login") show("welcome");
-    else if (k === "sync") push(true);
     else if (k === "logout") logout();
     else if (k === "delete") deleteAccount();
   }

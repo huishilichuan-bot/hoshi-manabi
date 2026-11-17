@@ -1,7 +1,7 @@
 /* ほしまなび — 勉強して⭐を集める学習アプリ（小1〜中3）。課金・お金の機能はありません。 */
 (() => {
   "use strict";
-  const VERSION = "1.3.0";
+  const VERSION = "1.3.1";
   const KEY = "hoshimanabi";
   const SCHEMA = 1;
   const $ = (s, r = document) => r.querySelector(s);
@@ -685,7 +685,7 @@
   }
   function bossSummary() {
     const p = GCArt.charById(state.partner), L = bossLook(Q.s, Q.g, Q.ui), win = Q.hp <= 0, first = win && !(state.bossWins || {})[Q.key];
-    if (win) { state.bossWins = state.bossWins || {}; state.bossWins[Q.key] = state.bossWins[Q.key] || today(); save(); }
+    if (win) { state.bossWins = state.bossWins || {}; state.bossWins[Q.key] = state.bossWins[Q.key] || today(); save(); try { window.dispatchEvent(new Event("hm-milestone")); } catch (e) {} }
     const nw = Object.keys(state.bossWins || {}).length;
     const line = win ? (first ? "やったー！ " + L.name + "をたおしたよ！ この単元、もうバッチリだね！" : "また勝った！ 強すぎる！") : "あと " + Q.hp + " ヒットだった！ 解説を読んで、もう一回いこう！";
     let h = '<div class="sum"><div class="boss-end ' + (win ? "win" : "") + '"><div class="be-mon">' + bossSvg(L, 120) + (win ? '<span class="be-crown">👑</span>' : "") + '</div><div class="be-t">' + (win ? "ボスをたおした！" : L.name + "とのバトル") + "</div>";
@@ -831,6 +831,7 @@
     state.pullsUsed += n;
     state.gachaLog.unshift({ t: now(), ids: out.map((o) => o.id) }); state.gachaLog = state.gachaLog.slice(0, 50);
     save();
+    try { window.dispatchEvent(new Event("hm-milestone")); } catch (e) {}
     return { results: out };
   }
   function viewGacha() {

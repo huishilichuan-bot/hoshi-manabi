@@ -37,7 +37,7 @@ with sync_playwright() as p:
 
     # A：新規登録して、進みぐあいを作る
     ctxA, A = newpage()
-    A.goto(B); ok("本番 v1.3.0", wait(A, "window.HM_APP && HM_APP.version === '1.3.0'"))
+    A.goto(B); ok("本番 v1.3.1", wait(A, "window.HM_APP && HM_APP.version === '1.3.1'"))
     ok("ようこそ画面（スプラッシュのあと）", wait(A, "window.HMAuthUI && HMAuthUI.state().view === 'welcome'"))
     A.wait_for_timeout(500); A.screenshot(path=os.path.join(SHOT, "live-01-welcome.png"))
     ok("A：メールで新規登録→クラウドに保存", email_flow(A, EA, PW, True, "live-02-email-signup.png"), EA)
@@ -50,6 +50,7 @@ with sync_playwright() as p:
     ok("A：進みぐあいをクラウドに保存", wait(A, "HMSync.status().status === 'saved' && !HMSync.status().dirty", 15000), A.evaluate("HMSync.status().status"))
     A.locator('.tab[data-tab="settings"]').tap(); A.wait_for_timeout(700)
     A.locator(".acct-card").scroll_into_view_if_needed(); A.wait_for_timeout(300)
+    ok("A：「今すぐ保存」ボタンなし", A.locator('[data-acct="sync"]').count() == 0)
     ok("A：マイページにメールと保存ずみ", EA in A.locator(".acct-card").inner_text() and "保存ずみ" in A.locator(".acct-sync").inner_text())
     A.screenshot(path=os.path.join(SHOT, "live-03-mypage-account.png"))
     A.evaluate("HMSync.flush()"); A.wait_for_timeout(1500)

@@ -19,7 +19,7 @@ try:
     # 本物の Firebase へ行く通信がないことを確かめる
     net = []
     ctx.on("request", lambda r: net.append(r.url) if (not r.url.startswith("http://localhost") and ("googleapis" in r.url or "gstatic" in r.url or "firebase" in r.url)) else None)
-    pg = ctx.new_page()
+    pg = ctx.new_page(); pg.clock.install()
     pg.on("pageerror", lambda e: errors.append(str(e)))
     pg.on("console", lambda m: errors.append("console: " + m.text) if m.type == "error" else None)
     pg.on("dialog", lambda d: d.accept())
@@ -90,24 +90,51 @@ try:
     ok("マイページにメールと同期状態", "kid@example.com" in pg.locator(".acct-card").inner_text() and "保存ずみ" in pg.locator(".acct-sync").inner_text())
     pg.locator(".acct-card").scroll_into_view_if_needed(); shot("07-mypage-signed-in")
 
-    # 4) まとめて書く：30秒に1回まで＋ステップの終わり＋画面をかくしたとき
-    w0 = E("__HM_FB_MOCK.writes")
-    for _ in range(6): E("HM_APP.save()")
-    pg.wait_for_timeout(800)
-    ok("何回保存してもすぐには書かない（30秒まとめ）", E("__HM_FB_MOCK.writes") == w0 and E("HMSync.status().dirty"))
-    pg.wait_for_timeout(4600)
-    E("window.dispatchEvent(new Event('hm-step-end'))"); pg.wait_for_timeout(700)
-    ok("ステップの終わりに1回書く", E("__HM_FB_MOCK.writes") == w0 + 1 and not E("HMSync.status().dirty"))
-    E("HM_APP.save()")
-    E("Object.defineProperty(document, 'visibilityState', {configurable:true, get(){return 'hidden'}}); document.dispatchEvent(new Event('visibilitychange'))"); pg.wait_for_timeout(700)
-    E("Object.defineProperty(document, 'visibilityState', {configurable:true, get(){return 'visible'}})")
-    ok("画面をかくしたときに書く", E("__HM_FB_MOCK.writes") == w0 + 2)
-    # オフライン
-    E("HM_APP.save(); __HM_FB_MOCK.failNext = 'unavailable'"); E("HMSync.flush()"); pg.wait_for_timeout(700)
+    # 4) 書きこみを少なく：ステップの終わり・かくしたとき・ガチャ/ボス（3分以内はまとめる）だけ。同じ内容なら書かない
+    ok("「今すぐ保存」ボタンはない", pg.locator('[data-acct="sync"]').count() == 0 and "今すぐ保存" not in pg.inner_text("body"))
+    W = lambda: E("__HM_FB_MOCK.writes")
+    def change(): E("(() => { const s = HM_APP.state(); s.totalStars++; s.pulls++; HM_APP.save(); })()")
+    def hide_show():
+        E("Object.defineProperty(document, 'visibilityState', {configurable:true, get(){return 'hidden'}}); document.dispatchEvent(new Event('visibilitychange'))"); pg.wait_for_timeout(500)
+        E("Object.defineProperty(document, 'visibilityState', {configurable:true, get(){return 'visible'}})")
+    w0 = W()
+    for _ in range(6): change()
+    pg.clock.fast_forward("01:00"); pg.wait_for_timeout(400)
+    ok("変わっただけでは書かない（自動の30秒保存なし）", W() == w0 and E("HMSync.status().dirty"))
+    E("window.dispatchEvent(new Event('hm-step-end'))"); pg.wait_for_timeout(500)
+    ok("前の保存から3分以内のステップ終わりはまとめる（すぐは書かない）", W() == w0 and E("HMSync.status().timer"))
+    pg.clock.fast_forward("02:10"); pg.wait_for_timeout(600)
+    ok("3分たったら1回だけ書く", W() == w0 + 1, W() - w0)
+    hide_show()
+    ok("内容が同じなら、かくしても書かない", W() == w0 + 1)
+    change(); hide_show()
+    ok("変わっていれば、かくしたときに書く", W() == w0 + 2)
+    change(); E("window.dispatchEvent(new Event('pagehide'))"); pg.wait_for_timeout(500)
+    ok("とじたとき（pagehide）に書く", W() == w0 + 3)
+    # オフライン → あとで自動でもう一度
+    change(); E("__HM_FB_MOCK.failNext = 'unavailable'"); hide_show()
     ok("オフラインでもこわれない（あとで保存）", "オフライン" in pg.locator(".acct-sync").inner_text() and E("HMSync.status().dirty"))
-    E("HMSync.flush()"); pg.wait_for_timeout(700)
-    ok("つながったら保存", "保存ずみ" in pg.locator(".acct-sync").inner_text())
-
+    pg.clock.fast_forward("01:05"); pg.wait_for_timeout(700)
+    ok("1分後に自動でもう一度保存", "保存ずみ" in pg.locator(".acct-sync").inner_text() and W() == w0 + 4)
+    # 30分の勉強をまねする：2分ごとにステップ（とちゅうで5回保存）、3回ガチャ、1回ボス勝利、2回アプリをかくす、最後にとじる
+    pg.clock.fast_forward("05:00"); pg.wait_for_timeout(300)
+    ws = W()
+    for k in range(15):
+        for _ in range(5): change()
+        E("window.dispatchEvent(new Event('hm-step-end'))"); pg.wait_for_timeout(150)
+        if k in (2, 7, 12): change(); E("window.dispatchEvent(new Event('hm-milestone'))"); pg.wait_for_timeout(150)
+        if k == 10: change(); E("window.dispatchEvent(new Event('hm-milestone'))"); pg.wait_for_timeout(150)
+        if k in (5, 11): hide_show()
+        pg.clock.fast_forward("02:00"); pg.wait_for_timeout(250)
+    hide_show(); pg.wait_for_timeout(400)
+    sess = W() - ws
+    print("SESSION_WRITES", sess)
+    ok("30分のまね：書きこみ12回以下（15ステップ・ガチャ3・ボス1・かくす3）", sess <= 12, sess)
+    ok("30分のまね：最後の内容はクラウドに保存ずみ", not E("HMSync.status().dirty") and json.loads(E("__HM_FB_MOCK.db.docs['u0'].data"))["totalStars"] == E("HM_APP.state().totalStars"))
+    # 起動しなおしても、変わっていなければ書かない
+    wr = W(); pg.reload(); pg.wait_for_timeout(2500)
+    ok("ログインしたまま起動しなおしても書かない", E("HMAuthUI.state().status") == "saved" and E("__HM_FB_MOCK.writes") == 0, [E("HMAuthUI.state().status"), E("__HM_FB_MOCK.writes")])
+    tap('.tab[data-tab="settings"]'); pg.wait_for_timeout(400)
     # 5) ログアウト → 同じメールで登録しようとするとエラー → まちがったパスワード → ネット → 回数
     tap('[data-acct="logout"]'); pg.wait_for_timeout(700)
     ok("ログアウトでゲスト欄にもどる", pg.locator(".acct-card.guest").count() == 1)
@@ -169,7 +196,7 @@ try:
     t = open(os.path.join(ROOT, "privacy.html"), encoding="utf-8").read()
     ok("privacy：Firebase・Google・localStorage・広告なし・販売なし・支払いなし・削除方法", all(k in t for k in ["Firebase", "Google でログイン", "localStorage", "広告は表示しません", "売ったり", "支払い", "アカウントを削除する"]))
     sw = open(os.path.join(ROOT, "sw.js"), encoding="utf-8").read()
-    ok("SW：v1.3.0・Firebase 通信はキャッシュしない", 'hoshi-manabi-v1.3.0' in sw and "googleapis" in sw and "firebase" in sw)
+    ok("SW：v1.3.1・Firebase 通信はキャッシュしない", 'hoshi-manabi-v1.3.1' in sw and "googleapis" in sw and "firebase" in sw)
     ok("本物の Firebase への通信なし（にせものを使用）", not net, net[:3])
     br.close()
 finally:

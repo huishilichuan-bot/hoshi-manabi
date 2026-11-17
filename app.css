@@ -685,7 +685,7 @@ body.auth-open { overflow: hidden; }
 .acct-av.g { background: #eceef6; font-size: 22px; }
 .acct-sync .sy { font-size: 13px; font-weight: 700; color: #6b6e8a; }
 .acct-sync .sy.ok { color: #1f9d55; } .acct-sync .sy.busy { color: #5b4ce0; } .acct-sync .sy.off { color: #b7791f; }
-.acct-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.acct-btns { display: grid; grid-template-columns: 1fr; gap: 8px; }
 .acct-del { color: #c0392b !important; align-self: center; }
 .legal-links a { color: inherit; font-weight: 700; }
 .sheet .gsi-btn { margin-top: 8px; }
