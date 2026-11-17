@@ -21,3 +21,10 @@ v1.1.0 は完了（2560f9c）。
 - C9 済み：tools/curriculum.json（310項目）→ tools/audit.js → coverage.json.audit。前 291/310（tools/audit-before-v12.txt）→ 後 310/310。q-gaps.js 追加
 - 修正：画面遷移アニメ中の横はみ出しでページが縮小される問題（overflow-x clip）。test_v12 52/52
 - C10 済み：b72b807 Actions success、公開版 v1.2.0・SWキャッシュ hoshi-manabi-v1.2.0 を確認
+
+# v1.3.0 TODO（アカウント・クラウド保存）
+- [x] A1 firebase-config.js（本物の設定・enabled:true）、hm-merge.js（合わせ方）、auth.js（Firebase 12.6.0 CDN・ログイン画面・同期・マイページ欄）
+- [x] A2 firestore.rules、privacy.html、terms.html、legal.html 更新、SW v1.3.0（Firebase/Google 通信はキャッシュしない）
+- [x] A3 tools/fb_mock.js ＋ tools/test_v13.py（55/55）、旧テストは NOAUTH でログイン画面なし、screenshots/v13
+- [ ] A4 オーナーが firestore.rules を公開 → main にマージして公開 → 本番でメール登録・同期・削除のE2E → 報告
+  - いまはブランチ v1.3.0-auth にだけ push（main に入れると公開される）

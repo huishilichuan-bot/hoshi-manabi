@@ -1,6 +1,7 @@
 # ほしまなび v1.2 — 新機能のテスト（ヘッドレスChrome 390×844・タッチ）
 import subprocess, sys, time, os
 from playwright.sync_api import sync_playwright
+NOAUTH = "Object.defineProperty(window, 'HM_FIREBASE', { configurable: true, get() { return { enabled: false }; }, set() {} });"  # 旧テストではログイン画面を出さない
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SHOT = os.path.join(ROOT, "screenshots", "v12"); os.makedirs(SHOT, exist_ok=True)
 PORT = 8773
@@ -14,7 +15,7 @@ try:
   with sync_playwright() as p:
     br = p.chromium.launch(executable_path="/usr/bin/google-chrome", args=["--no-sandbox"])
     ctx = br.new_context(viewport={"width": 390, "height": 844}, device_scale_factor=2, is_mobile=True, has_touch=True)
-    pg = ctx.new_page()
+    pg = ctx.new_page(); pg.add_init_script(NOAUTH)
     pg.on("pageerror", lambda e: errors.append(str(e)))
     pg.on("console", lambda m: errors.append("console: " + m.text) if m.type == "error" else None)
     pg.goto(f"http://localhost:{PORT}/index.html"); pg.wait_for_timeout(1200)
@@ -197,7 +198,7 @@ try:
     # 読み上げできない端末
     ctx2 = br.new_context(viewport={"width": 390, "height": 844}, is_mobile=True, has_touch=True)
     ctx2.add_init_script("delete window.speechSynthesis; delete window.SpeechSynthesisUtterance;")
-    pg2 = ctx2.new_page(); pg2.on("pageerror", lambda e: errors.append(str(e)))
+    pg2 = ctx2.new_page(); pg2.add_init_script(NOAUTH); pg2.on("pageerror", lambda e: errors.append(str(e)))
     pg2.goto(f"http://localhost:{PORT}/index.html"); pg2.wait_for_timeout(1200)
     pg2.evaluate("(l) => HM_APP.startStep(l[0], l[1], l[2], l[3], {noCard:true})", pg2.evaluate(FIND, "いろいろな単語/聞きとり（単語）")); pg2.wait_for_timeout(300)
     t2 = pg2.inner_text("#quiz")

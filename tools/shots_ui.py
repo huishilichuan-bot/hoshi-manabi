@@ -1,6 +1,7 @@
 # UI のスクショ（before/after 用）：python tools/shots_ui.py before|after
 import subprocess, sys, time, os
 from playwright.sync_api import sync_playwright
+NOAUTH = "Object.defineProperty(window, 'HM_FIREBASE', { configurable: true, get() { return { enabled: false }; }, set() {} });"  # 旧テストではログイン画面を出さない
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 tag = sys.argv[1]; SHOT = os.path.join(ROOT, "screenshots", "v12"); os.makedirs(SHOT, exist_ok=True)
 PORT = 8774
@@ -9,7 +10,7 @@ try:
   with sync_playwright() as p:
     br = p.chromium.launch(executable_path="/usr/bin/google-chrome", args=["--no-sandbox"])
     ctx = br.new_context(viewport={"width": 390, "height": 844}, device_scale_factor=2, is_mobile=True, has_touch=True)
-    pg = ctx.new_page(); pg.goto(f"http://localhost:{PORT}/index.html"); pg.wait_for_timeout(2500)
+    pg = ctx.new_page(); pg.add_init_script(NOAUTH); pg.goto(f"http://localhost:{PORT}/index.html"); pg.wait_for_timeout(2500)
     pg.screenshot(path=f"{SHOT}/{tag}-1-home.png")
     pg.locator('[data-tab="study"]').first.click(); pg.wait_for_timeout(600); pg.screenshot(path=f"{SHOT}/{tag}-2-study.png")
     pg.locator('.subj[data-subj="math"]').first.click(); pg.wait_for_timeout(500); pg.locator('.grade[data-grade="3"]').first.click(); pg.wait_for_timeout(500)

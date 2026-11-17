@@ -1,17 +1,17 @@
 {
- "seeds": 20,
- "generatedChecked": 104284,
- "uniqueQuestions": 49558,
+ "seeds": 200,
+ "generatedChecked": 1020842,
+ "uniqueQuestions": 242749,
  "stats": {
-  "chk": 57666,
-  "ord": 1688,
-  "qx": 15180,
-  "pairchk": 360,
-  "ordx": 160,
-  "expr": 2200,
-  "tap": 1732,
-  "sys": 400,
-  "eqn": 480
+  "chk": 576798,
+  "ord": 16865,
+  "qx": 151794,
+  "pairchk": 3600,
+  "ordx": 1600,
+  "expr": 22000,
+  "tap": 17335,
+  "sys": 4000,
+  "eqn": 4800
  },
  "problems": 0,
  "cover": {
@@ -345,8 +345,15 @@
   }
  },
  "warns": {
+  "short_set": {
+   "n": 2,
+   "sample": [
+    "math 1 / 10より おおきい かず / 11〜20 9/10",
+    "math 6 / 場合の数 / 条件に合う場合 4/5"
+   ]
+  },
   "bank_ex_not_contain_answer": {
-   "n": 1128,
+   "n": 3114,
    "sample": [
     "math 3 / 三角形と角 / 角 :: 角の大きさは何で決まる？ => 辺の開きぐあい",
     "math 3 / 三角形と角 / 角 :: 角の大きさは何で決まる？ => 辺の開きぐあい",

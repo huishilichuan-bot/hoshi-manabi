@@ -1,6 +1,7 @@
 # ほしまなび — ヘッドレスChrome（390×844）での自動テスト
 import json, subprocess, sys, time, os, random
 from playwright.sync_api import sync_playwright
+NOAUTH = "Object.defineProperty(window, 'HM_FIREBASE', { configurable: true, get() { return { enabled: false }; }, set() {} });"  # 旧テストではログイン画面を出さない
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SHOT = os.path.join(ROOT, "screenshots"); os.makedirs(SHOT, exist_ok=True)
 PORT = 8765
@@ -13,7 +14,7 @@ try:
   with sync_playwright() as p:
     br = p.chromium.launch(executable_path="/usr/bin/google-chrome", args=["--no-sandbox"])
     ctx = br.new_context(viewport={"width": 390, "height": 844}, device_scale_factor=2, is_mobile=True, has_touch=True)
-    pg = ctx.new_page()
+    pg = ctx.new_page(); pg.add_init_script(NOAUTH)
     pg.on("pageerror", lambda e: errors.append(str(e)))
     pg.on("console", lambda m: errors.append("console: " + m.text) if m.type == "error" else None)
     pg.goto(f"http://localhost:{PORT}/index.html"); pg.wait_for_timeout(1200)

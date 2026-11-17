@@ -1,6 +1,7 @@
 # 新しい本格ゲーム8本を390×844でそれっぽく操作してプレイテスト（スクショ・エラー・結果画面まで）
 import subprocess, sys, time, os, random, json
 from playwright.sync_api import sync_playwright
+NOAUTH = "Object.defineProperty(window, 'HM_FIREBASE', { configurable: true, get() { return { enabled: false }; }, set() {} });"  # 旧テストではログイン画面を出さない
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "screenshots", "pro"); os.makedirs(OUT, exist_ok=True)
 PORT = 8767
@@ -17,7 +18,7 @@ try:
   with sync_playwright() as p:
     br = p.chromium.launch(executable_path="/usr/bin/google-chrome", args=["--no-sandbox"])
     ctx = br.new_context(viewport={"width": 390, "height": 844}, device_scale_factor=1, has_touch=True)
-    pg = ctx.new_page()
+    pg = ctx.new_page(); pg.add_init_script(NOAUTH)
     pg.on("pageerror", lambda e: errs.append(str(e)))
     pg.on("console", lambda m: errs.append("console: " + m.text) if m.type == "error" else None)
     pg.goto(f"http://localhost:{PORT}/index.html"); pg.wait_for_timeout(600)

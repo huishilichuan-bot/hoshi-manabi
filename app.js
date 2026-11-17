@@ -1,7 +1,7 @@
 /* ほしまなび — 勉強して⭐を集める学習アプリ（小1〜中3）。課金・お金の機能はありません。 */
 (() => {
   "use strict";
-  const VERSION = "1.2.0";
+  const VERSION = "1.3.0";
   const KEY = "hoshimanabi";
   const SCHEMA = 1;
   const $ = (s, r = document) => r.querySelector(s);
@@ -81,7 +81,7 @@
   }
   let state;
   try { state = migrate(JSON.parse(localStorage.getItem(KEY) || "null")); } catch (e) { state = fresh(); }
-  function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { toast("保存できませんでした（容量がいっぱいかも）"); } }
+  function save() { state.updatedAt = now(); try { if (window.HMSync) HMSync.dirty(); } catch (e) {} try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { toast("保存できませんでした（容量がいっぱいかも）"); } }
   save();
   const dayRec = (k) => (state.days[k] = state.days[k] || { stars: 0, steps: {} });
   const starsToday = () => (state.days[today()] || { stars: 0 }).stars;
@@ -495,6 +495,7 @@
       Q.wrongLeft = Q.retryRes.filter((r) => !r.ok).map((r) => r.q);
     }
     summary();
+    try { window.dispatchEvent(new Event("hm-step-end")); } catch (e) {}
   }
   // ⭐をあげる（同じステップは1日1回まで）。⭐やポイントがへることはない。
   function giveStar() {
@@ -896,6 +897,7 @@
     let h = '<div class="me-card">' + charHtml(p.id, 72, "r" + p.rarity) + '<div class="grow"><b class="me-n">' + esc(state.settings.nick || "なまえ未設定") + '</b><span class="chip-t">🏅 ' + esc(titleName()) + "</span></div></div>";
     h += '<div class="me-stats"><div><b class="num">' + state.totalStars + "</b><small>累計⭐</small></div><div><b class=\"num\">" + nd + "</b><small>合格ステップ</small></div><div><b class=\"num\">" + nb + "</b><small>ボス撃破</small></div><div><b class=\"num\">" + (state.bestCombo || 0) + "</b><small>最高コンボ</small></div></div>";
     if ((state.wrongBox || []).length) h += '<button type="button" class="box-card" data-act="box"><span class="bx-i">📦</span><span class="grow"><b>まちがえた問題ボックス</b><small>' + state.wrongBox.length + " 問 ・ これまでのクリア " + (state.boxCleared || 0) + ' 問</small></span><span class="go">▶</span></button>';
+    h += '<div id="acct-sec">' + (window.HMAuthUI ? HMAuthUI.sectionHtml() : "") + "</div>";
     h += '<div class="sec">設定</div>';
     h += '<div class="card set"><label class="sw"><span>🔈 音量</span><input type="range" min="0" max="1" step="0.1" id="vol" value="' + (state.settings.vol == null ? 0.8 : state.settings.vol) + '"></label>';
     h += '<label class="sw"><span>効果音（ピコーンなど）</span><input type="checkbox" data-set="sound" ' + (state.settings.sound ? "checked" : "") + '></label><label class="sw"><span>振動（対応している端末のみ）</span><input type="checkbox" data-set="haptic" ' + (state.settings.haptic ? "checked" : "") + '></label><label class="field"><span>なまえ（マイページとチェスの友だち対戦で表示）</span><input class="input" id="nick" maxlength="12" value="' + esc(state.settings.nick) + '"></label></div>';
@@ -907,6 +909,7 @@
     h += '<div class="actions"><button type="button" class="btn danger block" data-act="reset">すべてのデータを消す</button></div>';
     h += '<div class="sec">このアプリについて</div><p class="small">ほしまなび v' + VERSION + "。小1〜中3の算数・数学、国語、生活、理科、社会、英語。学習指導要領（平成29年告示）の内容にそって作っています。<br>⭐は1ステップ6割以上で1こ（同じステップは1日1回）。⭐4こで、その日のゲームがひらきます。<br><b>課金・広告・お金の機能はありません。</b>データはこの端末の中だけに保存され、どこにも送信しません。</p>";
     h += '<p class="small muted">算数・数学の問題はプログラムで作り、答えを別の計算で確かめています。文章の問題も確認していますが、まちがいを見つけたら「この問題おかしい？」で教えてください。<a href="./legal.html">くわしく</a></p>';
+    h += '<p class="small legal-links"><a href="./privacy.html">プライバシーポリシー</a> ・ <a href="./terms.html">利用規約</a></p>';
     return h;
   }
   function download(name, text) {
@@ -1018,7 +1021,7 @@
   (() => { const ext = ((window.HMGames && HMGames.list) || []).filter((g) => !DROPPED.includes(g.id)); for (let i = 0; i < GAMES.length; i++) { const r = ext.find((x) => x.id === GAMES[i].id); if (r) GAMES[i] = r; } ext.forEach((x) => { if (!GAMES.some((y) => y.id === x.id)) GAMES.push(x); }); })();
   // スプラッシュ（起動画面）を消す
   (() => { const sp = document.getElementById("splash"); if (!sp) return; const hide = () => { sp.classList.add("out"); setTimeout(() => sp.remove(), 500); }; setTimeout(hide, Math.max(150, 650 - performance.now())); })();
-  window.HM_APP = { state: () => state, save, render, today, dkey, setClockOffset: (ms) => { clockOffset = ms; render(); }, GAMES, gachaPull, rates: () => ({ normal: GACHA_RATES.slice(), sr: GACHA_RATES_SR.slice() }), drawRarity, startStep, findStep, judgeNum, passNeed: HM.passNeed, STARS_TO_UNLOCK, READ_MS, starsToday, gamesOpen, pullsLeft, startGame, version: VERSION, quiz: () => Q, startBox, startBoss, speak, canSpeak };
+  window.HM_APP = { state: () => state, save, render, today, dkey, setClockOffset: (ms) => { clockOffset = ms; render(); }, GAMES, gachaPull, rates: () => ({ normal: GACHA_RATES.slice(), sr: GACHA_RATES_SR.slice() }), drawRarity, startStep, findStep, judgeNum, passNeed: HM.passNeed, STARS_TO_UNLOCK, READ_MS, starsToday, gamesOpen, pullsLeft, startGame, version: VERSION, quiz: () => Q, tab: () => tab, exportState: () => JSON.parse(JSON.stringify(state)), importState: (d) => { state = migrate(JSON.parse(JSON.stringify(d))); try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} render(); }, charHtml, sound, toast, haptic, openSheet, closeSheet, startBox, startBoss, speak, canSpeak };
 
   // テスト用：?clock=+86400000 のように時計をずらせる
   try { const c = new URLSearchParams(location.search).get("clock"); if (c) clockOffset = +c || 0; } catch (e) {}

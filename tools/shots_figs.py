@@ -1,6 +1,7 @@
 # 図つき問題のスクショ（screenshots/v12/fig-*.png）
 import subprocess, sys, time, os
 from playwright.sync_api import sync_playwright
+NOAUTH = "Object.defineProperty(window, 'HM_FIREBASE', { configurable: true, get() { return { enabled: false }; }, set() {} });"  # 旧テストではログイン画面を出さない
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__))); SHOT = os.path.join(ROOT, "screenshots", "v12")
 PORT = 8775
 srv = subprocess.Popen([sys.executable, "-m", "http.server", str(PORT)], cwd=ROOT, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL); time.sleep(0.8)
@@ -9,7 +10,7 @@ L = [("japan", "47都道府県（表で練習）/地図で地方をタップ"), 
 try:
   with sync_playwright() as p:
     br = p.chromium.launch(executable_path="/usr/bin/google-chrome", args=["--no-sandbox"])
-    pg = br.new_context(viewport={"width": 390, "height": 844}, device_scale_factor=2, is_mobile=True, has_touch=True).new_page()
+    pg = br.new_context(viewport={"width": 390, "height": 844}, device_scale_factor=2, is_mobile=True, has_touch=True).new_page(); pg.add_init_script(NOAUTH)
     errs = []; pg.on("pageerror", lambda e: errs.append(str(e)))
     pg.goto(f"http://localhost:{PORT}/index.html"); pg.wait_for_timeout(1200)
     for nm, step in L:

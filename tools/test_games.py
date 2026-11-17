@@ -1,6 +1,7 @@
 # 全50ゲームを少し長めに遊んで（ランダムなタップ・キー）エラーがないか確かめ、一覧画像を作る
 import subprocess, sys, time, os, random, json
 from playwright.sync_api import sync_playwright
+NOAUTH = "Object.defineProperty(window, 'HM_FIREBASE', { configurable: true, get() { return { enabled: false }; }, set() {} });"  # 旧テストではログイン画面を出さない
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "screenshots", "games"); os.makedirs(OUT, exist_ok=True)
 PORT = 8766
@@ -9,7 +10,7 @@ time.sleep(0.8); errs = []; bad = []; finished = []
 try:
   with sync_playwright() as p:
     br = p.chromium.launch(executable_path="/usr/bin/google-chrome", args=["--no-sandbox"])
-    pg = br.new_page(viewport={"width": 390, "height": 844})
+    pg = br.new_page(viewport={"width": 390, "height": 844}); pg.add_init_script(NOAUTH)
     pg.on("pageerror", lambda e: errs.append(str(e)))
     pg.on("console", lambda m: errs.append("console: " + m.text) if m.type == "error" else None)
     pg.goto(f"http://localhost:{PORT}/index.html"); pg.wait_for_timeout(600)
