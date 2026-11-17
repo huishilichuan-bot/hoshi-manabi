@@ -39,5 +39,5 @@
     return g;
   }
   const list = [];
-  window.HMGames = { list, add(meta, fn) { list.push(meta); GC.open[meta.id] = fn; }, shell, rnd, shuffle, setupCanvas, DI };
+  window.HMGames = { list, add(meta, fn) { const i = list.findIndex((x) => x.id === meta.id); if (i >= 0) list[i] = meta; else list.push(meta); GC.open[meta.id] = fn; }, shell, rnd, shuffle, setupCanvas, DI };
 })();

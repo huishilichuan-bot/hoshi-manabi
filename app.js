@@ -736,7 +736,8 @@
     { id: "g2048", e: "🔢", n: "2048", c: "#e0a030", d: "同じ数字を合体。CPUより少ない手数で目標の数字へ。" },
     { id: "sudoku", e: "🔠", n: "ナンプレ", c: "#3f8fd2", d: "縦・横・3×3に1〜9を1つずつ。CPUより先に解けたら勝ち。" },
     { id: "coin", e: "🪙", n: "コインパズル", c: "#c9a227", d: "同じコインを3つ並べて消す。CPUより高い得点で勝ち。" },
-  ].concat(((window.HMGames && HMGames.list) || []).filter((g) => !DROPPED.includes(g.id)));
+  ];
+  (() => { const ext = ((window.HMGames && HMGames.list) || []).filter((g) => !DROPPED.includes(g.id)); for (let i = 0; i < GAMES.length; i++) { const r = ext.find((x) => x.id === GAMES[i].id); if (r) GAMES[i] = r; } ext.forEach((x) => { if (!GAMES.some((y) => y.id === x.id)) GAMES.push(x); }); })();
   window.HM_APP = { state: () => state, save, render, today, dkey, setClockOffset: (ms) => { clockOffset = ms; render(); }, GAMES, gachaPull, rates: () => ({ normal: GACHA_RATES.slice(), sr: GACHA_RATES_SR.slice() }), drawRarity, startStep, findStep, judgeNum, passNeed: HM.passNeed, STARS_TO_UNLOCK, READ_MS, starsToday, gamesOpen, pullsLeft, startGame, version: VERSION, quiz: () => Q };
 
   // テスト用：?clock=+86400000 のように時計をずらせる

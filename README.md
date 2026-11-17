@@ -16,4 +16,12 @@ node tools/verify.js 40     # 問題の自動検証（算数・数学は独立�
 python3 -m http.server 8080 # ローカルで確認
 ```
 
-データは localStorage（キー `hoshimanabi`、schema 1）に保存。サービスワーカーのキャッシュ名は `hoshi-manabi-v1.0.1`。
+データは localStorage（キー `hoshimanabi`、schema 1）に保存。サービスワーカーのキャッシュ名は `hoshi-manabi-v1.1.0`。
+
+## v1.1.0 の主な変更
+- ホーム：大きく動く相棒（まばたき・ゆれ・タップで反応）、今日の⭐リング「ゲームまであと◯個」。
+- 教科・ゲームのアイコンをSVGで作り直し（icons.js）。ボタンの押しこみ・画面切りかえ・正解/⭐/勝利の演出・振動。
+- 本格ゲームエンジン games-pro.js（キャンバス・パーティクル・効果音・画面ゆれ）で14本を新規/作り直し：
+  野球・ゴルフ・サッカー・ボウリング・バスケ・レース・バトルロイヤル・シューティング・エアホッケー・メテオ・ハイウェイ・フラッパー・スネーク・ランナー。
+- 問題：表から作る問題（q-tables.js / q-t-*.js）と追加バンク（q-more.js）で非算数の教科を大幅に追加。
+- テスト：tools/test_app.py（アプリ全体）、tools/test_games.py（全50ゲーム）、tools/test_pro.py（新ゲームのプレイテスト）、tools/test_bots.py（うまいボットで勝てるか＝難易度の確認）。

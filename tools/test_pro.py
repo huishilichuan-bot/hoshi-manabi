@@ -46,6 +46,16 @@ try:
             elif gid == "royale":
                 drag(pg, X + 80, Y + H - 100, X + 80 + random.randint(-55, 55), Y + H - 100 + random.randint(-55, 55), hold=random.randint(300, 900))
                 drag(pg, X + W - 80, Y + H - 100, X + W - 80 + random.randint(-50, 50), Y + H - 100 + random.randint(-50, 50), hold=400)
+            elif gid == "hockey":
+                pg.mouse.move(X + W / 2, Y + H * 0.8); pg.mouse.down(); pg.mouse.move(X + random.random() * W, Y + H * (0.55 + random.random() * 0.4), steps=6); pg.mouse.up()
+            elif gid in ("meteor",):
+                drag(pg, X + W / 2, Y + H * 0.8, X + random.random() * W, Y + H * (0.5 + random.random() * 0.4), steps=8, hold=200)
+            elif gid in ("highway",):
+                pg.mouse.click(X + (W * 0.2 if random.random() < 0.5 else W * 0.8), Y + H * 0.7); pg.wait_for_timeout(random.randint(200, 700))
+            elif gid in ("flappy", "runner"):
+                pg.mouse.click(X + W / 2, Y + H / 2); pg.wait_for_timeout(random.randint(150, 500))
+            elif gid == "snake":
+                a, b2 = random.choice([(60, 0), (-60, 0), (0, 60), (0, -60)]); drag(pg, X + W / 2, Y + H / 2, X + W / 2 + a, Y + H / 2 + b2, steps=4); pg.wait_for_timeout(300)
             elif gid == "starfighter":
                 drag(pg, X + W / 2, Y + H * 0.85, X + random.random() * W, Y + H * (0.6 + random.random() * 0.3), steps=10, hold=300)
             if pg.evaluate("!document.getElementById('gl-result').hidden"): done = True; break
