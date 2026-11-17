@@ -70,7 +70,7 @@
   F.EMO = EMO;
   const COLHEX = { red: "#e03131", blue: "#1c7ed6", yellow: "#fcc419", green: "#2f9e44", white: "#ffffff", black: "#212529", pink: "#f783ac", purple: "#9c36b5", brown: "#8d5a3b", orange: "#fd7e14" };
   F.COLHEX = COLHEX;
-  const e3match = (d) => { const pool = Object.keys(EMO).filter((w) => (d < 0.5 ? HM.EN.VT.animal : HM.EN.VT.fruit).some((x) => x[0] === w)); const ws = shuf(pool).slice(0, 4); return F.match("絵と英語を線でつなごう", ws.map((w) => [EMO[w], w]), ws.map((w) => EMO[w] + "＝" + w).join("、") + "。", { en: 1 }); };
+  const e3match = (d) => { const pool = Object.keys(EMO).filter((w) => (d < 0.5 ? HM.EN.VT.animal : HM.EN.VT.fruit).some((x) => x[0] === w)); const ws = shuf(pool).slice(0, 4); return F.match("絵と英語を線でつなごう", ws.map((w) => [EMO[w], w]), ws.map((w) => EMO[w] + "＝" + w).join("、") + "。", { en: 1, big: 1 }); };
   const e3color = (d) => { const ws = shuf(Object.keys(COLHEX)).slice(0, 4); const tgt = R(0, 3); const s = ws.map((w, i) => '<rect data-hit="' + w + '" x="' + (10 + i * 62) + '" y="10" width="54" height="54" rx="12" fill="' + COLHEX[w] + '" stroke="#adb5bd" stroke-width="2"/>').join(""); return F.tap("「" + ws[tgt] + "」の色をタップしよう", fig(260, 74, s), ws.map((w) => [w, w]), ws[tgt], ws[tgt] + " は「" + HM.EN.VT.color.find((x) => x[0] === ws[tgt])[1] + "」。", { say: ws[tgt] }); };
   const DAYS = HM.EN.VT.day.map((x) => x[0]), MON = HM.EN.VT.month.map((x) => x[0]);
   const e4ord = (d) => { const L2 = d < 0.5 ? DAYS : MON; const st = R(0, L2.length - 4); const s = L2.slice(st, st + 4); return F.ord((L2 === DAYS ? "曜日" : "月") + "の順にならべよう", s, s.map((w) => w + "（" + (L2 === DAYS ? HM.EN.VT.day : HM.EN.VT.month).find((x) => x[0] === w)[1] + "）").join(" → ") + "。", { vals: s.map((w) => L2.indexOf(w)), dir: "asc", en: 1 }); };

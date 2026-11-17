@@ -1,15 +1,15 @@
 {
  "seeds": 10,
- "generatedChecked": 51321,
- "uniqueQuestions": 29947,
+ "generatedChecked": 52231,
+ "uniqueQuestions": 30175,
  "stats": {
-  "chk": 28509,
-  "ord": 640,
+  "chk": 28669,
+  "ord": 683,
   "qx": 7587,
   "pairchk": 180,
   "ordx": 80,
   "expr": 1100,
-  "tap": 160,
+  "tap": 867,
   "sys": 200,
   "eqn": 240
  },
@@ -105,33 +105,33 @@
   },
   "sci:3": {
    "units": 8,
-   "steps": 19,
-   "filled": 19,
-   "gen": 5,
+   "steps": 21,
+   "filled": 21,
+   "gen": 7,
    "bank": 14,
    "bankQ": 83
   },
   "sci:4": {
    "units": 8,
-   "steps": 23,
-   "filled": 23,
-   "gen": 4,
+   "steps": 25,
+   "filled": 25,
+   "gen": 6,
    "bank": 19,
    "bankQ": 163
   },
   "sci:5": {
    "units": 8,
-   "steps": 22,
-   "filled": 22,
-   "gen": 6,
+   "steps": 23,
+   "filled": 23,
+   "gen": 7,
    "bank": 16,
    "bankQ": 133
   },
   "sci:6": {
    "units": 9,
-   "steps": 15,
-   "filled": 15,
-   "gen": 5,
+   "steps": 17,
+   "filled": 17,
+   "gen": 7,
    "bank": 10,
    "bankQ": 51
   },
@@ -161,25 +161,25 @@
   },
   "soc:3": {
    "units": 4,
-   "steps": 12,
-   "filled": 12,
-   "gen": 1,
+   "steps": 13,
+   "filled": 13,
+   "gen": 2,
    "bank": 11,
    "bankQ": 95
   },
   "soc:4": {
    "units": 4,
-   "steps": 11,
-   "filled": 11,
-   "gen": 4,
+   "steps": 13,
+   "filled": 13,
+   "gen": 6,
    "bank": 7,
    "bankQ": 65
   },
   "soc:5": {
    "units": 4,
-   "steps": 17,
-   "filled": 17,
-   "gen": 3,
+   "steps": 18,
+   "filled": 18,
+   "gen": 4,
    "bank": 14,
    "bankQ": 129
   },
@@ -193,17 +193,17 @@
   },
   "soc:7": {
    "units": 6,
-   "steps": 11,
-   "filled": 11,
-   "gen": 5,
+   "steps": 12,
+   "filled": 12,
+   "gen": 6,
    "bank": 6,
    "bankQ": 32
   },
   "soc:8": {
    "units": 5,
-   "steps": 9,
-   "filled": 9,
-   "gen": 3,
+   "steps": 10,
+   "filled": 10,
+   "gen": 4,
    "bank": 6,
    "bankQ": 47
   },

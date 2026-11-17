@@ -338,7 +338,7 @@
     else if (q.t === "match") Q.work = { right: order, sel: null, link: {} };
     else { const cards = rshuf([...Array(n).keys()].flatMap((i) => [[i, 0], [i, 1]])); Q.work = { cards, sel: null, mate: {} }; }
     const hint = q.t === "ord" ? "タップした順にならぶよ（もう一度タップでもどす）" : q.t === "match" ? "左→右の順にタップして線でつなごう" : "同じ組になるカードを2まいずつタップしよう";
-    return '<div class="work work-' + q.t + '" id="work"></div><p class="small muted center">' + hint + '</p><button type="button" class="btn primary block" data-q="submit" id="work-ok" disabled>こたえる</button>';
+    return '<div class="work work-' + q.t + (q.big ? " big-l" : "") + '" id="work"></div><p class="small muted center">' + hint + '</p><button type="button" class="btn primary block" data-q="submit" id="work-ok" disabled>こたえる</button>';
   }
   function workDone() { const w = Q.work, q = curList()[Q.i]; if (!w) return false; if (q.t === "ord") return w.pick.length === q.items.length; if (q.t === "match") return Object.keys(w.link).length === q.pairs.length; return Object.keys(w.mate).length === w.cards.length; }
   function renderWork() {
