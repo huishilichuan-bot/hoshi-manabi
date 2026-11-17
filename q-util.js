@@ -103,7 +103,8 @@
       const all = step.src.map((x) => (typeof x === "string" ? parseBankLine(x) : x));
       const n = Math.min(step.cnt || 6, all.length);
       // 順番（易→難）を保ったまま n 問えらぶ
-      const idx = HM.U.shuf(all.map((_, i) => i)).slice(0, n).sort((a, b) => a - b);
+      let idx = HM.U.shuf(all.map((_, i) => i)).slice(0, n);
+      if (!step.shuffle) idx.sort((a, b) => a - b);
       out = idx.map((i) => Object.assign({}, all[i]));
     }
     out.forEach((q) => { if (q.t === "ch") q.opts = HM.U.shuf([q.a].concat(q.o)); if (step.pass && !q.pass) q.pass = step.pass; });

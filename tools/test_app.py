@@ -18,7 +18,7 @@ try:
     pg.on("console", lambda m: errors.append("console: " + m.text) if m.type == "error" else None)
     pg.goto(f"http://localhost:{PORT}/index.html"); pg.wait_for_timeout(800)
     E = pg.evaluate
-    ok("ホーム表示", pg.locator(".hero").count() == 1)
+    ok("ホーム表示", pg.locator(".hx").count() == 1 and pg.locator(".today2").count() == 1)
     pg.screenshot(path=f"{SHOT}/01-home.png")
     # ナビゲーション：教科→学年→単元→ステップ
     pg.click('.tab[data-tab="study"]'); pg.wait_for_timeout(200)

@@ -1,7 +1,7 @@
 /* ほしまなび — 勉強して⭐を集める学習アプリ（小1〜中3）。課金・お金の機能はありません。 */
 (() => {
   "use strict";
-  const VERSION = "1.0.1";
+  const VERSION = "1.1.0";
   const KEY = "hoshimanabi";
   const SCHEMA = 1;
   const $ = (s, r = document) => r.querySelector(s);
@@ -168,6 +168,7 @@
     back.hidden = !(tab === "study" && nav.length);
     const m = $("#main");
     let title = "ほしまなび";
+    m.classList.remove("page-in"); void m.offsetWidth; m.classList.add("page-in");
     if (tab === "home") m.innerHTML = viewHome();
     else if (tab === "study") { const r = viewStudy(); m.innerHTML = r.html; title = r.title; }
     else if (tab === "games") { m.innerHTML = viewGames(); title = "ゲーム"; }
@@ -183,29 +184,37 @@
   const titleName = () => (TITLES.find((t) => t.id === state.look.title && t.ok(titleCtx())) || TITLES[0]).n;
 
   // ホーム
-  const HOME_LINES = ["今日もいっしょにがんばろう！", "1ステップは約7分。まずは1つやってみよう。", "まちがえても大丈夫。⭐はへらないよ。", "⭐を4つ集めると、今日のゲームがひらくよ。", "解説を読むと、もっと分かるようになるよ。"];
+  const HOME_LINES = ["今日もいっしょにがんばろう！", "1ステップは約7分。まずは1つやってみよう。", "解説まで読むと、ぐっと分かるようになるよ。", "⭐を4つ集めたら、今日はゲームで遊ぼう！", "コツコツが最強。今日の1ステップから。"];
+  const TAP_LINES = ["わっ！ びっくりした〜", "えへへ、くすぐったい！", "いっしょに⭐集めよう！", "今日はどの教科にする？", "がんばってるの、ちゃんと見てるよ！", "ゲームまであと少し！", "次のステップ、いけそう！", "ナイス！ その調子！"];
+  function ringSvg(n, max) { const k = Math.min(1, n / max), C = 2 * Math.PI * 44; return '<svg class="ring2" viewBox="0 0 100 100"><defs><linearGradient id="rg-ring" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffd43b"/><stop offset="1" stop-color="#ff922b"/></linearGradient></defs><circle cx="50" cy="50" r="44" fill="none" stroke="rgba(255,255,255,.14)" stroke-width="10"/><circle class="ring-fg" cx="50" cy="50" r="44" fill="none" stroke="url(#rg-ring)" stroke-width="10" stroke-linecap="round" stroke-dasharray="' + C.toFixed(1) + '" stroke-dashoffset="' + (C * (1 - k)).toFixed(1) + '" transform="rotate(-90 50 50)"/></svg>'; }
   function viewHome() {
-    const p = GCArt.charById(state.partner), n = starsToday(), e = state.chars[p.id] || {};
+    const p = GCArt.charById(state.partner), n = starsToday(), e = state.chars[p.id] || {}, need = Math.max(0, STARS_TO_UNLOCK - n);
     const line = HOME_LINES[(new Date().getDate() + n) % HOME_LINES.length];
-    let h = '<section class="hero"><div class="hero-bg"></div><div class="hero-in"><div class="title-badge">🏅 ' + esc(titleName()) + "</div>" +
-      '<div class="partner-wrap" id="partner">' + charHtml(p.id, 150, "bob r" + p.rarity) + "</div>" +
-      '<div class="bubble">' + esc(line) + "</div>" +
-      '<div class="pname">' + esc(p.name) + " " + rarityTag(p.rarity) + starMarks(e.star || 0) + "</div></div></section>";
-    h += '<section class="card today"><div class="today-row"><div><b>今日の⭐</b><div class="big-stars">' + topStars() + "</div></div><div class=\"today-r\">" +
-      (n >= STARS_TO_UNLOCK ? '<span class="ok">🎮 ゲーム解放中！</span>' : "あと <b>" + (STARS_TO_UNLOCK - n) + "</b> こで<br>ゲーム解放") + "</div></div>" +
-      '<p class="small muted">⭐は1ステップで6割以上正解すると1こ（ガチャ1回つき）。毎日0にもどります。⭐やポイントがへることはありません。</p></section>';
+    let h = '<section class="hx r' + p.rarity + '"><div class="hx-bg"><i class="orb o1"></i><i class="orb o2"></i><i class="orb o3"></i><i class="sparkles"></i></div>' +
+      '<div class="hx-top"><span class="chip-t">🏅 ' + esc(titleName()) + '</span><span class="chip-t">累計 ⭐ ' + state.totalStars + "</span></div>" +
+      '<div class="hx-bubble" id="hx-bubble">' + esc(line) + "</div>" +
+      '<button type="button" class="hx-stage" id="partner" aria-label="相棒にタッチ"><span class="hx-glow"></span><span class="hx-char">' + charHtml(p.id, 220, "r" + p.rarity) + '</span><span class="hx-shadow"></span></button>' +
+      '<div class="hx-name"><b>' + esc(p.name) + "</b> " + rarityTag(p.rarity) + starMarks(e.star || 0) + "</div></section>";
+    h += '<section class="today2"><div class="t2-ring">' + ringSvg(n, STARS_TO_UNLOCK) + '<div class="t2-num"><b>' + n + '</b><small>/' + STARS_TO_UNLOCK + '</small></div></div><div class="t2-r"><div class="t2-k">今日の⭐</div>' +
+      (need ? '<div class="t2-big">ゲームまで あと <b>' + need + "</b> 個</div>" : '<div class="t2-big ok">🎮 ゲーム解放中！</div>') +
+      '<div class="t2-stars">' + Array.from({ length: STARS_TO_UNLOCK }, (_, i) => '<span class="t2s ' + (i < n ? "on" : "") + '" style="--i:' + i + '">★</span>').join("") + (n > STARS_TO_UNLOCK ? '<span class="t2-more">+' + (n - STARS_TO_UNLOCK) + "</span>" : "") + "</div></div></section>";
     if (state.last) {
       const L = state.last, st = findStep(L.s, L.g, L.u, L.st);
-      if (st) h += '<button type="button" class="card cont" data-act="cont"><span class="ce">' + subjById(L.s).e + '</span><span class="grow"><b>つづきから</b><span class="small muted">' + esc(subjName(L.s, L.g) + " " + gradeName(L.g) + " ／ " + st.unit.n + " ／ " + st.step.n) + "</span></span>›</button>";
+      if (st) h += '<button type="button" class="cont2" data-act="cont">' + HMIcons.icon(L.s, subjById(L.s).c, 46) + '<span class="grow"><b>つづきから学ぶ</b><span class="small">' + esc(subjName(L.s, L.g) + " " + gradeName(L.g) + " ／ " + st.unit.n + " ／ " + st.step.n) + '</span></span><span class="go">▶</span></button>';
     }
-    h += '<div class="quick">' + SUBJ.map((s) => '<button type="button" class="qbtn" data-subj="' + s.id + '" style="--sc:' + s.c + '"><span>' + s.e + "</span>" + esc(s.n) + "</button>").join("") + "</div>";
-    if (pullsLeft()) h += '<button type="button" class="card gacha-call" data-act="gacha"><span class="ce">🎁</span><span class="grow"><b>ガチャを ' + pullsLeft() + " 回ひけます</b><span class=\"small muted\">⭐をとったごほうび。見た目が変わるだけで、勉強やゲームが有利になることはありません。</span></span>›</button>";
-    h += '<p class="foot">累計 ⭐ ' + state.totalStars + " こ ・ なかま " + Object.keys(state.chars).length + "/" + GCArt.CHARACTERS.length + "</p>";
+    h += '<div class="sec2">教科</div><div class="quick2">' + SUBJ.map((s, i) => '<button type="button" class="qb2" data-subj="' + s.id + '" style="--sc:' + s.c + ";--i:" + i + '">' + HMIcons.icon(s.id, s.c, 52) + "<b>" + esc(s.n) + "</b><small>" + (s.id === "life" ? "小1・小2" : s.id === "math" || s.id === "ja" ? "小1〜中3" : "小3〜中3") + "</small></button>").join("") + "</div>";
+    if (pullsLeft()) h += '<button type="button" class="gacha2" data-act="gacha"><span class="g2-box">🎁</span><span class="grow"><b>ガチャを ' + pullsLeft() + ' 回ひけます</b><span class="small">新しいなかまに会いに行こう</span></span><span class="go">▶</span></button>';
+    h += '<p class="foot">なかま ' + Object.keys(state.chars).length + "/" + GCArt.CHARACTERS.length + " ・ v" + VERSION + "</p>";
     return h;
   }
   function mountPartner() {
     const w = $("#partner"); if (!w) return;
-    w.addEventListener("click", () => { w.classList.remove("hop"); void w.offsetWidth; w.classList.add("hop"); sound("soft"); });
+    w.addEventListener("click", () => {
+      const ch = w.querySelector(".hx-char"); ch.classList.remove("tap"); void ch.offsetWidth; ch.classList.add("tap");
+      const b = $("#hx-bubble"); if (b) { b.textContent = TAP_LINES[Math.floor(Math.random() * TAP_LINES.length)]; b.classList.remove("pop"); void b.offsetWidth; b.classList.add("pop"); }
+      sound("soft"); haptic(12);
+      const r = w.getBoundingClientRect(); for (let i = 0; i < 7; i++) { const s = document.createElement("span"); s.className = "heart-p"; s.textContent = ["💖", "✨", "⭐", "💫"][i % 4]; s.style.left = r.left + r.width / 2 + "px"; s.style.top = r.top + r.height * 0.4 + "px"; s.style.setProperty("--dx", (Math.random() * 160 - 80).toFixed(0) + "px"); s.style.setProperty("--dy", (-60 - Math.random() * 90).toFixed(0) + "px"); document.body.appendChild(s); setTimeout(() => s.remove(), 1000); }
+    });
   }
 
   // ---------- 教材の検索 ----------
@@ -224,7 +233,7 @@
   function viewStudy() {
     const top = nav[nav.length - 1];
     if (!top) {
-      return { title: "勉強", html: '<p class="lead">教科をえらぼう</p><div class="subj-grid">' + SUBJ.map((s) => { const gs = gradesOf(s.id); return '<button type="button" class="subj" data-subj="' + s.id + '" style="--sc:' + s.c + '"><span class="se">' + s.e + "</span><b>" + esc(s.n) + '</b><small>' + (gs.length ? gradeName(gs[0]) + "〜" + gradeName(gs[gs.length - 1]) : "") + "</small></button>"; }).join("") + "</div>" };
+      return { title: "勉強", html: '<p class="lead">教科をえらぼう</p><div class="subj-grid">' + SUBJ.map((s) => { const gs = gradesOf(s.id); return '<button type="button" class="subj" data-subj="' + s.id + '" style="--sc:' + s.c + '"><span class="se">' + HMIcons.icon(s.id, s.c, 54) + "</span><b>" + esc(s.n) + '</b><small>' + (gs.length ? gradeName(gs[0]) + "〜" + gradeName(gs[gs.length - 1]) : "") + "</small></button>"; }).join("") + "</div>" };
     }
     if (top.v === "grades") {
       const s = subjById(top.s);
@@ -315,7 +324,7 @@
     // 画面
     if (q.t === "ch") $$(".opt").forEach((b) => { const v = (q.opts || [q.a].concat(q.o))[+b.dataset.opt]; b.disabled = true; if (v === q.a) b.classList.add("right"); else if (v === given) b.classList.add("wrong"); });
     else { const box = $("#ans-box"); box.classList.add(ok ? "right" : "wrong"); $$(".key").forEach((k) => (k.disabled = true)); }
-    if (ok) { bigMaru(); sound("pikon"); haptic(15); } else { sound("miss"); haptic([20, 40, 20]); }
+    if (ok) { bigMaru(); burstAt(innerWidth / 2, innerHeight * 0.42, 22); sound("pikon"); haptic(15); } else { sound("miss"); haptic([20, 40, 20]); }
     let f = '<div class="fb ' + (ok ? "ok" : "ng") + '">';
     f += ok ? '<div class="fb-h">⭕ 正解！</div>' : '<div class="fb-h">✖ ざんねん</div><div class="fb-a">正解：<b>' + esc(q.a) + (q.unit && q.t !== "ch" ? esc(q.unit) : "") + "</b></div>";
     const ex = '<div class="fb-ex"><b>解説</b><p>' + esc(q.ex || "").replace(/\n/g, "<br>") + "</p></div>";
@@ -331,6 +340,14 @@
     d.className = "big-maru m-" + state.look.maru;
     d.innerHTML = maruSvg(state.look.maru);
     fx.appendChild(d); setTimeout(() => d.remove(), 900);
+  }
+  function burstAt(x, y, n) {
+    const cols = ["#ff5fa2", "#ffd43b", "#22d3ee", "#8b5cf6", "#51cf66", "#ff922b"];
+    for (let i = 0; i < (n || 18); i++) { const p = document.createElement("span"); p.className = "maru-burst"; const a = Math.random() * Math.PI * 2, r = 70 + Math.random() * 110; p.style.left = x + "px"; p.style.top = y + "px"; p.style.background = cols[i % cols.length]; p.style.setProperty("--dx", (Math.cos(a) * r).toFixed(0) + "px"); p.style.setProperty("--dy", (Math.sin(a) * r).toFixed(0) + "px"); document.body.appendChild(p); setTimeout(() => p.remove(), 750); }
+  }
+  function confetti(n) {
+    const cols = ["#ff5fa2", "#ffd43b", "#22d3ee", "#8b5cf6", "#51cf66", "#ff922b"];
+    for (let i = 0; i < (n || 60); i++) { const p = document.createElement("span"); p.className = "confetti-p"; p.style.left = Math.random() * 100 + "vw"; p.style.background = cols[i % cols.length]; p.style.animationDuration = (1.6 + Math.random() * 1.4).toFixed(2) + "s"; p.style.animationDelay = (Math.random() * 0.5).toFixed(2) + "s"; p.style.setProperty("--dx", (Math.random() * 120 - 60).toFixed(0) + "px"); p.style.setProperty("--rot", (Math.random() * 900 - 450).toFixed(0) + "deg"); document.body.appendChild(p); setTimeout(() => p.remove(), 3600); }
   }
   function maruSvg(id) {
     const col = { red: "#e5383b", blue: "#2f7fd8", star: "#e5383b", hanamaru: "#e5383b", rainbow: "url(#rg)", gold: "url(#gg)", myth: "url(#mg)" }[id] || "#e5383b";
@@ -380,6 +397,7 @@
     const fx = $("#fx-root"), d = document.createElement("div");
     d.className = "star-pop"; d.innerHTML = "<span>⭐</span><b>" + (Q && Q.starDup ? "合格！（このステップの⭐は今日もうもらったよ）" : "⭐ ゲット！ ガチャ1回") + "</b>";
     fx.appendChild(d); setTimeout(() => d.remove(), 1800);
+    if (!(Q && Q.starDup)) { confetti(50); burstAt(innerWidth / 2, innerHeight * 0.45, 26); haptic([20, 30, 50]); }
     $("#top-stars").innerHTML = topStars();
   }
   const PRAISE = {
@@ -453,15 +471,15 @@
   function viewGames() {
     const open = gamesOpen(), n = starsToday();
     let h = '<div class="gate ' + (open ? "open" : "") + '">' + (open ? "🎮 今日はゲームで遊べるよ！（⭐" + n + "）" : "🔒 今日の⭐が " + STARS_TO_UNLOCK + " こになるとひらきます（今 " + n + " こ）") + "</div>";
-    h += '<div class="app-grid">' + GAMES.map((g) => '<button type="button" class="app-ic ' + (open ? "" : "locked") + '" data-game="' + g.id + '"><span class="ai" style="--gc:' + g.c + '">' + g.e + (open ? "" : '<span class="lock">🔒</span>') + "</span><span class=\"an\">" + esc(g.n) + "</span></button>").join("") + "</div>";
-    h += '<p class="foot">全' + GAMES.length + 'ゲーム。ゲームで勝っても負けても、⭐・ガチャ・なかまは変わりません（ゲームの有利・不利もありません）。</p>';
+    h += '<div class="app-grid">' + GAMES.map((g, i) => '<button type="button" class="app-ic ' + (open ? "" : "locked") + '" data-game="' + g.id + '" style="--i:' + (i % 24) + '"><span class="ai">' + HMIcons.icon(g.id, g.c, 62) + (g.pro ? '<span class="newb">NEW</span>' : "") + (open ? "" : '<span class="lock">🔒</span>') + "</span><span class=\"an\">" + esc(g.n) + "</span></button>").join("") + "</div>";
+    h += '<p class="foot">全' + GAMES.length + 'ゲーム</p>';
     return h;
   }
   function openGameMenu(id) {
     const g = GAMES.find((x) => x.id === id); if (!g) return;
     if (!gamesOpen()) { toast("🔒 今日の⭐をあと " + (STARS_TO_UNLOCK - starsToday()) + " こ集めるとひらくよ"); return; }
     const rec = state.games[id] || {};
-    openSheet("<h2>" + g.e + " " + esc(g.n) + '</h2><p class="small muted">' + esc(g.d) + '</p><div class="diff-list">' + DIFFS.map((d) => { const r = rec[d.id] || { plays: 0, wins: 0 }; return '<button type="button" class="diff-btn ' + d.id + '" data-diff="' + d.id + '"><span class="grow"><b>' + d.name + "</b><small>" + DIFF_DESC[d.id] + '</small></span><span class="diff-r num">' + (r.wins || 0) + "勝/" + (r.plays || 0) + "回</span></button>"; }).join("") + "</div>", {
+    openSheet('<div class="gm-head">' + HMIcons.icon(g.id, g.c, 56) + "<h2>" + esc(g.n) + '</h2></div><p class="small muted">' + esc(g.d) + '</p><div class="diff-list">' + DIFFS.map((d) => { const r = rec[d.id] || { plays: 0, wins: 0 }; return '<button type="button" class="diff-btn ' + d.id + '" data-diff="' + d.id + '"><span class="grow"><b>' + d.name + "</b><small>" + DIFF_DESC[d.id] + '</small></span><span class="diff-r num">' + (r.wins || 0) + "勝/" + (r.plays || 0) + "回</span></button>"; }).join("") + "</div>", {
       label: g.n,
       mount: (sh) => sh.addEventListener("click", (e) => { const b = e.target.closest("[data-diff]"); if (b) { closeSheet(true); startGame(id, b.dataset.diff); } }),
     });
@@ -498,11 +516,11 @@
   }
   function showResult(o) {
     const box = $("#gl-result");
-    box.innerHTML = '<div class="res-card" role="dialog" aria-label="結果"><div class="res-emoji">' + (o.win ? "🏆" : o.draw ? "🤝" : "🌧️") + "</div><h3>" + esc(o.title) + "</h3><p>" + esc(o.text || "") + '</p><p class="small muted">ゲームの結果で⭐やなかまが変わることはありません。</p><div class="actions two"><button type="button" class="btn" id="res-close">ゲーム一覧へ</button><button type="button" class="btn primary" id="res-retry">もう一回</button></div></div>';
+    box.innerHTML = '<div class="res-card" role="dialog" aria-label="結果"><div class="res-emoji">' + (o.win ? "🏆" : o.draw ? "🤝" : "🌧️") + "</div><h3>" + esc(o.title) + "</h3><p>" + esc(o.text || "") + '</p><div class="actions two"><button type="button" class="btn" id="res-close">ゲーム一覧へ</button><button type="button" class="btn primary" id="res-retry">もう一回</button></div></div>';
     box.hidden = false;
     $("#res-close").addEventListener("click", closeLayer);
     $("#res-retry").addEventListener("click", () => { box.hidden = true; if (o.onRetry) o.onRetry(); });
-    if (o.win) sound("fanfare");
+    if (o.win) { sound("fanfare"); confetti(70); haptic([30, 40, 60]); }
   }
   function reportGame(game, diff, win) {
     state.games[game] = state.games[game] || {};
@@ -564,7 +582,6 @@
     h += "<b>⭕のデザイン</b><div class=\"chips\">" + MARUS.map((b) => '<button type="button" class="chip ' + (state.look.maru === b.id ? "on" : "") + '" data-maru="' + b.id + '" ' + (mr >= b.r ? "" : "disabled") + ">" + (mr >= b.r ? "" : "🔒") + esc(b.n) + "</button>").join("") + "</div>";
     const tc = titleCtx();
     h += "<b>称号</b><div class=\"chips\">" + TITLES.map((t) => '<button type="button" class="chip ' + (state.look.title === t.id ? "on" : "") + '" data-title="' + t.id + '" ' + (t.ok(tc) ? "" : "disabled") + ' title="' + esc(t.how) + '">' + (t.ok(tc) ? "" : "🔒") + esc(t.n) + "</button>").join("") + "</div></div>";
-    h += '<p class="foot">見た目が変わるだけです。勉強やゲームが有利になることはありません。</p>';
     return h;
   }
   function openRates() {
@@ -633,6 +650,7 @@
   document.addEventListener("click", (e) => {
     const t = e.target;
     const tb = t.closest(".tab"); if (tb) { setTab(tb.dataset.tab); return; }
+    if (t.closest("button")) haptic(6);
     if (t.closest("#back-btn")) { nav.pop(); render(); window.scrollTo(0, 0); return; }
     if (t.closest("#gl-close")) { closeLayer(); return; }
     // クイズ
@@ -703,6 +721,7 @@
   document.addEventListener("visibilitychange", () => { if (!document.hidden && today() !== lastDay) { lastDay = today(); render(); } });
 
   // ---------- ゲーム一覧（50） ----------
+  const DROPPED = ["stroop", "calcbattle", "highlow", "nim", "hitblow", "memgrid", "pk", "shooter"];
   const GAMES = [
     { id: "climb", e: "🧗", n: "クライミング", c: "#6d8f5a", d: "左手・右手を交互に押して、CPUより先に頂上へ。落石に注意。" },
     { id: "chess", e: "♟️", n: "チェス", c: "#55606b", d: "キャスリングや昇格もある本格ルール。友だちとリンクで対戦も。" },
@@ -717,7 +736,7 @@
     { id: "g2048", e: "🔢", n: "2048", c: "#e0a030", d: "同じ数字を合体。CPUより少ない手数で目標の数字へ。" },
     { id: "sudoku", e: "🔠", n: "ナンプレ", c: "#3f8fd2", d: "縦・横・3×3に1〜9を1つずつ。CPUより先に解けたら勝ち。" },
     { id: "coin", e: "🪙", n: "コインパズル", c: "#c9a227", d: "同じコインを3つ並べて消す。CPUより高い得点で勝ち。" },
-  ].concat((window.HMGames && HMGames.list) || []);
+  ].concat(((window.HMGames && HMGames.list) || []).filter((g) => !DROPPED.includes(g.id)));
   window.HM_APP = { state: () => state, save, render, today, dkey, setClockOffset: (ms) => { clockOffset = ms; render(); }, GAMES, gachaPull, rates: () => ({ normal: GACHA_RATES.slice(), sr: GACHA_RATES_SR.slice() }), drawRarity, startStep, findStep, judgeNum, passNeed: HM.passNeed, STARS_TO_UNLOCK, READ_MS, starsToday, gamesOpen, pullsLeft, startGame, version: VERSION, quiz: () => Q };
 
   // テスト用：?clock=+86400000 のように時計をずらせる

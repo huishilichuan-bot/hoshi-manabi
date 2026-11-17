@@ -143,8 +143,8 @@
       '<ellipse cx="38" cy="96" rx="9" ry="5" fill="' + c.dark + '"/><ellipse cx="62" cy="96" rx="9" ry="5" fill="' + c.dark + '"/>' +
       '<ellipse cx="50" cy="70" rx="' + rx + '" ry="' + ry + '" fill="' + fill + '" stroke="' + c.dark + '" stroke-width="2.5"/>' +
       '<ellipse cx="42" cy="58" rx="9" ry="5" fill="rgba(255,255,255,0.35)" transform="rotate(-20 42 58)"/>' +
-      '<circle cx="40" cy="' + eyeY + '" r="4.4" fill="' + eye + '"/><circle cx="60" cy="' + eyeY + '" r="4.4" fill="' + eye + '"/>' +
-      '<circle cx="41.5" cy="' + (eyeY - 1.6) + '" r="1.5" fill="' + hi + '"/><circle cx="61.5" cy="' + (eyeY - 1.6) + '" r="1.5" fill="' + hi + '"/>' +
+      '<g class="eyes" style="transform-origin:50px ' + eyeY + 'px"><circle cx="40" cy="' + eyeY + '" r="4.4" fill="' + eye + '"/><circle cx="60" cy="' + eyeY + '" r="4.4" fill="' + eye + '"/>' +
+      '<circle cx="41.5" cy="' + (eyeY - 1.6) + '" r="1.5" fill="' + hi + '"/><circle cx="61.5" cy="' + (eyeY - 1.6) + '" r="1.5" fill="' + hi + '"/></g>' +
       '<ellipse cx="32" cy="' + (eyeY + 8) + '" rx="5" ry="3" fill="rgba(255,120,140,0.45)"/><ellipse cx="68" cy="' + (eyeY + 8) + '" rx="5" ry="3" fill="rgba(255,120,140,0.45)"/>' +
       '<path d="M45 ' + (eyeY + 9) + " Q50 " + (eyeY + 14) + " 55 " + (eyeY + 9) + '" stroke="' + eye + '" stroke-width="2.4" fill="none" stroke-linecap="round"/>' + (acc.front || "") + sparkle + "</g></svg>";
   }

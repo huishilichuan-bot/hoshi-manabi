@@ -76,97 +76,97 @@
    "subj": "生活",
    "grade": "小1",
    "units": 5,
-   "steps": 10,
-   "perPass": 52,
-   "uniq": 52
+   "steps": 15,
+   "perPass": 98,
+   "uniq": 144
   },
   {
    "subj": "生活",
    "grade": "小2",
    "units": 5,
-   "steps": 9,
-   "perPass": 47,
-   "uniq": 47
+   "steps": 12,
+   "perPass": 73,
+   "uniq": 106
   },
   {
    "subj": "理科",
    "grade": "小3",
    "units": 8,
-   "steps": 13,
-   "perPass": 67,
-   "uniq": 67
+   "steps": 19,
+   "perPass": 123,
+   "uniq": 246
   },
   {
    "subj": "理科",
    "grade": "小4",
    "units": 8,
-   "steps": 11,
-   "perPass": 57,
-   "uniq": 57
+   "steps": 15,
+   "perPass": 80,
+   "uniq": 80
   },
   {
    "subj": "理科",
    "grade": "小5",
    "units": 8,
-   "steps": 10,
-   "perPass": 52,
-   "uniq": 52
+   "steps": 16,
+   "perPass": 90,
+   "uniq": 103
   },
   {
    "subj": "理科",
    "grade": "小6",
    "units": 9,
-   "steps": 10,
-   "perPass": 51,
-   "uniq": 51
+   "steps": 15,
+   "perPass": 88,
+   "uniq": 182
   },
   {
    "subj": "理科",
    "grade": "中1",
-   "units": 8,
-   "steps": 11,
-   "perPass": 59,
-   "uniq": 304
+   "units": 13,
+   "steps": 19,
+   "perPass": 131,
+   "uniq": 501
   },
   {
    "subj": "理科",
    "grade": "中2",
-   "units": 6,
-   "steps": 11,
-   "perPass": 63,
-   "uniq": 485
+   "units": 10,
+   "steps": 17,
+   "perPass": 117,
+   "uniq": 701
   },
   {
    "subj": "理科",
    "grade": "中3",
-   "units": 6,
-   "steps": 8,
-   "perPass": 43,
-   "uniq": 380
+   "units": 10,
+   "steps": 13,
+   "perPass": 85,
+   "uniq": 491
   },
   {
    "subj": "社会",
    "grade": "小3",
    "units": 4,
-   "steps": 6,
-   "perPass": 32,
-   "uniq": 33
+   "steps": 8,
+   "perPass": 53,
+   "uniq": 73
   },
   {
    "subj": "社会",
    "grade": "小4",
    "units": 4,
-   "steps": 6,
-   "perPass": 39,
-   "uniq": 107
+   "steps": 7,
+   "perPass": 49,
+   "uniq": 137
   },
   {
    "subj": "社会",
    "grade": "小5",
    "units": 4,
-   "steps": 9,
-   "perPass": 49,
-   "uniq": 50
+   "steps": 13,
+   "perPass": 82,
+   "uniq": 95
   },
   {
    "subj": "社会",
@@ -180,25 +180,25 @@
    "subj": "社会",
    "grade": "中1",
    "units": 6,
-   "steps": 8,
-   "perPass": 42,
-   "uniq": 149
+   "steps": 11,
+   "perPass": 74,
+   "uniq": 271
   },
   {
    "subj": "社会",
    "grade": "中2",
    "units": 5,
-   "steps": 6,
-   "perPass": 34,
-   "uniq": 282
+   "steps": 7,
+   "perPass": 46,
+   "uniq": 328
   },
   {
    "subj": "社会",
    "grade": "中3",
    "units": 4,
-   "steps": 9,
-   "perPass": 49,
-   "uniq": 49
+   "steps": 11,
+   "perPass": 69,
+   "uniq": 95
   },
   {
    "subj": "国語",
@@ -212,65 +212,65 @@
    "subj": "国語",
    "grade": "小2",
    "units": 4,
-   "steps": 7,
-   "perPass": 59,
-   "uniq": 246
+   "steps": 8,
+   "perPass": 69,
+   "uniq": 258
   },
   {
    "subj": "国語",
    "grade": "小3",
-   "units": 4,
-   "steps": 8,
-   "perPass": 69,
-   "uniq": 327
+   "units": 5,
+   "steps": 9,
+   "perPass": 79,
+   "uniq": 355
   },
   {
    "subj": "国語",
    "grade": "小4",
-   "units": 4,
-   "steps": 7,
-   "perPass": 59,
-   "uniq": 236
+   "units": 5,
+   "steps": 10,
+   "perPass": 91,
+   "uniq": 304
   },
   {
    "subj": "国語",
    "grade": "小5",
-   "units": 3,
-   "steps": 7,
-   "perPass": 55,
-   "uniq": 207
+   "units": 4,
+   "steps": 10,
+   "perPass": 87,
+   "uniq": 273
   },
   {
    "subj": "国語",
    "grade": "小6",
-   "units": 3,
-   "steps": 7,
-   "perPass": 54,
-   "uniq": 231
+   "units": 4,
+   "steps": 10,
+   "perPass": 88,
+   "uniq": 310
   },
   {
    "subj": "国語",
    "grade": "中1",
-   "units": 5,
-   "steps": 8,
-   "perPass": 68,
-   "uniq": 156
+   "units": 6,
+   "steps": 11,
+   "perPass": 96,
+   "uniq": 251
   },
   {
    "subj": "国語",
    "grade": "中2",
-   "units": 4,
-   "steps": 7,
-   "perPass": 57,
-   "uniq": 173
+   "units": 5,
+   "steps": 11,
+   "perPass": 97,
+   "uniq": 291
   },
   {
    "subj": "国語",
    "grade": "中3",
-   "units": 4,
-   "steps": 6,
-   "perPass": 52,
-   "uniq": 168
+   "units": 5,
+   "steps": 9,
+   "perPass": 82,
+   "uniq": 282
   },
   {
    "subj": "英語",
@@ -291,48 +291,48 @@
   {
    "subj": "英語",
    "grade": "小5",
-   "units": 3,
-   "steps": 6,
-   "perPass": 54,
-   "uniq": 256
+   "units": 4,
+   "steps": 7,
+   "perPass": 64,
+   "uniq": 280
   },
   {
    "subj": "英語",
    "grade": "小6",
-   "units": 3,
-   "steps": 5,
-   "perPass": 44,
-   "uniq": 114
+   "units": 4,
+   "steps": 6,
+   "perPass": 54,
+   "uniq": 138
   },
   {
    "subj": "英語",
    "grade": "中1",
-   "units": 6,
-   "steps": 9,
-   "perPass": 82,
-   "uniq": 818
+   "units": 7,
+   "steps": 11,
+   "perPass": 102,
+   "uniq": 846
   },
   {
    "subj": "英語",
    "grade": "中2",
-   "units": 3,
-   "steps": 7,
-   "perPass": 52,
-   "uniq": 114
+   "units": 4,
+   "steps": 10,
+   "perPass": 82,
+   "uniq": 168
   },
   {
    "subj": "英語",
    "grade": "中3",
-   "units": 3,
-   "steps": 6,
-   "perPass": 46,
-   "uniq": 78
+   "units": 4,
+   "steps": 9,
+   "perPass": 76,
+   "uniq": 140
   }
  ],
  "tot": {
-  "units": 261,
-  "steps": 657,
-  "perPass": 4891,
-  "uniq": 68235
+  "units": 286,
+  "steps": 749,
+  "perPass": 5729,
+  "uniq": 70395
  }
 }
