@@ -9,4 +9,4 @@
 - [x] 6 問題拡充（q-tables, q-t-*, q-more.js）
 - [x] 7 uncommitted を test_app + verify 通過後に commit/push
 - [x] 8 Actions（abfd649 run 44027179730 success、ライブ v1.1.0・50ゲーム・空ステップ0を確認） 成功確認・ライブを新規プロファイルで確認・after スクショ
-- [ ] 9 日本語の最終報告
+- [x] 9 日本語の最終報告（c0f4092 / run 44031962133 で完了）
