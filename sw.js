@@ -1,5 +1,5 @@
 /* ほしまなび — オフライン用サービスワーカー */
-const CACHE = "hoshi-manabi-v1.1.0";
+const CACHE = "hoshi-manabi-v1.2.0";
 const ASSETS = ["./", "./index.html", "./legal.html", "./manifest.webmanifest", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/apple-touch-icon.png", "./icons/icon-maskable-512.png", "./app.css", "./app.js", "./games-arcade.js", "./games-remaster.js", "./games-sports.js", "./games-pro.js", "./icons.js", "./q-t-lang.js", "./q-t-soc.js", "./q-t-sci.js", "./q-tables.js", "./q-formats.js", "./q-figs.js", "./q-gaps.js", "./chars.js", "./chess.js", "./games-action.js", "./games-board.js", "./games-core.js", "./games-new-action.js", "./games-new-board.js", "./games-new-cards.js", "./games-new-puzzle.js", "./games.js", "./q-en-b.js", "./q-en.js", "./q-extra.js", "./q-more.js", "./q-ja-b.js", "./q-ja.js", "./q-life.js", "./q-math-e1.js", "./q-math-e2.js", "./q-math-e3.js", "./q-math-extra.js", "./q-math-j.js", "./q-sci-j.js", "./q-sci.js", "./q-soc-j.js", "./q-soc.js", "./q-util.js", "./styles.css", ];
 self.addEventListener("install", (e) => { e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASSETS)).then(() => self.skipWaiting())); });
 self.addEventListener("activate", (e) => { e.waitUntil(caches.keys().then((ks) => Promise.all(ks.filter((k) => k !== CACHE).map((k) => caches.delete(k)))).then(() => self.clients.claim())); });
