@@ -1,9 +1,9 @@
 {
  "seeds": 10,
- "generatedChecked": 50601,
- "uniqueQuestions": 29662,
+ "generatedChecked": 51321,
+ "uniqueQuestions": 29947,
  "stats": {
-  "chk": 28349,
+  "chk": 28509,
   "ord": 640,
   "qx": 7587,
   "pairchk": 180,
@@ -289,57 +289,57 @@
   },
   "en:3": {
    "units": 3,
-   "steps": 10,
-   "filled": 10,
-   "gen": 7,
+   "steps": 12,
+   "filled": 12,
+   "gen": 9,
    "bank": 3,
    "bankQ": 32
   },
   "en:4": {
    "units": 3,
-   "steps": 8,
-   "filled": 8,
-   "gen": 5,
+   "steps": 10,
+   "filled": 10,
+   "gen": 7,
    "bank": 3,
    "bankQ": 32
   },
   "en:5": {
    "units": 4,
-   "steps": 8,
-   "filled": 8,
-   "gen": 7,
+   "steps": 9,
+   "filled": 9,
+   "gen": 8,
    "bank": 1,
    "bankQ": 6
   },
   "en:6": {
    "units": 4,
-   "steps": 8,
-   "filled": 8,
-   "gen": 7,
+   "steps": 9,
+   "filled": 9,
+   "gen": 8,
    "bank": 1,
    "bankQ": 6
   },
   "en:7": {
    "units": 7,
-   "steps": 12,
-   "filled": 12,
-   "gen": 9,
+   "steps": 13,
+   "filled": 13,
+   "gen": 10,
    "bank": 3,
    "bankQ": 28
   },
   "en:8": {
    "units": 4,
-   "steps": 11,
-   "filled": 11,
-   "gen": 5,
+   "steps": 12,
+   "filled": 12,
+   "gen": 6,
    "bank": 6,
    "bankQ": 64
   },
   "en:9": {
    "units": 4,
-   "steps": 10,
-   "filled": 10,
-   "gen": 5,
+   "steps": 11,
+   "filled": 11,
+   "gen": 6,
    "bank": 5,
    "bankQ": 52
   }

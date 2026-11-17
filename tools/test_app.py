@@ -16,7 +16,7 @@ try:
     pg = ctx.new_page()
     pg.on("pageerror", lambda e: errors.append(str(e)))
     pg.on("console", lambda m: errors.append("console: " + m.text) if m.type == "error" else None)
-    pg.goto(f"http://localhost:{PORT}/index.html"); pg.wait_for_timeout(800)
+    pg.goto(f"http://localhost:{PORT}/index.html"); pg.wait_for_timeout(1200)
     E = pg.evaluate
     ok("ホーム表示", pg.locator(".hx").count() == 1 and pg.locator(".today2").count() == 1)
     pg.screenshot(path=f"{SHOT}/01-home.png")
@@ -27,9 +27,11 @@ try:
     pg.click('.grade[data-grade="3"]'); pg.wait_for_timeout(200)
     nunits = pg.locator(".row-btn").count(); ok("単元一覧", nunits > 5, nunits)
     pg.click('.row-btn[data-unit="0"]'); pg.wait_for_timeout(200)
-    ok("ステップ一覧", pg.locator(".row-btn.step").count() >= 2)
+    ok("ステップ一覧", pg.locator(".map-node.step").count() >= 2)
     pg.screenshot(path=f"{SHOT}/02-steps.png")
-    pg.click('.row-btn[data-step="0"]'); pg.wait_for_timeout(300)
+    pg.click('[data-step="0"]'); pg.wait_for_timeout(300)
+    ok("まとめカード", pg.locator(".card-pt").count() == 1 and pg.locator('[data-q="card-go"]').count() == 1)
+    pg.click('[data-q="card-go"]'); pg.wait_for_timeout(200)
     ok("クイズ画面", pg.locator(".qz-q").is_visible())
     # 2秒ブロック
     n0 = E("HM_APP.quiz().results.length")
@@ -92,7 +94,7 @@ try:
     ok("⭐4未満はゲームにロック", pg.locator(".app-ic.locked").count() == 50 and not E("HM_APP.gamesOpen()"), pg.locator(".app-ic").count())
     pg.screenshot(path=f"{SHOT}/07-games-locked.png")
     for (s, g, u, st) in [("ja", 7, 0, 0), ("en", 7, 1, 0), ("sci", 5, 0, 0)]:
-        E(f"HM_APP.startStep('{s}',{g},{u},{st})"); pg.wait_for_timeout(150)
+        E(f"HM_APP.startStep('{s}',{g},{u},{st},{{noCard:true}})"); pg.wait_for_timeout(150)
         for i in range(E("HM_APP.quiz().n")): answer(True); next_()
         pg.wait_for_timeout(200)
         if pg.locator('[data-q="quit"]').count(): pg.click('.sum [data-q="quit"]')
@@ -127,7 +129,7 @@ try:
     pg.screenshot(path=f"{SHOT}/10-rates.png")
     E("document.querySelector('.sheet-close').click()"); pg.wait_for_timeout(300)
     # 報告
-    E("HM_APP.startStep('math',1,0,0)"); pg.wait_for_timeout(200)
+    E("HM_APP.startStep('math',1,0,0,{noCard:true})"); pg.wait_for_timeout(200)
     pg.click('#quiz .qz-q'); answer(True); pg.click('[data-q="report"]'); pg.wait_for_timeout(300)
     pg.click('.chip[data-c="答えがちがう"]'); pg.click("#rep-save"); pg.wait_for_timeout(300)
     ok("報告を端末に保存", E("HM_APP.state().reports.length") == 1)

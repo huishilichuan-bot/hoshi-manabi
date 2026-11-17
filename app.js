@@ -56,13 +56,18 @@
     { id: "r4", n: "激レアの持ち主", ok: (c) => c.maxR >= 4, how: "激レア以上" },
     { id: "r5", n: "伝説の持ち主", ok: (c) => c.maxR >= 5, how: "伝説以上" },
     { id: "r6", n: "神話の持ち主", ok: (c) => c.maxR >= 6, how: "神話のなかま" },
+    { id: "boss1", n: "ボスハンター", ok: (c) => c.boss >= 1, how: "単元のボスに1回勝つ" },
+    { id: "boss10", n: "ボスマスター", ok: (c) => c.boss >= 10, how: "10の単元でボスに勝つ" },
+    { id: "boss50", n: "伝説のボスハンター", ok: (c) => c.boss >= 50, how: "50の単元でボスに勝つ" },
+    { id: "box20", n: "ふくしゅう名人", ok: (c) => c.box >= 20, how: "まちがえた問題ボックスで20問クリア" },
+    { id: "combo10", n: "コンボの星", ok: (c) => c.combo >= 10, how: "10問連続で正解" },
   ];
 
   // ---------- 保存 ----------
   function fresh() {
-    return { schema: SCHEMA, created: now(), settings: { sound: true, haptic: true, nick: "" }, days: {}, totalStars: 0, pulls: 0, pullsUsed: 0,
+    return { schema: SCHEMA, created: now(), settings: { sound: true, haptic: true, nick: "", vol: 0.8 }, days: {}, totalStars: 0, pulls: 0, pullsUsed: 0,
       chars: { mori: { n: 1, shards: 0, star: 0, t: now() } }, partner: "mori", look: { bg: "note", maru: "red", title: "first" },
-      progress: {}, last: null, reports: [], gachaLog: [], games: {} };
+      progress: {}, last: null, reports: [], gachaLog: [], games: {}, wrongBox: [], bossWins: {}, boxCleared: 0, bestCombo: 0 };
   }
   function migrate(s) {
     if (!s || typeof s !== "object") return fresh();
@@ -83,12 +88,13 @@
   const gamesOpen = () => starsToday() >= STARS_TO_UNLOCK;
   const pullsLeft = () => Math.max(0, state.pulls - state.pullsUsed);
   const maxRarity = () => Math.max(...Object.keys(state.chars).map((id) => GCArt.charById(id).rarity));
-  const titleCtx = () => ({ total: state.totalStars, maxR: maxRarity() });
+  const titleCtx = () => ({ total: state.totalStars, maxR: maxRarity(), boss: Object.keys(state.bossWins || {}).length, box: state.boxCleared || 0, combo: state.bestCombo || 0 });
 
   // ---------- 音・振動・トースト ----------
   let actx = null;
   function tone(notes, type = "sine", vol = 0.18) {
     if (!state.settings.sound) return;
+    const mv = state.settings.vol == null ? 0.8 : +state.settings.vol; if (mv <= 0.01) return; vol = Math.max(0.002, vol * mv);
     try {
       actx = actx || new (window.AudioContext || window.webkitAudioContext)();
       if (actx.state === "suspended") actx.resume();
@@ -114,6 +120,18 @@
     if (kind === "block") return tone([[220, 0, 0.12]], "square", 0.06);
     if (kind && kind.startsWith("r")) { const r = +kind.slice(1); const base = [523, 587, 659, 784, 880, 988, 1175]; const ns = []; for (let i = 0; i <= Math.min(6, r + 1); i++) ns.push([base[i] * (r >= 4 ? 1.5 : 1), i * 0.09, 0.3]); if (r >= 4) ns.push([2093, ns.length * 0.09, 0.8]); return tone(ns, r >= 5 ? "triangle" : "sine"); }
     return tone([[1568, 0, 0.09], [2093, 0.07, 0.32]]);
+  }
+  // 英語の読み上げ（iOS はタップの中でだけ話せるので、ボタンを押したときに読む）
+  const canSpeak = () => typeof window.speechSynthesis !== "undefined" && typeof window.SpeechSynthesisUtterance !== "undefined";
+  function speak(text) {
+    if (!canSpeak() || !text) return false;
+    try {
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text); u.lang = "en-US"; u.rate = 0.85;
+      u.volume = Math.max(0.2, state.settings.vol == null ? 0.8 : +state.settings.vol);
+      const vs = speechSynthesis.getVoices() || []; const v = vs.find((x) => /^en[-_]US/i.test(x.lang)) || vs.find((x) => /^en/i.test(x.lang)); if (v) u.voice = v;
+      speechSynthesis.speak(u); return true;
+    } catch (e) { return false; }
   }
   function haptic(p) { if (state.settings.haptic && navigator.vibrate) { try { navigator.vibrate(p || 12); } catch (e) {} } }
   function toast(msg, ms) {
@@ -148,8 +166,9 @@
 
   // ---------- 画面 ----------
   let tab = "home";
+  let navDir = "tab";
   let nav = []; // 勉強タブの中の階層 [{v:"grades",s}, {v:"units",s,g}, {v:"steps",s,g,u}]
-  function setTab(t) { tab = t; if (t !== "study") nav = []; render(); window.scrollTo(0, 0); }
+  function setTab(t) { if (t === tab && t === "study" && nav.length) { nav = []; navDir = "back"; } else navDir = "tab"; tab = t; if (t !== "study") nav = []; render(); window.scrollTo(0, 0); }
   function applyLook() {
     document.body.dataset.bg = state.look.bg;
     document.body.dataset.maru = state.look.maru;
@@ -169,13 +188,15 @@
     back.hidden = !(tab === "study" && nav.length);
     const m = $("#main");
     let title = "ほしまなび";
-    m.classList.remove("page-in"); void m.offsetWidth; m.classList.add("page-in");
+    m.classList.remove("page-in", "pg-fwd", "pg-back", "pg-tab"); void m.offsetWidth; m.classList.add("page-in", "pg-" + navDir); navDir = "fwd";
     if (tab === "home") m.innerHTML = viewHome();
     else if (tab === "study") { const r = viewStudy(); m.innerHTML = r.html; title = r.title; }
     else if (tab === "games") { m.innerHTML = viewGames(); title = "ゲーム"; }
     else if (tab === "gacha") { m.innerHTML = viewGacha(); title = "なかま"; }
-    else if (tab === "settings") { m.innerHTML = viewSettings(); title = "設定"; }
+    else if (tab === "settings") { m.innerHTML = viewSettings(); title = "マイページ"; }
     $("#top-title").textContent = title;
+    $("#topbar").classList.toggle("large", !(tab === "study" && nav.length));
+    const bl = $("#back-btn"); if (bl && !bl.hidden) { const pv = nav[nav.length - 2]; bl.innerHTML = '<span class="chev">‹</span>' + esc(!pv ? "学ぶ" : pv.v === "grades" ? subjById(pv.s).n : pv.v === "units" ? subjName(pv.s, pv.g) + gradeName(pv.g) : "もどる"); }
     mountPartner();
   }
   function charLevelFor(id) { const e = state.chars[id]; const s = e ? e.star || 0 : 0; return [5, 15, 15, 30, 30, 50][s]; }
@@ -204,6 +225,7 @@
       if (st) h += '<button type="button" class="cont2" data-act="cont">' + HMIcons.icon(L.s, subjById(L.s).c, 46) + '<span class="grow"><b>つづきから学ぶ</b><span class="small">' + esc(subjName(L.s, L.g) + " " + gradeName(L.g) + " ／ " + st.unit.n + " ／ " + st.step.n) + '</span></span><span class="go">▶</span></button>';
     }
     h += '<div class="sec2">教科</div><div class="quick2">' + SUBJ.map((s, i) => '<button type="button" class="qb2" data-subj="' + s.id + '" style="--sc:' + s.c + ";--i:" + i + '">' + HMIcons.icon(s.id, s.c, 52) + "<b>" + esc(s.n) + "</b><small>" + (s.id === "life" ? "小1・小2" : s.id === "math" || s.id === "ja" ? "小1〜中3" : "小3〜中3") + "</small></button>").join("") + "</div>";
+    if ((state.wrongBox || []).length) h += '<button type="button" class="box-card" data-act="box"><span class="bx-i">📦</span><span class="grow"><b>まちがえた問題ボックス</b><small>' + state.wrongBox.length + " 問 ・ 正解すると消えるよ</small></span><span class=\"go\">▶</span></button>";
     if (pullsLeft()) h += '<button type="button" class="gacha2" data-act="gacha"><span class="g2-box">🎁</span><span class="grow"><b>ガチャを ' + pullsLeft() + ' 回ひけます</b><span class="small">新しいなかまに会いに行こう</span></span><span class="go">▶</span></button>';
     h += '<p class="foot">なかま ' + Object.keys(state.chars).length + "/" + GCArt.CHARACTERS.length + " ・ v" + VERSION + "</p>";
     return h;
@@ -234,7 +256,7 @@
   function viewStudy() {
     const top = nav[nav.length - 1];
     if (!top) {
-      return { title: "勉強", html: '<p class="lead">教科をえらぼう</p><div class="subj-grid">' + SUBJ.map((s) => { const gs = gradesOf(s.id); return '<button type="button" class="subj" data-subj="' + s.id + '" style="--sc:' + s.c + '"><span class="se">' + HMIcons.icon(s.id, s.c, 54) + "</span><b>" + esc(s.n) + '</b><small>' + (gs.length ? gradeName(gs[0]) + "〜" + gradeName(gs[gs.length - 1]) : "") + "</small></button>"; }).join("") + "</div>" };
+      return { title: "学ぶ", html: (state.wrongBox && state.wrongBox.length ? '<button type="button" class="box-card" data-act="box"><span class="bx-i">📦</span><span class="grow"><b>まちがえた問題ボックス</b><small>' + state.wrongBox.length + " 問 ・ 正解すると消えるよ</small></span><span class=\"go\">▶</span></button>" : "") + '<p class="lead">教科をえらぼう</p><div class="subj-grid">' + SUBJ.map((s) => { const gs = gradesOf(s.id); return '<button type="button" class="subj" data-subj="' + s.id + '" style="--sc:' + s.c + '"><span class="se">' + HMIcons.icon(s.id, s.c, 54) + "</span><b>" + esc(s.n) + '</b><small>' + (gs.length ? gradeName(gs[0]) + "〜" + gradeName(gs[gs.length - 1]) : "") + "</small></button>"; }).join("") + "</div>" };
     }
     if (top.v === "grades") {
       const s = subjById(top.s);
@@ -245,10 +267,24 @@
       return { title: subjName(top.s, top.g) + " " + gradeName(top.g), html: '<p class="lead">単元をえらぼう</p><div class="list">' + us.map((u, ui) => { const r = unitStats(top.s, top.g, ui); return '<button type="button" class="row-btn" data-unit="' + ui + '"><span class="un">' + (ui + 1) + '</span><span class="grow"><b>' + esc(u.n) + '</b><span class="small muted">' + r.total + "ステップ ・ 合格 " + r.done + "</span>" + bar(r.done, r.total) + "</span>›</button>"; }).join("") + "</div>" };
     }
     if (top.v === "steps") {
-      const u = S()[top.s][top.g][top.u], tk = dayRec(today()).steps;
-      return { title: u.n, html: '<p class="lead">ステップ（やさしい → むずかしい）</p><div class="list">' + u.steps.map((st, si) => { const k = stepKey(top.s, top.g, top.u, si), p = state.progress[k]; const n = stepQCount(st); return '<button type="button" class="row-btn step" data-step="' + si + '"><span class="un st">' + (si + 1) + '</span><span class="grow"><b>' + esc(st.n) + '</b><span class="small muted">' + n + "問 ・ 約" + STEP_MIN + "分 ・ 合格 " + HM.passNeed(n) + "問" + (p ? " ・ ベスト " + p.best + "/" + p.n : "") + "</span></span>" + (tk[k] ? '<span class="got">⭐</span>' : p && p.passed ? '<span class="got done">✓</span>' : "") + "›</button>"; }).join("") + "</div>" };
+      const u = S()[top.s][top.g][top.u], tk = dayRec(today()).steps, sb = subjById(top.s);
+      const n = u.steps.length, info = u.steps.map((st, si) => { const k = stepKey(top.s, top.g, top.u, si), p = state.progress[k]; return { st, si, p, star: !!tk[k], done: !!(p && p.passed) }; });
+      let cur = info.findIndex((x) => !x.done); const allDone = cur < 0;
+      const X = [50, 76, 50, 24], GAP = 104, H = (n + 1) * GAP + 60, bk = "boss|" + top.s + "|" + top.g + "|" + u.n, won = !!(state.bossWins || {})[bk];
+      const pos = (i) => [X[i % 4], 46 + i * GAP];
+      let path = "", pathDone = "";
+      for (let i = 0; i < n; i++) { const [x1, y1] = pos(i), [x2, y2] = pos(i + 1); const seg = "M" + x1 + " " + y1 + " C" + x1 + " " + (y1 + GAP / 2) + " " + x2 + " " + (y2 - GAP / 2) + " " + x2 + " " + y2 + " "; path += seg; if (info[i].done && (i + 1 >= n || info[i + 1].done || i + 1 === cur)) pathDone += seg; }
+      const done = info.filter((x) => x.done).length;
+      let h = '<div class="map-head" style="--sc:' + sb.c + '">' + HMIcons.icon(top.s, sb.c, 40) + '<div class="grow"><small>' + esc(subjName(top.s, top.g) + " " + gradeName(top.g)) + "</small><b>" + esc(u.n) + '</b>' + bar(done, n) + '</div><span class="map-cnt num">' + done + "/" + n + "</span></div>";
+      h += '<div class="smap" style="height:' + H + "px;--sc:" + sb.c + '"><svg class="smap-path" viewBox="0 0 100 ' + H + '" preserveAspectRatio="none"><path d="' + path + '" class="sp-all"/><path d="' + pathDone + '" class="sp-done"/></svg>';
+      info.forEach((x) => { const [px, py] = pos(x.si); const isCur = x.si === cur; h += '<button type="button" class="map-node step ' + (x.done ? "done " : "") + (isCur ? "cur " : "") + (x.star ? "star" : "") + '" data-step="' + x.si + '" style="left:' + px + "%;top:" + py + 'px"><span class="mn-c">' + (x.star ? "⭐" : x.done ? "✓" : x.si + 1) + '</span><span class="mn-l"><b>' + esc(x.st.n) + "</b><small>" + stepQCount(x.st) + "問" + (x.p ? " ・ ベスト " + x.p.best + "/" + x.p.n : "") + "</small></span>" + (isCur ? '<span class="mn-here">' + charHtml(state.partner, 40) + "</span>" : "") + "</button>"; });
+      const [bx, by] = pos(n);
+      h += '<button type="button" class="map-node boss ' + (won ? "won " : "") + (allDone ? "cur" : "") + '" data-boss="1" style="left:' + bx + "%;top:" + by + 'px"><span class="mn-c">' + bossSvg(bossLook(top.s, top.g, top.u), 58) + (won ? '<i class="mn-crown">👑</i>' : "") + '</span><span class="mn-l"><b>ボスバトル</b><small>' + (won ? "クリア！ もう一度も OK" : "単元のまとめ問題") + "</small></span></button>";
+      h += "</div>";
+      if ((state.wrongBox || []).length) h += '<button type="button" class="box-card" data-act="box"><span class="bx-i">📦</span><span class="grow"><b>まちがえた問題ボックス</b><small>' + state.wrongBox.length + " 問 ・ 正解すると消えるよ</small></span><span class=\"go\">▶</span></button>";
+      return { title: u.n, html: h };
     }
-    return { title: "勉強", html: "" };
+    return { title: "学ぶ", html: "" };
   }
   const bar = (d, t) => '<span class="pbar"><i style="width:' + (t ? Math.round((d / t) * 100) : 0) + '%"></i></span>';
 
@@ -259,10 +295,10 @@
     let qs;
     try { qs = HM.makeSet(f.step); } catch (e) { toast("問題を作れませんでした"); return; }
     if (!qs.length) return;
-    Q = { s, g, ui, si, key: stepKey(s, g, ui, si), unit: f.unit, step: f.step, qs, i: 0, mode: "main", results: [], baseCorrect: 0, retryCorrect: 0, need: HM.passNeed(qs.length), n: qs.length, starGiven: false, shownAt: 0, answered: false, passOpen: true };
+    Q = { s, g, ui, si, key: stepKey(s, g, ui, si), unit: f.unit, step: f.step, qs, i: 0, mode: "main", results: [], baseCorrect: 0, retryCorrect: 0, need: HM.passNeed(qs.length), n: qs.length, starGiven: false, shownAt: 0, answered: false, passOpen: true, combo: 0 };
     state.last = { s, g, u: ui, st: si }; save();
     $("#quiz").hidden = false; document.body.classList.add("in-quiz");
-    showQ();
+    if (opt.noCard) showQ(); else showCard();
   }
   function curList() { return Q.mode === "main" ? Q.qs : Q.retry; }
   function showQ() {
@@ -270,10 +306,15 @@
     Q.answered = false; Q.input = "";
     const total = list.length;
     let h = '<div class="qz-head"><button type="button" class="qz-x" data-q="quit" aria-label="やめる">✕</button><div class="qz-prog"><i style="width:' + Math.round((Q.i / total) * 100) + '%"></i></div><span class="qz-n num">' + (Q.i + 1) + "/" + total + "</span></div>";
+    h += comboHtml();
     h += '<div class="qz-body">';
-    h += '<div class="qz-meta">' + esc(subjName(Q.s, Q.g) + " " + gradeName(Q.g) + " ／ " + Q.step.n) + (Q.mode === "retry" ? ' <span class="retry-tag">やり直し</span>' : "") + "</div>";
+    if (Q.mode === "boss") h += bossHtml();
+    const src = q.__src || { s: Q.s, g: Q.g, sn: Q.step.n };
+    h += '<div class="qz-meta">' + esc(subjName(src.s, src.g) + " " + gradeName(src.g) + " ／ " + src.sn) + (Q.mode === "retry" ? ' <span class="retry-tag">やり直し</span>' : Q.mode === "box" ? ' <span class="retry-tag box">📦 ボックス</span>' : Q.mode === "boss" ? ' <span class="retry-tag boss">👾 ボス</span>' : "") + "</div>";
     if (q.pass) h += '<details class="passage"' + (Q.passOpen ? " open" : "") + '><summary>📄 文章を読む</summary><div class="ptext">' + esc(q.pass).replace(/\n/g, "<br>") + "</div></details>";
-    h += '<div class="qz-q">' + q.q + "</div>";
+    const say = sayText(q);
+    if (q.listen) h += '<div class="qz-q">' + q.q + "</div>" + (canSpeak() ? '<button type="button" class="say-big" data-q="say"><span>🔊</span><b>タップして聞こう</b><small>何回でも聞けるよ</small></button>' : '<div class="say-text">' + esc(say) + "</div>");
+    else h += '<div class="qz-q">' + q.q + (say && canSpeak() ? ' <button type="button" class="say-btn" data-q="say" aria-label="英語を聞く">🔊</button>' : "") + "</div>";
     if (q.t === "ch") h += '<div class="opts">' + (q.opts || [q.a].concat(q.o)).map((o, i) => '<button type="button" class="opt" data-opt="' + i + '">' + esc(o) + "</button>").join("") + "</div>";
     else if (q.t === "ord" || q.t === "match" || q.t === "pair" || q.t === "tap") h += workHtml(q);
     else h += '<div class="num-in"><div class="ans-box" id="ans-box"><span id="ans-val" class="num"></span><span class="caret"></span>' + (q.unit ? '<span class="ans-unit">' + esc(q.unit) + "</span>" : "") + "</div>" + keypad(q) + "</div>";
@@ -385,15 +426,17 @@
       ok = j.ok;
     }
     Q.answered = true;
-    if (Q.mode === "main") Q.results.push({ q, ok, given: gtext });
+    if (Q.mode !== "retry") Q.results.push({ q, ok, given: gtext });
     else if (Q.mode === "retry") { Q.retryRes.push({ q, ok, given: gtext }); if (ok) Q.retryCorrect++; }
+    afterAnswer(q, ok);
     if (typeof onAnswered === "function") onAnswered(q, ok);
     if (ok && Q.mode === "main") Q.baseCorrect++;
     // 画面
     if (q.t === "ch") $$(".opt").forEach((b) => { const v = (q.opts || [q.a].concat(q.o))[+b.dataset.opt]; b.disabled = true; if (v === q.a) b.classList.add("right"); else if (v === given) b.classList.add("wrong"); });
     else if (q.t === "num") { const box = $("#ans-box"); box.classList.add(ok ? "right" : "wrong"); $$(".key").forEach((k) => (k.disabled = true)); }
     else workShowResult(q, given);
-    if (ok) { bigMaru(); burstAt(innerWidth / 2, innerHeight * 0.42, 22); sound("pikon"); haptic(15); } else { sound("miss"); haptic([20, 40, 20]); }
+    if (ok) { bigMaru(); burstAt(innerWidth / 2, innerHeight * 0.42, 22); sound("pikon"); haptic(15); if (Q.mode === "boss") setTimeout(bossHit, 280); comboFx(); } else { sound("miss"); haptic([20, 40, 20]); }
+    const cg = $("#combo"); if (cg) cg.outerHTML = comboHtml();
     let f = '<div class="fb ' + (ok ? "ok" : "ng") + '">';
     f += ok ? '<div class="fb-h">⭕ 正解！</div>' : '<div class="fb-h">✖ ざんねん</div><div class="fb-a">正解：<b>' + esc(q.a) + (q.unit && q.t !== "ch" ? esc(q.unit) : "") + "</b></div>";
     const ex = '<div class="fb-ex"><b>解説</b><p>' + esc(q.ex || "").replace(/\n/g, "<br>") + "</p></div>";
@@ -431,10 +474,13 @@
   function next() {
     const list = curList();
     if (!Q.answered) return;
+    if (Q.mode === "boss" && Q.hp <= 0) { finishRound(); return; }
     if (Q.i + 1 < list.length) { Q.i++; showQ(); return; }
     finishRound();
   }
   function finishRound() {
+    if (Q.mode === "box") return boxSummary();
+    if (Q.mode === "boss") return bossSummary();
     if (Q.mode === "main") {
       const p = state.progress[Q.key] || { best: 0, n: Q.n, plays: 0, passed: false };
       Q.prevBest = p.plays ? p.best : null;
@@ -506,6 +552,151 @@
     $("#quiz").innerHTML = h; $("#quiz").scrollTop = 0;
     if (Q.starNew && !Q.celebrated) { Q.celebrated = true; setTimeout(() => celebrateStar(), 200); }
   }
+  // ---------- v1.2 まとめカード ----------
+  const CARD_LINES = ["今日のポイントはこれ！ れいを見てからいこう。", "まずはここをおさえよう。", "れいの考え方をまねすれば大丈夫！", "ポイントを見たら、さっそくチャレンジ！", "ここが分かれば、ぐっと楽になるよ。"];
+  function exampleFor(step, qs) {
+    try {
+      if (typeof step.src === "function") { for (let t = 0; t < 30; t++) { const c = step.src(0.3, 1); if (c && !qs.some((q) => q.q === c.q && q.a === c.a)) return c; } return null; }
+      const all = step.src.map((x) => (typeof x === "string" ? HM.parseBankLine(x) : x));
+      const unused = all.filter((c) => !qs.some((q) => q.q === c.q && q.a === c.a));
+      return (unused.length ? unused : all)[Math.floor(Math.random() * (unused.length || all.length))];
+    } catch (e) { return null; }
+  }
+  function exAnswer(c) {
+    if (c.t === "ord") return c.items.join(" → ");
+    if (c.t === "match" || c.t === "pair") return c.pairs.map((p) => p[0] + "－" + p[1]).join("、");
+    return c.a + (c.unit && c.t !== "ch" ? c.unit : "");
+  }
+  function showCard() {
+    const p = GCArt.charById(state.partner), c = exampleFor(Q.step, Q.qs), sb = subjById(Q.s);
+    const pts = (HM.POINTS && (HM.POINTS[Q.unit.n + "/" + Q.step.n] || HM.POINTS[Q.unit.n])) || "";
+    let h = '<div class="qz-head"><button type="button" class="qz-x" data-q="quit" aria-label="やめる">✕</button><div class="qz-prog"><i style="width:0%"></i></div><span class="qz-n num">0/' + Q.n + "</span></div>";
+    h += '<div class="card-pt" style="--sc:' + sb.c + '"><div class="cp-head">' + HMIcons.icon(Q.s, sb.c, 40) + '<div><small>' + esc(subjName(Q.s, Q.g) + " " + gradeName(Q.g) + " ／ " + Q.unit.n) + "</small><b>" + esc(Q.step.n) + '</b></div></div><div class="cp-tag">💡 今日のポイント</div>';
+    if (pts) h += '<p class="cp-pt">' + esc(pts) + "</p>";
+    if (c) { const cq = c.t === "tap" ? String(c.q).replace(/data-hit=/g, "data-x=") + (c.svg || "").replace(/data-hit=/g, "data-x=") : c.q; h += '<div class="cp-ex"><div class="cp-k">れい</div><div class="cp-q">' + (c.listen ? esc(c.say || "") : cq) + '</div><div class="cp-a">こたえ：<b>' + esc(exAnswer(c)) + '</b></div><div class="cp-why">' + esc(c.ex || "").replace(/\n/g, "<br>") + "</div></div>"; }
+    h += '<div class="cp-char">' + charHtml(p.id, 84, "bob r" + p.rarity) + '<div class="bubble">' + esc(CARD_LINES[Math.floor(Math.random() * CARD_LINES.length)]) + "</div></div>";
+    h += '<div class="cp-info">' + Q.n + "問 ・ 約" + STEP_MIN + "分 ・ " + Q.need + "問正解で⭐</div>";
+    h += '<button type="button" class="btn primary block big" data-q="card-go">はじめる ▶</button></div>';
+    Q.card = true; const el = $("#quiz"); el.innerHTML = h; el.scrollTop = 0;
+  }
+  // ---------- v1.2 コンボ ----------
+  const comboNext = (n) => (n < 3 ? 3 : n < 5 ? 5 : n < 10 ? 10 : (Math.floor(n / 5) + 1) * 5);
+  const comboPrev = (n) => (n < 3 ? 0 : n < 5 ? 3 : n < 10 ? 5 : Math.floor(n / 5) * 5);
+  function comboHtml() {
+    const n = (Q && Q.combo) || 0, a = comboPrev(n), b = comboNext(n), k = Math.round(((n - a) / (b - a)) * 100);
+    return '<div class="combo ' + (n >= 10 ? "lv3" : n >= 5 ? "lv2" : n >= 3 ? "lv1" : "") + '" id="combo"><span class="cb-f">🔥</span><span class="cb-g"><i style="width:' + k + '%"></i></span><span class="cb-n num">' + (n ? n + " コンボ" : "コンボ") + "</span></div>";
+  }
+  function afterAnswer(q, ok) {
+    Q.combo = ok ? (Q.combo || 0) + 1 : 0;
+    if (Q.combo > (state.bestCombo || 0)) state.bestCombo = Q.combo;
+    if (!ok && Q.mode !== "box") boxAdd(q);
+    if (ok && (Q.mode === "box" || Q.mode === "retry")) { if (boxRemove(q) && Q.mode === "box") Q.cleared = (Q.cleared || 0) + 1; }
+    save();
+  }
+  function comboFx() {
+    const n = Q.combo; if (!(n === 3 || n === 5 || n === 10 || (n > 10 && n % 5 === 0))) return;
+    const lv = n >= 10 ? 3 : n >= 5 ? 2 : 1;
+    const fx = $("#fx-root"), d = document.createElement("div");
+    d.className = "combo-pop lv" + lv; d.innerHTML = "<b>" + n + "</b><span>コンボ！</span>" + (lv >= 2 ? "<i>🔥</i>" : "");
+    fx.appendChild(d); setTimeout(() => d.remove(), 1400 + lv * 200);
+    setTimeout(() => { sound("r" + Math.min(6, lv + 1)); burstAt(innerWidth / 2, innerHeight * 0.3, 14 + lv * 12); if (lv === 3) confetti(60); haptic(lv === 3 ? [20, 30, 20, 30, 60] : [15, 25, 15]); }, 250);
+    if (lv === 3) { document.body.classList.remove("combo-flash"); void document.body.offsetWidth; document.body.classList.add("combo-flash"); setTimeout(() => document.body.classList.remove("combo-flash"), 900); }
+  }
+  // ---------- v1.2 まちがえた問題ボックス ----------
+  const boxKey = (s, g, un, q) => s + "|" + g + "|" + un + "|" + strip(q.q).slice(0, 120) + "|" + q.a;
+  function boxAdd(q) {
+    const src = q.__src || { s: Q.s, g: Q.g, un: Q.unit.n, sn: Q.step.n };
+    const k = q.__k || boxKey(src.s, src.g, src.un, q);
+    state.wrongBox = state.wrongBox || [];
+    if (state.wrongBox.some((x) => x.k === k)) return;
+    const c = Object.assign({}, q); delete c.opts; delete c.__src; delete c.__k;
+    state.wrongBox.push({ k, s: src.s, g: src.g, un: src.un, sn: src.sn, q: c, t: now() });
+    while (state.wrongBox.length > 150) state.wrongBox.shift();
+  }
+  function boxRemove(q) {
+    const src = q.__src || { s: Q.s, g: Q.g, un: Q.unit ? Q.unit.n : "" };
+    const k = q.__k || boxKey(src.s, src.g, src.un, q);
+    const i = (state.wrongBox || []).findIndex((x) => x.k === k); if (i < 0) return false;
+    state.wrongBox.splice(i, 1); return true;
+  }
+  function startBox() {
+    const b = state.wrongBox || []; if (!b.length) { toast("ボックスはからっぽ！ 全部クリアしてるよ"); return; }
+    const pickN = HM.U.shuf(b.slice()).slice(0, 10);
+    const qs = pickN.map((x) => Object.assign({}, x.q, { __k: x.k, __src: { s: x.s, g: x.g, un: x.un, sn: x.sn }, opts: x.q.t === "ch" ? HM.U.shuf([x.q.a].concat(x.q.o)) : undefined }));
+    Q = { s: pickN[0].s, g: pickN[0].g, ui: null, si: null, key: null, unit: { n: "" }, step: { n: "まちがえた問題ボックス" }, qs, i: 0, mode: "box", results: [], baseCorrect: 0, need: 0, n: qs.length, shownAt: 0, answered: false, passOpen: true, combo: 0, cleared: 0 };
+    $("#quiz").hidden = false; document.body.classList.add("in-quiz"); showQ();
+  }
+  function boxSummary() {
+    const p = GCArt.charById(state.partner), cl = Q.cleared || 0, left = (state.wrongBox || []).length;
+    state.boxCleared = (state.boxCleared || 0) + cl; save();
+    const line = cl === Q.n ? "全部クリア！ にがてを1つずつ消していくの、かっこいい！" : cl ? cl + "問クリア！ 前にまちがえた問題ができるようになったね！" : "いっしょに解説を読んで、またチャレンジしよう！";
+    let h = '<div class="sum"><div class="box-hero"><div class="bx-ico">📦</div><div class="bx-t">ボックスから <b class="num">' + cl + "</b> 問クリア</div><div class=\"small muted\">のこり " + left + " 問 ・ これまでのクリア " + state.boxCleared + " 問</div></div>";
+    h += '<div class="sum-char">' + charHtml(p.id, 110, "bob r" + p.rarity) + '<div class="bubble">' + esc(line) + "</div></div>";
+    h += '<div class="sum-act">' + (left ? '<button type="button" class="btn primary block" data-q="box-again">📦 つづけてボックスの問題</button>' : "") + '<button type="button" class="btn ghost block" data-q="quit">もどる</button></div></div>';
+    $("#quiz").innerHTML = h; $("#quiz").scrollTop = 0;
+    if (cl) { confetti(cl === Q.n ? 60 : 24); sound(cl === Q.n ? "fanfare" : "soft"); }
+  }
+  // ---------- v1.2 ボス ----------
+  const BOSS_NAMES = ["モヤモヤン", "ナゾナゾドン", "ムズカシーガ", "ウッカリング", "ワスレーヌ", "マチガイーダ", "ハテナゴン", "ヨミトバシー"];
+  function bossLook(s, g, ui) { let hsh = 0; const k = s + g + ui; for (let i = 0; i < k.length; i++) hsh = (hsh * 31 + k.charCodeAt(i)) >>> 0; return { hue: hsh % 360, name: BOSS_NAMES[hsh % BOSS_NAMES.length], v: hsh % 3 }; }
+  function bossSvg(L, size) {
+    const c = "hsl(" + L.hue + ",70%,58%)", d = "hsl(" + L.hue + ",60%,38%)", l = "hsl(" + ((L.hue + 40) % 360) + ",85%,78%)";
+    const horns = L.v === 0 ? '<path d="M38 34 L30 8 L50 28Z M82 34 L90 8 L70 28Z" fill="' + l + '" stroke="' + d + '" stroke-width="3" stroke-linejoin="round"/>' : L.v === 1 ? '<circle cx="34" cy="22" r="9" fill="' + l + '" stroke="' + d + '" stroke-width="3"/><circle cx="86" cy="22" r="9" fill="' + l + '" stroke="' + d + '" stroke-width="3"/>' : '<path d="M60 6 L68 28 L52 28Z" fill="' + l + '" stroke="' + d + '" stroke-width="3" stroke-linejoin="round"/>';
+    return '<svg viewBox="0 0 120 120" width="' + size + '" height="' + size + '" class="boss-svg">' + horns + '<path d="M18 70 C18 36 40 24 60 24 C80 24 102 36 102 70 C102 98 86 110 60 110 C34 110 18 98 18 70Z" fill="' + c + '" stroke="' + d + '" stroke-width="4"/><path d="M10 74 L22 66 L22 86Z M110 74 L98 66 L98 86Z" fill="' + c + '" stroke="' + d + '" stroke-width="3" stroke-linejoin="round"/><ellipse cx="60" cy="88" rx="26" ry="14" fill="' + l + '" opacity=".55"/><ellipse cx="45" cy="60" rx="10" ry="12" fill="#fff" stroke="' + d + '" stroke-width="2.5"/><ellipse cx="75" cy="60" rx="10" ry="12" fill="#fff" stroke="' + d + '" stroke-width="2.5"/><circle cx="47" cy="62" r="5" fill="#222"/><circle cx="73" cy="62" r="5" fill="#222"/><path d="M36 46 L54 52 M84 46 L66 52" stroke="' + d + '" stroke-width="4" stroke-linecap="round"/><path d="M46 82 Q60 92 74 82" fill="none" stroke="' + d + '" stroke-width="3.5" stroke-linecap="round"/><path d="M52 85 L55 91 L58 86 M62 86 L65 91 L68 85" fill="#fff" stroke="' + d + '" stroke-width="1.5"/></svg>';
+  }
+  function bossHtml() {
+    const L = bossLook(Q.s, Q.g, Q.ui), k = Math.max(0, Q.hp) / Q.maxHp;
+    return '<div class="boss-panel ' + (Q.hp <= 0 ? "down" : "") + '" id="boss-panel"><div class="bp-mon" id="bp-mon">' + bossSvg(L, 96) + '</div><div class="bp-r"><b>' + esc(L.name) + '</b><div class="bp-hp"><i id="bp-hp" style="width:' + Math.round(k * 100) + '%"></i></div><small class="num">HP ' + Math.max(0, Q.hp) + " / " + Q.maxHp + "</small></div></div>";
+  }
+  function bossHit() {
+    if (!Q || Q.mode !== "boss") return;
+    Q.hp = Math.max(0, Q.hp - 1);
+    const mon = $("#bp-mon"), bar = $("#bp-hp"), pn = $("#boss-panel"); if (!mon) return;
+    const r = mon.getBoundingClientRect(), fx = $("#fx-root");
+    const shot = document.createElement("div"); shot.className = "boss-shot"; shot.textContent = "⭐";
+    shot.style.left = innerWidth / 2 + "px"; shot.style.top = innerHeight * 0.62 + "px"; shot.style.setProperty("--tx", (r.left + r.width / 2 - innerWidth / 2) + "px"); shot.style.setProperty("--ty", (r.top + r.height / 2 - innerHeight * 0.62) + "px");
+    fx.appendChild(shot); setTimeout(() => shot.remove(), 520);
+    setTimeout(() => {
+      mon.classList.remove("hit"); void mon.offsetWidth; mon.classList.add("hit");
+      if (bar) bar.style.width = Math.round((Q.hp / Q.maxHp) * 100) + "%";
+      const sm = $("#boss-panel small"); if (sm) sm.textContent = "HP " + Q.hp + " / " + Q.maxHp;
+      const dmg = document.createElement("div"); dmg.className = "boss-dmg"; dmg.textContent = "ヒット！"; dmg.style.left = r.left + r.width / 2 + "px"; dmg.style.top = r.top + "px"; fx.appendChild(dmg); setTimeout(() => dmg.remove(), 900);
+      burstAt(r.left + r.width / 2, r.top + r.height / 2, 16); sound("tap"); haptic([10, 20, 30]);
+      if (Q.hp <= 0) { pn && pn.classList.add("down"); sound("fanfare"); confetti(70); const nb = $('[data-q="next"]'); if (nb) nb.textContent = "ボスをたおした！ ›"; }
+    }, 480);
+  }
+  function startBoss(s, g, ui) {
+    const u = (S()[s] || {})[g] && S()[s][g][ui]; if (!u) return;
+    let pool = [];
+    u.steps.forEach((st) => { try { const set = HM.makeSet(st); pool.push(...set.slice(-2)); } catch (e) {} });
+    if (pool.length < 6) u.steps.forEach((st) => { try { pool.push(...HM.makeSet(st).slice(0, 3)); } catch (e) {} });
+    const seen = new Set(); pool = HM.U.shuf(pool).filter((q) => { const k = q.q + "|" + q.a; if (seen.has(k)) return false; seen.add(k); return true; }).slice(0, 10);
+    if (!pool.length) return;
+    pool.forEach((q) => { if (q.t === "ch") q.opts = HM.U.shuf([q.a].concat(q.o)); });
+    const need = HM.passNeed(pool.length);
+    Q = { s, g, ui, si: null, key: "boss|" + s + "|" + g + "|" + u.n, unit: u, step: { n: "ボスバトル" }, qs: pool, i: 0, mode: "boss", results: [], baseCorrect: 0, need, n: pool.length, hp: need, maxHp: need, shownAt: 0, answered: false, passOpen: true, combo: 0 };
+    $("#quiz").hidden = false; document.body.classList.add("in-quiz");
+    const L = bossLook(s, g, ui);
+    $("#quiz").innerHTML = '<div class="boss-intro"><div class="bi-mon">' + bossSvg(L, 150) + '</div><b>' + esc(L.name) + ' があらわれた！</b><small>' + esc(u.n) + ' のまとめ問題 ・ ' + pool.length + '問 ・ ' + need + 'ヒットでたおせる</small><span class="spinner"></span></div>';
+    sound("block"); setTimeout(() => { if (Q && Q.mode === "boss" && Q.i === 0 && !Q.answered) showQ(); }, 1100);
+  }
+  function bossSummary() {
+    const p = GCArt.charById(state.partner), L = bossLook(Q.s, Q.g, Q.ui), win = Q.hp <= 0, first = win && !(state.bossWins || {})[Q.key];
+    if (win) { state.bossWins = state.bossWins || {}; state.bossWins[Q.key] = state.bossWins[Q.key] || today(); save(); }
+    const nw = Object.keys(state.bossWins || {}).length;
+    const line = win ? (first ? "やったー！ " + L.name + "をたおしたよ！ この単元、もうバッチリだね！" : "また勝った！ 強すぎる！") : "あと " + Q.hp + " ヒットだった！ 解説を読んで、もう一回いこう！";
+    let h = '<div class="sum"><div class="boss-end ' + (win ? "win" : "") + '"><div class="be-mon">' + bossSvg(L, 120) + (win ? '<span class="be-crown">👑</span>' : "") + '</div><div class="be-t">' + (win ? "ボスをたおした！" : L.name + "とのバトル") + "</div>";
+    h += '<div class="small muted">' + esc(subjName(Q.s, Q.g) + " " + gradeName(Q.g) + " ／ " + Q.unit.n) + "</div>";
+    if (win) h += '<div class="be-prize">🏆 単元マップにかんむりがつきました' + (nw === 1 ? "<br>称号「ボスハンター」がえらべるようになったよ" : nw === 10 ? "<br>称号「ボスマスター」がえらべるようになったよ" : "") + "</div>";
+    h += "</div>";
+    h += '<div class="sum-char">' + charHtml(p.id, 110, "bob r" + p.rarity) + '<div class="bubble">' + esc(line) + "</div></div>";
+    h += '<div class="sum-act"><button type="button" class="btn ' + (win ? "" : "primary") + ' block" data-q="boss-again">👾 もう一度ボスと戦う</button><button type="button" class="btn ghost block" data-q="quit">マップにもどる</button></div>';
+    if (Q.results.length) h += '<details class="review"><summary>問題をふりかえる</summary>' + Q.results.map((r, i) => '<div class="rv ' + (r.ok ? "ok" : "ng") + '"><b>' + (i + 1) + ". " + (r.ok ? "⭕" : "✖") + '</b> <span class="rq">' + strip(r.q.q).slice(0, 80) + "</span><br><span class=\"small\">正解：" + esc(r.q.a) + "</span></div>").join("") + "</details>";
+    h += "</div>";
+    $("#quiz").innerHTML = h; $("#quiz").scrollTop = 0;
+    if (win) { confetti(80); sound("fanfare"); }
+  }
+  function sayText(q) { return q.say || (typeof q.en === "string" && /^[A-Za-z][A-Za-z .,'?!-]*$/.test(q.en) ? q.en : null); }
   const strip = (html) => esc(String(html).replace(/<svg[\s\S]*?<\/svg>/g, "［図］").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim());
   function startRetry() {
     const w = Q.wrongForRetry || []; if (!w.length) return;
@@ -516,7 +707,8 @@
   }
   function quitQuiz() {
     $("#quiz").hidden = true; $("#quiz").innerHTML = ""; document.body.classList.remove("in-quiz");
-    if (Q) { nav = [{ v: "grades", s: Q.s }, { v: "units", s: Q.s, g: Q.g }, { v: "steps", s: Q.s, g: Q.g, u: Q.ui }]; tab = "study"; }
+    try { if (canSpeak()) speechSynthesis.cancel(); } catch (e) {}
+    if (Q && Q.ui != null) { nav = [{ v: "grades", s: Q.s }, { v: "units", s: Q.s, g: Q.g }, { v: "steps", s: Q.s, g: Q.g, u: Q.ui }]; tab = "study"; navDir = "back"; }
     Q = null; render();
   }
   function reportQ() {
@@ -698,7 +890,13 @@
 
   // ---------- 設定 ----------
   function viewSettings() {
-    let h = '<div class="card set"><label class="sw"><span>効果音（ピコーンなど）</span><input type="checkbox" data-set="sound" ' + (state.settings.sound ? "checked" : "") + '></label><label class="sw"><span>振動（対応している端末のみ）</span><input type="checkbox" data-set="haptic" ' + (state.settings.haptic ? "checked" : "") + '></label><label class="field"><span>ニックネーム（チェスの友だち対戦で表示）</span><input class="input" id="nick" maxlength="12" value="' + esc(state.settings.nick) + '"></label></div>';
+    const p = GCArt.charById(state.partner), nb = Object.keys(state.bossWins || {}).length, nd = Object.values(state.progress).filter((x) => x.passed).length;
+    let h = '<div class="me-card">' + charHtml(p.id, 72, "r" + p.rarity) + '<div class="grow"><b class="me-n">' + esc(state.settings.nick || "なまえ未設定") + '</b><span class="chip-t">🏅 ' + esc(titleName()) + "</span></div></div>";
+    h += '<div class="me-stats"><div><b class="num">' + state.totalStars + "</b><small>累計⭐</small></div><div><b class=\"num\">" + nd + "</b><small>合格ステップ</small></div><div><b class=\"num\">" + nb + "</b><small>ボス撃破</small></div><div><b class=\"num\">" + (state.bestCombo || 0) + "</b><small>最高コンボ</small></div></div>";
+    if ((state.wrongBox || []).length) h += '<button type="button" class="box-card" data-act="box"><span class="bx-i">📦</span><span class="grow"><b>まちがえた問題ボックス</b><small>' + state.wrongBox.length + " 問 ・ これまでのクリア " + (state.boxCleared || 0) + ' 問</small></span><span class="go">▶</span></button>';
+    h += '<div class="sec">設定</div>';
+    h += '<div class="card set"><label class="sw"><span>🔈 音量</span><input type="range" min="0" max="1" step="0.1" id="vol" value="' + (state.settings.vol == null ? 0.8 : state.settings.vol) + '"></label>';
+    h += '<label class="sw"><span>効果音（ピコーンなど）</span><input type="checkbox" data-set="sound" ' + (state.settings.sound ? "checked" : "") + '></label><label class="sw"><span>振動（対応している端末のみ）</span><input type="checkbox" data-set="haptic" ' + (state.settings.haptic ? "checked" : "") + '></label><label class="field"><span>なまえ（マイページとチェスの友だち対戦で表示）</span><input class="input" id="nick" maxlength="12" value="' + esc(state.settings.nick) + '"></label></div>';
     h += '<div class="sec">問題の報告 <span class="muted">' + state.reports.length + "件</span></div>";
     if (!state.reports.length) h += '<p class="small muted">「この問題おかしい？」で保存した報告がここに出ます。</p>';
     else h += '<div class="reports">' + state.reports.slice(0, 50).map((r, i) => '<div class="rep"><div class="small muted">' + new Date(r.t).toLocaleString("ja-JP") + " ・ " + esc(subjName(r.subj, r.grade) + gradeName(r.grade)) + " ・ " + esc(r.unit + "／" + r.step) + "</div><div>" + r.q + '</div><div class="small">アプリの正解：' + esc(r.a) + " ・ " + esc(r.kind) + (r.note ? " ・ " + esc(r.note) : "") + '</div><button type="button" class="link-btn" data-rep-del="' + i + '">消す</button></div>').join("") + "</div>";
@@ -720,11 +918,12 @@
     const t = e.target;
     const tb = t.closest(".tab"); if (tb) { setTab(tb.dataset.tab); return; }
     if (t.closest("button")) haptic(6);
-    if (t.closest("#back-btn")) { nav.pop(); render(); window.scrollTo(0, 0); return; }
+    if (t.closest("#back-btn")) { nav.pop(); navDir = "back"; render(); window.scrollTo(0, 0); return; }
     if (t.closest("#gl-close")) { closeLayer(); return; }
     // クイズ
     if (t.closest("#quiz")) {
       const o = t.closest("[data-opt]"); if (o && Q) { const q = curList()[Q.i]; answer((q.opts || [q.a].concat(q.o))[+o.dataset.opt]); return; }
+      if (Q && Q.card) { const cb = t.closest("[data-q]"); if (cb && cb.dataset.q === "card-go") { Q.card = false; showQ(); } else if (cb && cb.dataset.q === "quit") quitQuiz(); return; }
       if (Q && !Q.answered) { const hit = t.closest("[data-hit]"); if (hit && curList()[Q.i].t === "tap") { answer(hit.dataset.hit); return; } if (workClick(t)) return; }
       const k = t.closest("[data-key]");
       if (k && Q && !Q.answered) {
@@ -738,12 +937,15 @@
       }
       const a = t.closest("[data-q]"); if (!a || !Q) return;
       const act = a.dataset.q;
+      if (act === "say") { const q = curList()[Q.i]; speak(sayText(q)); a.classList.remove("on"); void a.offsetWidth; a.classList.add("on"); return; }
+      if (act === "box-again") { startBox(); return; }
+      if (act === "boss-again") { const b = [Q.s, Q.g, Q.ui]; startBoss(...b); return; }
       if (act === "submit") { if (!Q.answered && workDone()) answer(workResult()); }
       else if (act === "next") next();
       else if (act === "ex") { const w = $(".ex-wrap"); w.hidden = !w.hidden; a.textContent = w.hidden ? "💡 解説を見る" : "解説をとじる"; }
       else if (act === "report") reportQ();
       else if (act === "retry") startRetry();
-      else if (act === "again") { const s = [Q.s, Q.g, Q.ui, Q.si]; startStep(...s); }
+      else if (act === "again") { const s = [Q.s, Q.g, Q.ui, Q.si]; startStep(...s, { noCard: true }); }
       else if (act === "nextstep") { const s = [Q.s, Q.g, Q.ui, Q.si + 1]; startStep(...s); }
       else if (act === "gacha") { quitQuiz(); tab = "gacha"; render(); doGacha(1); }
       else if (act === "quit") { if (Q.mode === "main" && Q.results.length && Q.results.length < Q.n && $(".qz-head")) { if (!confirm("やめますか？（このステップの結果は記録されません）")) return; } quitQuiz(); }
@@ -754,6 +956,7 @@
     if (sb) { tab = "study"; nav = [{ v: "grades", s: sb.dataset.subj }]; render(); window.scrollTo(0, 0); return; }
     const gb = t.closest("[data-grade]"); if (gb) { const top = nav[nav.length - 1]; nav.push({ v: "units", s: top.s, g: +gb.dataset.grade }); render(); window.scrollTo(0, 0); return; }
     const ub = t.closest("[data-unit]"); if (ub) { const top = nav[nav.length - 1]; nav.push({ v: "steps", s: top.s, g: top.g, u: +ub.dataset.unit }); render(); window.scrollTo(0, 0); return; }
+    const bb = t.closest("[data-boss]"); if (bb) { const top = nav[nav.length - 1]; startBoss(top.s, top.g, top.u); return; }
     const stb = t.closest("[data-step]"); if (stb) { const top = nav[nav.length - 1]; startStep(top.s, top.g, top.u, +stb.dataset.step); return; }
     const gm = t.closest("[data-game]"); if (gm) { openGameMenu(gm.dataset.game); return; }
     const ga = t.closest("[data-g]"); if (ga) { if (ga.dataset.g === "rates") openRates(); else doGacha(+ga.dataset.g); return; }
@@ -767,6 +970,7 @@
       const a = ac.dataset.act;
       if (a === "cont" && state.last) { const L = state.last; startStep(L.s, L.g, L.u, L.st); }
       else if (a === "gacha") { tab = "gacha"; render(); }
+      else if (a === "box") startBox();
       else if (a === "rep-copy") copyText(reportText());
       else if (a === "rep-dl") download("hoshimanabi-reports-" + today() + ".json", JSON.stringify({ app: "ほしまなび", version: VERSION, exported: new Date().toISOString(), reports: state.reports }, null, 1));
       else if (a === "backup") download("hoshimanabi-backup-" + today() + ".json", JSON.stringify(state));
@@ -776,6 +980,7 @@
   });
   document.addEventListener("change", (e) => {
     const s = e.target.closest("[data-set]"); if (s) { state.settings[s.dataset.set] = s.checked; save(); return; }
+    if (e.target.id === "vol") { state.settings.vol = +e.target.value; save(); sound("tap"); return; }
     if (e.target.id === "nick") { state.settings.nick = e.target.value.trim().slice(0, 12); save(); return; }
     if (e.target.id === "restore-file") {
       const f = e.target.files[0]; if (!f) return;
@@ -809,7 +1014,9 @@
     { id: "coin", e: "🪙", n: "コインパズル", c: "#c9a227", d: "同じコインを3つ並べて消す。CPUより高い得点で勝ち。" },
   ];
   (() => { const ext = ((window.HMGames && HMGames.list) || []).filter((g) => !DROPPED.includes(g.id)); for (let i = 0; i < GAMES.length; i++) { const r = ext.find((x) => x.id === GAMES[i].id); if (r) GAMES[i] = r; } ext.forEach((x) => { if (!GAMES.some((y) => y.id === x.id)) GAMES.push(x); }); })();
-  window.HM_APP = { state: () => state, save, render, today, dkey, setClockOffset: (ms) => { clockOffset = ms; render(); }, GAMES, gachaPull, rates: () => ({ normal: GACHA_RATES.slice(), sr: GACHA_RATES_SR.slice() }), drawRarity, startStep, findStep, judgeNum, passNeed: HM.passNeed, STARS_TO_UNLOCK, READ_MS, starsToday, gamesOpen, pullsLeft, startGame, version: VERSION, quiz: () => Q };
+  // スプラッシュ（起動画面）を消す
+  (() => { const sp = document.getElementById("splash"); if (!sp) return; const hide = () => { sp.classList.add("out"); setTimeout(() => sp.remove(), 500); }; setTimeout(hide, Math.max(150, 650 - performance.now())); })();
+  window.HM_APP = { state: () => state, save, render, today, dkey, setClockOffset: (ms) => { clockOffset = ms; render(); }, GAMES, gachaPull, rates: () => ({ normal: GACHA_RATES.slice(), sr: GACHA_RATES_SR.slice() }), drawRarity, startStep, findStep, judgeNum, passNeed: HM.passNeed, STARS_TO_UNLOCK, READ_MS, starsToday, gamesOpen, pullsLeft, startGame, version: VERSION, quiz: () => Q, startBox, startBoss, speak, canSpeak };
 
   // テスト用：?clock=+86400000 のように時計をずらせる
   try { const c = new URLSearchParams(location.search).get("clock"); if (c) clockOffset = +c || 0; } catch (e) {}

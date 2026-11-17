@@ -89,4 +89,17 @@
   A("en", 6, "文の形", [["英文のならべかえ", eSent(6), 8]]);
   A("en", 6, "単語（表）", [["カード合わせ", ePair(["verb", "adj", "place"]), 6]]);
   for (const g of [7, 8, 9]) A("en", g, "文法いろいろ", [["英文のならべかえ", eSent(g), 8]]);
+  // ---- 聞きとり（🔊ボタンで読み上げ。読み上げできない端末では英語の文字を表示） ----
+  const lMean = (cats) => (d) => { const c = pick(cats), [e, j] = pick(HM.EN.VT[c]); return ch("🎧 聞こえた英語の意味はどれ？", j, shuf(HM.EN.VT[c].filter((w) => w[1] !== j)).map((w) => w[1]), "聞こえたのは「" + e + "」。意味は「" + j + "」。", { say: e, listen: 1 }); };
+  const lWord = (cats) => (d) => { const c = pick(cats), [e, j] = pick(HM.EN.VT[c]); return ch("🎧 聞こえた英語はどれ？", e, shuf(HM.EN.VT[c].filter((w) => w[0] !== e)).map((w) => w[0]), "聞こえたのは「" + e + "」（" + j + "）。", { say: e, listen: 1, sayIsAnswer: 1 }); };
+  const lNum = (hi) => (d) => { const n = R(1, Math.max(12, Math.round(hi * (0.3 + 0.7 * d)))); return num("🎧 聞こえた数を数字で入れよう", n, "聞こえたのは「" + HM.EN.word(n) + "」で " + n + "。", { chk: String(n), say: HM.EN.word(n), listen: 1 }); };
+  A("en", 3, "いろいろな単語", [["聞きとり（単語）", lMean(["animal", "fruit", "color"]), 8]]);
+  A("en", 3, "数", [["数の聞きとり", lNum(20), 8]]);
+  A("en", 4, "いろいろな単語", [["聞きとり（単語）", lWord(["day", "weather", "shape", "body"]), 8]]);
+  A("en", 4, "数", [["数の聞きとり", lNum(100), 8]]);
+  A("en", 5, "単語", [["聞きとり（単語）", lMean(["month", "subject", "place"]), 8]]);
+  A("en", 6, "単語", [["聞きとり（単語）", lWord(["job", "verb", "adj"]), 8]]);
+  A("en", 7, "単語", [["聞きとり（単語）", lMean(["j1", "verb", "adj"]), 8]]);
+  A("en", 8, "単語", [["聞きとり（単語）", lMean(["j2"]), 8]]);
+  A("en", 9, "単語", [["聞きとり（単語）", lMean(["j3"]), 8]]);
 })(typeof window !== "undefined" ? window : globalThis);

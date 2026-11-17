@@ -17,7 +17,7 @@ try:
     pg = ctx.new_page()
     pg.on("pageerror", lambda e: errors.append(str(e)))
     pg.on("console", lambda m: errors.append("console: " + m.text) if m.type == "error" else None)
-    pg.goto(f"http://localhost:{PORT}/index.html"); pg.wait_for_timeout(800)
+    pg.goto(f"http://localhost:{PORT}/index.html"); pg.wait_for_timeout(1200)
     E = pg.evaluate
     def start(name):
         loc = E(FIND, name); assert loc, name
