@@ -222,7 +222,7 @@
       '<div class="t2-stars">' + Array.from({ length: STARS_TO_UNLOCK }, (_, i) => '<span class="t2s ' + (i < n ? "on" : "") + '" style="--i:' + i + '">★</span>').join("") + (n > STARS_TO_UNLOCK ? '<span class="t2-more">+' + (n - STARS_TO_UNLOCK) + "</span>" : "") + "</div></div></section>";
     if ((state.wrongBox || []).length) h += '<button type="button" class="box-card" data-act="box"><span class="bx-i">📦</span><span class="grow"><b>まちがえた問題ボックス</b><small>' + state.wrongBox.length + " 問 ・ 正解すると消えるよ</small></span><span class=\"go\">▶</span></button>";
     if (state.last) {
-      const L = state.last, st = findStep(L.s, L.g, L.u, L.st);
+      const L = resolveLast(), st = findStep(L.s, L.g, L.u, L.st);
       if (st) h += '<button type="button" class="cont2" data-act="cont">' + HMIcons.icon(L.s, subjById(L.s).c, 46) + '<span class="grow"><b>つづきから学ぶ</b><span class="small">' + esc(subjName(L.s, L.g) + " " + gradeName(L.g) + " ／ " + st.unit.n + " ／ " + st.step.n) + '</span></span><span class="go">▶</span></button>';
     }
     h += '<div class="sec2">教科</div><div class="quick2">' + SUBJ.map((s, i) => '<button type="button" class="qb2" data-subj="' + s.id + '" style="--sc:' + s.c + ";--i:" + i + '">' + HMIcons.icon(s.id, s.c, 52) + "<b>" + esc(s.n) + "</b><small>" + (s.id === "life" ? "小1・小2" : s.id === "math" || s.id === "ja" ? "小1〜中3" : "小3〜中3") + "</small></button>").join("") + "</div>";
@@ -243,6 +243,8 @@
   // ---------- 教材の検索 ----------
   const S = () => HM.SUBJECTS;
   function gradesOf(s) { return Object.keys(S()[s] || {}).map(Number).sort((a, b) => a - b); }
+  // 単元が追加されて番号がずれても「つづきから」が同じステップを指すように、名前で探し直す
+  function resolveLast() { const L = state.last; if (!L || !L.un) return L; const us = (S()[L.s] || {})[L.g] || []; const ui = us.findIndex((u) => u.n === L.un); if (ui < 0) return L; const si = us[ui].steps.findIndex((x) => x.n === L.sn); if (si < 0) return L; L.u = ui; L.st = si; return L; }
   function findStep(s, g, u, st) { const us = (S()[s] || {})[g]; if (!us || !us[u] || !us[u].steps[st]) return null; return { unit: us[u], step: us[u].steps[st] }; }
   const stepKey = (s, g, u, st) => { const f = findStep(s, g, u, st); return s + "|" + g + "|" + (f ? f.unit.n + "|" + f.step.n : u + "|" + st); };
   function stepQCount(step) { return typeof step.src === "function" ? step.cnt || 10 : Math.min(step.cnt || 10, step.src.length); }
@@ -296,7 +298,7 @@
     try { qs = HM.makeSet(f.step); } catch (e) { toast("問題を作れませんでした"); return; }
     if (!qs.length) return;
     Q = { s, g, ui, si, key: stepKey(s, g, ui, si), unit: f.unit, step: f.step, qs, i: 0, mode: "main", results: [], baseCorrect: 0, retryCorrect: 0, need: HM.passNeed(qs.length), n: qs.length, starGiven: false, shownAt: 0, answered: false, passOpen: true, combo: 0 };
-    state.last = { s, g, u: ui, st: si }; save();
+    state.last = { s, g, u: ui, st: si, un: f.unit.n, sn: f.step.n }; save();
     $("#quiz").hidden = false; document.body.classList.add("in-quiz");
     if (opt.noCard) showQ(); else showCard();
   }
@@ -968,7 +970,7 @@
     const ac = t.closest("[data-act]");
     if (ac) {
       const a = ac.dataset.act;
-      if (a === "cont" && state.last) { const L = state.last; startStep(L.s, L.g, L.u, L.st); }
+      if (a === "cont" && state.last) { const L = resolveLast(); startStep(L.s, L.g, L.u, L.st); }
       else if (a === "gacha") { tab = "gacha"; render(); }
       else if (a === "box") startBox();
       else if (a === "rep-copy") copyText(reportText());

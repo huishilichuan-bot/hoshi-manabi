@@ -1,17 +1,17 @@
 {
- "seeds": 10,
- "generatedChecked": 52231,
- "uniqueQuestions": 30175,
+ "seeds": 20,
+ "generatedChecked": 104284,
+ "uniqueQuestions": 49558,
  "stats": {
-  "chk": 28669,
-  "ord": 683,
-  "qx": 7587,
-  "pairchk": 180,
-  "ordx": 80,
-  "expr": 1100,
-  "tap": 867,
-  "sys": 200,
-  "eqn": 240
+  "chk": 57666,
+  "ord": 1688,
+  "qx": 15180,
+  "pairchk": 360,
+  "ordx": 160,
+  "expr": 2200,
+  "tap": 1732,
+  "sys": 400,
+  "eqn": 480
  },
  "problems": 0,
  "cover": {
@@ -113,11 +113,11 @@
   },
   "sci:4": {
    "units": 8,
-   "steps": 25,
-   "filled": 25,
+   "steps": 27,
+   "filled": 27,
    "gen": 6,
-   "bank": 19,
-   "bankQ": 163
+   "bank": 21,
+   "bankQ": 185
   },
   "sci:5": {
    "units": 8,
@@ -129,11 +129,11 @@
   },
   "sci:6": {
    "units": 9,
-   "steps": 17,
-   "filled": 17,
+   "steps": 29,
+   "filled": 29,
    "gen": 7,
-   "bank": 10,
-   "bankQ": 51
+   "bank": 22,
+   "bankQ": 178
   },
   "sci:7": {
    "units": 13,
@@ -145,19 +145,19 @@
   },
   "sci:8": {
    "units": 10,
-   "steps": 17,
-   "filled": 17,
+   "steps": 21,
+   "filled": 21,
    "gen": 12,
-   "bank": 5,
-   "bankQ": 27
+   "bank": 9,
+   "bankQ": 69
   },
   "sci:9": {
    "units": 10,
-   "steps": 13,
-   "filled": 13,
+   "steps": 21,
+   "filled": 21,
    "gen": 8,
-   "bank": 5,
-   "bankQ": 27
+   "bank": 13,
+   "bankQ": 112
   },
   "soc:3": {
    "units": 4,
@@ -185,35 +185,35 @@
   },
   "soc:6": {
    "units": 5,
-   "steps": 11,
-   "filled": 11,
+   "steps": 21,
+   "filled": 21,
    "gen": 4,
-   "bank": 7,
-   "bankQ": 35
+   "bank": 17,
+   "bankQ": 166
   },
   "soc:7": {
-   "units": 6,
-   "steps": 12,
-   "filled": 12,
-   "gen": 6,
-   "bank": 6,
-   "bankQ": 32
+   "units": 7,
+   "steps": 19,
+   "filled": 19,
+   "gen": 7,
+   "bank": 12,
+   "bankQ": 98
   },
   "soc:8": {
-   "units": 5,
-   "steps": 10,
-   "filled": 10,
-   "gen": 4,
-   "bank": 6,
-   "bankQ": 47
+   "units": 6,
+   "steps": 14,
+   "filled": 14,
+   "gen": 5,
+   "bank": 9,
+   "bankQ": 76
   },
   "soc:9": {
    "units": 4,
-   "steps": 15,
-   "filled": 15,
+   "steps": 18,
+   "filled": 18,
    "gen": 1,
-   "bank": 14,
-   "bankQ": 127
+   "bank": 17,
+   "bankQ": 170
   },
   "ja:1": {
    "units": 4,
@@ -225,11 +225,11 @@
   },
   "ja:2": {
    "units": 4,
-   "steps": 9,
-   "filled": 9,
+   "steps": 10,
+   "filled": 10,
    "gen": 5,
-   "bank": 4,
-   "bankQ": 29
+   "bank": 5,
+   "bankQ": 45
   },
   "ja:3": {
    "units": 5,
@@ -241,27 +241,27 @@
   },
   "ja:4": {
    "units": 5,
-   "steps": 11,
-   "filled": 11,
+   "steps": 12,
+   "filled": 12,
    "gen": 7,
-   "bank": 4,
-   "bankQ": 33
+   "bank": 5,
+   "bankQ": 49
   },
   "ja:5": {
    "units": 4,
-   "steps": 11,
-   "filled": 11,
+   "steps": 12,
+   "filled": 12,
    "gen": 6,
-   "bank": 5,
-   "bankQ": 45
+   "bank": 6,
+   "bankQ": 53
   },
   "ja:6": {
    "units": 4,
-   "steps": 11,
-   "filled": 11,
+   "steps": 12,
+   "filled": 12,
    "gen": 6,
-   "bank": 5,
-   "bankQ": 47
+   "bank": 6,
+   "bankQ": 55
   },
   "ja:7": {
    "units": 6,
@@ -288,36 +288,36 @@
    "bankQ": 20
   },
   "en:3": {
-   "units": 3,
+   "units": 4,
+   "steps": 14,
+   "filled": 14,
+   "gen": 11,
+   "bank": 3,
+   "bankQ": 32
+  },
+  "en:4": {
+   "units": 4,
    "steps": 12,
    "filled": 12,
    "gen": 9,
    "bank": 3,
    "bankQ": 32
   },
-  "en:4": {
-   "units": 3,
-   "steps": 10,
-   "filled": 10,
-   "gen": 7,
-   "bank": 3,
-   "bankQ": 32
-  },
   "en:5": {
-   "units": 4,
-   "steps": 9,
-   "filled": 9,
+   "units": 5,
+   "steps": 12,
+   "filled": 12,
    "gen": 8,
-   "bank": 1,
-   "bankQ": 6
+   "bank": 4,
+   "bankQ": 38
   },
   "en:6": {
-   "units": 4,
-   "steps": 9,
-   "filled": 9,
+   "units": 5,
+   "steps": 13,
+   "filled": 13,
    "gen": 8,
-   "bank": 1,
-   "bankQ": 6
+   "bank": 5,
+   "bankQ": 54
   },
   "en:7": {
    "units": 7,
@@ -346,7 +346,7 @@
  },
  "warns": {
   "bank_ex_not_contain_answer": {
-   "n": 625,
+   "n": 1128,
    "sample": [
     "math 3 / 三角形と角 / 角 :: 角の大きさは何で決まる？ => 辺の開きぐあい",
     "math 3 / 三角形と角 / 角 :: 角の大きさは何で決まる？ => 辺の開きぐあい",
