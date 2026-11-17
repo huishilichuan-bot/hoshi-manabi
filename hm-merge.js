@@ -40,11 +40,22 @@
     }
     return out;
   }
+  // まだ何もしていない端末（はじめて開いただけ）の記録か
+  function isBlank(st) {
+    const days = Object.values(obj(st.days));
+    return !num(st.totalStars) && !num(st.pullsUsed) && !Object.keys(obj(st.progress)).length && !arr(st.wrongBox).length && !num(st.bestCombo) && days.every((d) => !Object.keys(obj(d.steps)).length) && !(obj(st.settings).nick);
+  }
+  // 設定は新しい方を使い、空の項目（名前など）はもう一方でうめる
+  function fillSettings(newer, older) {
+    const o = Object.assign({}, obj(older), obj(newer));
+    for (const k of Object.keys(obj(older))) if ((o[k] === "" || o[k] == null) && obj(older)[k] !== "" && obj(older)[k] != null) o[k] = obj(older)[k];
+    return o;
+  }
   // local = この端末、cloud = クラウド。どちらも state の形
   function mergeStates(local, cloud) {
     const L = obj(local), C = obj(cloud);
     if (!Object.keys(C).length) return JSON.parse(JSON.stringify(L));
-    if (!Object.keys(L).length) return JSON.parse(JSON.stringify(C));
+    if (!Object.keys(L).length || isBlank(L)) return JSON.parse(JSON.stringify(C));
     const newer = num(C.updatedAt) > num(L.updatedAt) ? C : L;
     const out = Object.assign({}, L, C);
     out.created = Math.min(num(L.created) || Infinity, num(C.created) || Infinity); if (out.created === Infinity) out.created = Date.now();
@@ -64,7 +75,7 @@
     out.wrongBox = unionBy(L.wrongBox, C.wrongBox, (x) => x && x.k, 150);
     out.reports = unionBy(L.reports, C.reports, (x) => x && x.t + "|" + x.q, 200);
     out.gachaLog = unionBy(L.gachaLog, C.gachaLog, (x) => JSON.stringify(x), 300);
-    out.settings = Object.assign({}, obj(newer === L ? C : L).settings, obj(newer.settings));
+    out.settings = fillSettings(newer.settings, (newer === L ? C : L).settings);
     out.look = Object.assign({}, obj(newer === L ? C : L).look, obj(newer.look));
     out.partner = out.chars[newer.partner] ? newer.partner : out.chars[L.partner] ? L.partner : Object.keys(out.chars)[0];
     out.last = newer.last || L.last || C.last || null;
@@ -81,7 +92,7 @@
     while (bytes(json) > limit && arr(s.gachaLog).length) { s.gachaLog.splice(0, Math.max(1, Math.ceil(s.gachaLog.length / 4))); json = JSON.stringify(s); }
     return json;
   }
-  const api = { mergeStates, slimForCloud };
+  const api = { mergeStates, slimForCloud, isBlank };
   root.HMMerge = api;
   if (typeof module !== "undefined") module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);
