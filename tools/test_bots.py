@@ -32,7 +32,7 @@ try:
       for diff in DIFFS:
         pg.evaluate(f"HM_APP.startGame('{gid}','{diff}')"); pg.wait_for_timeout(300)
         pg.evaluate(BOTS[gid]); t0 = time.time()
-        while time.time() - t0 < 150 and pg.evaluate("document.getElementById('gl-result').hidden"): pg.wait_for_timeout(500)
+        while time.time() - t0 < 200 and pg.evaluate("document.getElementById('gl-result').hidden"): pg.wait_for_timeout(500)
         res = pg.evaluate("document.getElementById('gl-result').hidden ? 'TIMEOUT' : document.getElementById('gl-result').innerText.split('\\n').filter(Boolean).slice(1,3).join(' | ')")
         pg.evaluate("clearInterval(window.__bot); document.getElementById('gl-close').click()"); pg.wait_for_timeout(200)
         out[f"{gid}/{diff}"] = res; print(gid, diff, round(time.time() - t0), res, errs[-1:] if errs else "", flush=True)

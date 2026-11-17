@@ -146,7 +146,7 @@
   // ===== フラッピー：スカイフラッパー =====
   add("flappy", "🐤", "スカイフラッパー", "#fbc02d", "タップでふわっと上昇。柱のすき間をくぐって目標の数だけ通りぬければ勝ち（ライフ3）。", (diff) => {
     const g = X.pro("flappy", diff, "スカイフラッパー"), W = g.W, Hh = g.H, d = g.d;
-    const GOAL = [10, 15, 20, 25][d], gap = [200, 175, 155, 140][d], sp = [140, 160, 180, 200][d], ground = Hh - 60;
+    const GOAL = [10, 15, 18, 22][d], gap = [210, 185, 165, 150][d], sp = [140, 160, 180, 200][d], ground = Hh - 60;
     const b = { x: W * 0.3, y: Hh * 0.45, vy: 0, inv: 0, lives: 3, flap: 0 }; let pipes = [], passed = 0, started = false, coins = 0, clouds = [], scroll = 0, nextX = W + 60;
     for (let i = 0; i < 6; i++) clouds.push({ x: rand(0, W), y: rand(70, Hh * 0.5), s: rand(0.6, 1.3) });
     const flap = () => { if (g.over) return; started = true; b.vy = -330; b.flap = 0.25; X.SFX.pop(); for (let i = 0; i < 3; i++) g.parts.push({ x: b.x - 10, y: b.y + 6, vx: rand(-60, -20), vy: rand(20, 80), life: 0.4, max: 0.4, color: "#fff3bf", size: 3 }); };

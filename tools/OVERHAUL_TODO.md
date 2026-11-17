@@ -5,8 +5,8 @@
 - [x] 4 SVGアイコン（教科・全50ゲーム・タブ）
 - [x] 5a 新ゲーム8本（野球/ゴルフ/サッカー/ボウリング/バスケ/レース/ロイヤル/シューティング）+ ボット調整
 - [x] 5b 作り直し6本（games-remaster.js：ホッケー/メテオ/ハイウェイ/フラッパー/スネーク/ランナー）
-- [ ] 5c remaster のボット確認（snake/highway/runner/flappy/meteor）→ 必要なら調整
+- [x] 5c remaster のボット確認済み（flappy の柱数・すき間を緩和）
 - [x] 6 問題拡充（q-tables, q-t-*, q-more.js）
 - [x] 7 uncommitted を test_app + verify 通過後に commit/push
-- [ ] 8 Actions 成功確認・ライブを新規プロファイルで確認・after スクショ
+- [x] 8 Actions（abfd649 run 44027179730 success、ライブ v1.1.0・50ゲーム・空ステップ0を確認） 成功確認・ライブを新規プロファイルで確認・after スクショ
 - [ ] 9 日本語の最終報告
