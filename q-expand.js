@@ -69,10 +69,10 @@
     return (d, i) => { for (let t = 0; t < GEN_TRIES; t++) { const s = pick(srcs); const q = conv(s(d, i)); if (q) return q; } return null; };
   }
   // ステップが十分に問題を作れるか（ちがう問題の数）をしらべる
-  function probe(gen, n) {
-    const seen = new Set(); HM.setRng(HM.mulberry(12345));
-    for (let k = 0; k < n * 6 && seen.size < n; k++) { const q = gen(Math.min(1, k / n), k % 10); if (q) seen.add(q.q + "|" + q.a); }
-    HM.setRng(Math.random); return seen.size;
+  function probe(gen, n, needA) {
+    const seen = new Set(), as = new Set(); HM.setRng(HM.mulberry(12345));
+    for (let k = 0; k < n * 8 && (seen.size < n || as.size < needA); k++) { const q = gen(Math.min(1, k / n), k % 10); if (q) { seen.add(q.q + "|" + q.a); as.add(q.a); } }
+    HM.setRng(Math.random); return seen.size >= n && as.size >= needA;
   }
   // ---- 表から ----
   function groupsOf(st) { const out = []; const walk = (f) => { if (!f) return; if (f.table) out.push(f.table); (f.parts || []).forEach(walk); }; walk(st.src); return out; }
@@ -124,7 +124,7 @@
       if (!base.length) continue;
       const srcs = base.map(sampler).filter(Boolean);
       const add = [];
-      const tryAdd = (name, gen, cnt, need, kind) => { if (probe(gen, need) >= need) { add.push({ n: name, src: gen, cnt, auto: kind }); added[kind]++; } };
+      const tryAdd = (name, gen, cnt, need, kind) => { if (probe(gen, need, kind === "tf" ? 2 : Math.min(need, 6))) { add.push({ n: name, src: gen, cnt, auto: kind }); added[kind]++; } };
       tryAdd("〇×でたしかめ", wrapGen(srcs, toTF), 10, 10, "tf");
       if (s !== "math") tryAdd("ことばカード", wrapGen(srcs, toTiles), 8, 8, "tiles");
       else tryAdd("答えをえらぼう", wrapGen(srcs, numToCh), 8, 10, "ch");

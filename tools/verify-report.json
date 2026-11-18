@@ -1,94 +1,95 @@
 {
- "seeds": 20,
- "generatedChecked": 216388,
- "uniqueQuestions": 107537,
+ "seeds": 10,
+ "generatedChecked": 116778,
+ "uniqueQuestions": 72027,
  "stats": {
-  "chk": 92900,
-  "ord": 1688,
-  "tf": 56200,
-  "qx": 20350,
-  "pairchk": 360,
-  "ordx": 160,
-  "expr": 2856,
-  "tap": 1732,
-  "sys": 636,
-  "eqn": 620,
-  "tiles": 15520,
-  "sort": 2640,
-  "multi": 4480,
-  "kanji": 14864
+  "chk": 49898,
+  "qx": 10104,
+  "ord": 843,
+  "tf": 28498,
+  "pairchk": 180,
+  "nl": 520,
+  "multi": 2620,
+  "ordx": 80,
+  "sort": 1380,
+  "expr": 1415,
+  "tap": 867,
+  "sys": 320,
+  "eqn": 309,
+  "tiles": 7200,
+  "kanji": 9464
  },
  "problems": 0,
  "cover": {
   "math:1": {
    "units": 12,
-   "steps": 72,
-   "filled": 72,
-   "gen": 72,
+   "steps": 78,
+   "filled": 78,
+   "gen": 78,
    "bank": 0,
    "bankQ": 0
   },
   "math:2": {
    "units": 12,
-   "steps": 73,
-   "filled": 73,
-   "gen": 73,
+   "steps": 81,
+   "filled": 81,
+   "gen": 81,
    "bank": 0,
    "bankQ": 0
   },
   "math:3": {
    "units": 15,
-   "steps": 82,
-   "filled": 82,
-   "gen": 82,
+   "steps": 89,
+   "filled": 89,
+   "gen": 89,
    "bank": 0,
    "bankQ": 0
   },
   "math:4": {
    "units": 15,
-   "steps": 87,
-   "filled": 87,
-   "gen": 87,
+   "steps": 95,
+   "filled": 95,
+   "gen": 95,
    "bank": 0,
    "bankQ": 0
   },
   "math:5": {
    "units": 18,
-   "steps": 100,
-   "filled": 100,
-   "gen": 100,
+   "steps": 108,
+   "filled": 108,
+   "gen": 108,
    "bank": 0,
    "bankQ": 0
   },
   "math:6": {
    "units": 12,
-   "steps": 71,
-   "filled": 71,
-   "gen": 71,
+   "steps": 77,
+   "filled": 77,
+   "gen": 77,
    "bank": 0,
    "bankQ": 0
   },
   "math:7": {
    "units": 7,
-   "steps": 48,
-   "filled": 48,
-   "gen": 48,
+   "steps": 63,
+   "filled": 63,
+   "gen": 63,
    "bank": 0,
    "bankQ": 0
   },
   "math:8": {
    "units": 7,
-   "steps": 39,
-   "filled": 39,
-   "gen": 39,
+   "steps": 47,
+   "filled": 47,
+   "gen": 47,
    "bank": 0,
    "bankQ": 0
   },
   "math:9": {
    "units": 9,
-   "steps": 50,
-   "filled": 50,
-   "gen": 50,
+   "steps": 62,
+   "filled": 62,
+   "gen": 62,
    "bank": 0,
    "bankQ": 0
   },
@@ -102,9 +103,9 @@
   },
   "life:2": {
    "units": 5,
-   "steps": 29,
-   "filled": 29,
-   "gen": 16,
+   "steps": 28,
+   "filled": 28,
+   "gen": 15,
    "bank": 13,
    "bankQ": 102
   },
@@ -126,25 +127,25 @@
   },
   "sci:5": {
    "units": 8,
-   "steps": 38,
-   "filled": 38,
-   "gen": 22,
+   "steps": 37,
+   "filled": 37,
+   "gen": 21,
    "bank": 16,
    "bankQ": 133
   },
   "sci:6": {
    "units": 9,
-   "steps": 47,
-   "filled": 47,
-   "gen": 25,
+   "steps": 46,
+   "filled": 46,
+   "gen": 24,
    "bank": 22,
    "bankQ": 178
   },
   "sci:7": {
    "units": 13,
-   "steps": 41,
-   "filled": 41,
-   "gen": 34,
+   "steps": 40,
+   "filled": 40,
+   "gen": 33,
    "bank": 7,
    "bankQ": 38
   },
@@ -158,9 +159,9 @@
   },
   "sci:9": {
    "units": 10,
-   "steps": 38,
-   "filled": 38,
-   "gen": 25,
+   "steps": 37,
+   "filled": 37,
+   "gen": 24,
    "bank": 13,
    "bankQ": 112
   },
@@ -326,9 +327,9 @@
   },
   "en:7": {
    "units": 7,
-   "steps": 26,
-   "filled": 26,
-   "gen": 23,
+   "steps": 25,
+   "filled": 25,
+   "gen": 22,
    "bank": 3,
    "bankQ": 28
   },
@@ -351,7 +352,7 @@
  },
  "warns": {
   "bank_ex_not_contain_answer": {
-   "n": 1254,
+   "n": 1066,
    "sample": [
     "math 3 / 三角形と角 / 角 :: 角の大きさは何で決まる？ => 辺の開きぐあい",
     "math 3 / 三角形と角 / 角 :: 角の大きさは何で決まる？ => 辺の開きぐあい",
@@ -361,6 +362,19 @@
     "math 3 / 三角形と角 / 角 :: 角の大きさは何で決まる？ => 辺の開きぐあい",
     "math 3 / 三角形と角 / 角 :: 角の大きさは何で決まる？ => 辺の開きぐあい",
     "math 3 / 三角形と角 / 角 :: 角の大きさは何で決まる？ => 辺の開きぐあい"
+   ]
+  },
+  "short_set": {
+   "n": 110,
+   "sample": [
+    "math 3 / 三角形と角 / 三角形のせいしつ（ぜんぶえらぶ） 2/6",
+    "math 3 / 三角形と角 / 三角形のせいしつ（ぜんぶえらぶ） 2/6",
+    "math 3 / 三角形と角 / 三角形のせいしつ（ぜんぶえらぶ） 2/6",
+    "math 3 / 三角形と角 / 三角形のせいしつ（ぜんぶえらぶ） 2/6",
+    "math 3 / 三角形と角 / 三角形のせいしつ（ぜんぶえらぶ） 2/6",
+    "math 3 / 三角形と角 / 三角形のせいしつ（ぜんぶえらぶ） 2/6",
+    "math 3 / 三角形と角 / 三角形のせいしつ（ぜんぶえらぶ） 2/6",
+    "math 3 / 三角形と角 / 三角形のせいしつ（ぜんぶえらぶ） 2/6"
    ]
   }
  }

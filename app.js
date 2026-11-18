@@ -325,8 +325,8 @@
     if (q.pass) h += '<details class="passage"' + (Q.passOpen ? " open" : "") + '><summary>📄 文章を読む</summary><div class="ptext">' + esc(q.pass).replace(/\n/g, "<br>") + "</div></details>";
     const say = sayText(q);
     if (q.listen) h += '<div class="qz-q">' + q.q + "</div>" + (canSpeak() ? '<button type="button" class="say-big" data-q="say"><span>🔊</span><b>タップして聞こう</b><small>何回でも聞けるよ</small></button>' : '<div class="say-text">' + esc(say) + "</div>");
-    else h += '<div class="qz-q">' + q.q + (say && canSpeak() ? ' <button type="button" class="say-btn" data-q="say" aria-label="英語を聞く">🔊</button>' : "") + "</div>";
-    if (q.t === "ch") h += '<div class="opts">' + (q.opts || [q.a].concat(q.o)).map((o, i) => '<button type="button" class="opt" data-opt="' + i + '">' + esc(o) + "</button>").join("") + "</div>";
+    else h += '<div class="qz-q">' + fracHtml(q.q) + (say && canSpeak() ? ' <button type="button" class="say-btn" data-q="say" aria-label="英語を聞く">🔊</button>' : "") + "</div>";
+    if (q.t === "ch") h += '<div class="opts">' + (q.opts || [q.a].concat(q.o)).map((o, i) => '<button type="button" class="opt" data-opt="' + i + '">' + fracHtml(esc(o)) + "</button>").join("") + "</div>";
     else if (q.t === "ord" || q.t === "match" || q.t === "pair" || q.t === "tap") h += workHtml(q);
     else if (window.HMQ && HMQ.has(q.t)) { Q.work = { plugin: true }; h += HMQ.html(q); }
     else h += '<div class="num-in"><div class="ans-box" id="ans-box"><span id="ans-val" class="num"></span><span class="caret"></span>' + (q.unit ? '<span class="ans-unit">' + esc(q.unit) + "</span>" : "") + "</div>" + keypad(q) + "</div>";
@@ -353,6 +353,8 @@
     const hint = q.t === "ord" ? "タップした順にならぶよ（もう一度タップでもどす）" : q.t === "match" ? "左→右の順にタップして線でつなごう" : "同じ組になるカードを2まいずつタップしよう";
     return '<div class="work work-' + q.t + (q.big ? " big-l" : "") + '" id="work"></div><p class="small muted center">' + hint + '</p><button type="button" class="btn primary block" data-q="submit" id="work-ok" disabled>こたえる</button>';
   }
+  // 問題文の {3/4}・{1と2/3} を、たての分数で見せる
+  function fracHtml(t) { return String(t).replace(/\{(-?\d+)と(\d+)\/(\d+)\}/g, '$1<span class="frac"><span>$2</span><span>$3</span></span>').replace(/\{(-?)(\d+)\/(\d+)\}/g, '$1<span class="frac"><span>$2</span><span>$3</span></span>'); }
   function workDone() { const w = Q.work, q = curList()[Q.i]; if (!w) return false; if (w.plugin) return HMQ.done(q); if (q.t === "ord") return w.pick.length === q.items.length; if (q.t === "match") return Object.keys(w.link).length === q.pairs.length; return Object.keys(w.mate).length === w.cards.length; }
   function renderWork() {
     const q = curList()[Q.i], w = Q.work, box = $("#work"); if (!box || !w) return;
@@ -453,8 +455,8 @@
     if (ok) { bigMaru(); burstAt(innerWidth / 2, innerHeight * 0.42, 22); sound("pikon"); haptic(15); if (Q.mode === "boss") setTimeout(bossHit, 280); comboFx(); } else { sound("miss"); haptic([20, 40, 20]); }
     const cg = $("#combo"); if (cg) cg.outerHTML = comboHtml();
     let f = '<div class="fb ' + (ok ? "ok" : "ng") + '">';
-    f += ok ? '<div class="fb-h">⭕ 正解！</div>' : '<div class="fb-h">✖ ざんねん</div><div class="fb-a">正解：<b>' + esc(q.a) + (q.unit && q.t !== "ch" ? esc(q.unit) : "") + "</b></div>";
-    const ex = '<div class="fb-ex"><b>解説</b><p>' + esc(q.ex || "").replace(/\n/g, "<br>") + "</p></div>";
+    f += ok ? '<div class="fb-h">⭕ 正解！</div>' : '<div class="fb-h">✖ ざんねん</div><div class="fb-a">正解：<b>' + fracHtml(esc(q.a)) + (q.unit && q.t !== "ch" ? esc(q.unit) : "") + "</b></div>";
+    const ex = '<div class="fb-ex"><b>解説</b><p>' + fracHtml(esc(q.ex || "")).replace(/\n/g, "<br>") + "</p></div>";
     f += ok ? '<button type="button" class="btn sm ghost" data-q="ex">💡 解説を見る</button><div class="ex-wrap" hidden>' + ex + "</div>" : ex;
     f += '<div class="fb-act"><button type="button" class="link-btn" data-q="report">この問題おかしい？</button><button type="button" class="btn primary" data-q="next">次へ ›</button></div></div>';
     $("#qz-foot").innerHTML = f;
@@ -1102,7 +1104,7 @@
   (() => { const ext = ((window.HMGames && HMGames.list) || []).filter((g) => !DROPPED.includes(g.id)); for (let i = 0; i < GAMES.length; i++) { const r = ext.find((x) => x.id === GAMES[i].id); if (r) GAMES[i] = r; } ext.forEach((x) => { if (!GAMES.some((y) => y.id === x.id)) GAMES.push(x); }); })();
   // スプラッシュ（起動画面）を消す
   (() => { const sp = document.getElementById("splash"); if (!sp) return; const hide = () => { sp.classList.add("out"); setTimeout(() => sp.remove(), 500); }; setTimeout(hide, Math.max(150, 650 - performance.now())); })();
-  window.HM_APP = { state: () => state, save, render, today, dkey, setClockOffset: (ms) => { clockOffset = ms; render(); }, GAMES, gachaPull, rates: () => ({ normal: GACHA_RATES.slice(), sr: GACHA_RATES_SR.slice() }), drawRarity, startStep, findStep, judgeNum, passNeed: HM.passNeed, STARS_TO_UNLOCK, READ_MS, starsToday, gamesOpen, pullsLeft, startGame, openGameMenu, gameRank, version: VERSION, quiz: () => Q, tab: () => tab, exportState: () => JSON.parse(JSON.stringify(state)), importState: (d) => { state = migrate(JSON.parse(JSON.stringify(d))); try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} render(); },
+  window.HM_APP = { state: () => state, save, render, today, dkey, setClockOffset: (ms) => { clockOffset = ms; render(); }, GAMES, gachaPull, rates: () => ({ normal: GACHA_RATES.slice(), sr: GACHA_RATES_SR.slice() }), drawRarity, startStep, findStep, judgeNum, passNeed: HM.passNeed, STARS_TO_UNLOCK, READ_MS, starsToday, gamesOpen, pullsLeft, startGame, openGameMenu, gameRank, version: VERSION, quiz: () => Q, showQ: () => showQ(), tab: () => tab, exportState: () => JSON.parse(JSON.stringify(state)), importState: (d) => { state = migrate(JSON.parse(JSON.stringify(d))); try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} render(); },
     // プロフィール（保存場所）を切りかえる。data があればそれを使い、なければその場所の記録を読む
     useProfile: (key, data, opt) => { KEY = key || GUEST_KEY; let d = data; if (d === undefined) { try { d = JSON.parse(localStorage.getItem(KEY) || "null"); } catch (e) { d = null; } } state = migrate(d ? JSON.parse(JSON.stringify(d)) : null); try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} if (Q && !$("#quiz").hidden) { try { quitQuiz(); } catch (e) {} } if (opt && opt.home) { tab = "home"; nav = []; navDir = "tab"; } render(); },
     profileKey: () => KEY, GUEST_KEY, charHtml, sound, toast, haptic, openSheet, closeSheet, startBox, startBoss, speak, canSpeak };

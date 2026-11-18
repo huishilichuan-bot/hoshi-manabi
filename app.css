@@ -596,7 +596,8 @@ body.combo-flash::after { content: ""; position: fixed; inset: 0; z-index: 85; p
 .mn-here .char { background: none !important; box-shadow: none !important; border: 0 !important; padding: 0 !important; }
 .mn-here .char svg { width: 42px; height: 42px; }
 .cp-char .char, .me-card .char, .mn-here .char { min-height: 0 !important; background: none !important; border: 0 !important; box-shadow: none !important; padding: 0 !important; flex: none; }
-.tapfig svg, .qz-q svg.qfig { max-height: 50vh; width: auto; max-width: 100%; margin: 0 auto; }
+.tapfig svg { max-height: 50vh; width: auto; max-width: 100%; margin: 0 auto; }
+.qz-q svg.qfig { width: 100%; max-width: 300px; height: auto; max-height: 38vh; margin: 6px auto 0; }
 .work.big-l .mt-item.L { font-size: 32px; line-height: 1; padding-top: 6px; padding-bottom: 6px; }
 /* 画面遷移のスライド中に横へはみ出してページが縮小されないように */
 html, body { overflow-x: hidden; }
@@ -840,3 +841,8 @@ body.auth-open { overflow: hidden; }
 .kjq .kj-box { display: inline-block; width: 1.25em; height: 1.25em; border: 2.5px solid #e8590c; border-radius: 6px; vertical-align: -0.2em; background: #fff4e6; }
 .kjq .kj-box.tr { color: rgba(232,89,12,.35); text-align: center; line-height: 1.2em; }
 .kj-sub { display: block; font-size: 13px; font-weight: 700; color: var(--muted, #777); margin-top: 2px; letter-spacing: 0; line-height: 1.5; }
+
+/* 分数（たて） */
+.frac { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; margin: 0 .12em; line-height: 1.05; font-size: .92em; }
+.frac > span:first-child { border-bottom: 2px solid currentColor; padding: 0 .18em; }
+.frac > span { display: block; }
