@@ -1,0 +1,734 @@
+{
+ "rows": [
+  {
+   "s": "math",
+   "subj": "算数",
+   "g": 1,
+   "grade": "小1",
+   "units": 12,
+   "steps": 50,
+   "perPass": 466,
+   "uniq": 4472,
+   "figUniq": 1982,
+   "figPass": 134,
+   "types": {
+    "num": 333,
+    "ch": 119,
+    "ord": 8,
+    "pair": 6
+   },
+   "sameRate": 0.169
+  },
+  {
+   "s": "math",
+   "subj": "算数",
+   "g": 2,
+   "grade": "小2",
+   "units": 12,
+   "steps": 50,
+   "perPass": 463,
+   "uniq": 7350,
+   "figUniq": 494,
+   "figPass": 32,
+   "types": {
+    "num": 409,
+    "ch": 40,
+    "match": 6,
+    "ord": 8
+   },
+   "sameRate": 0.04
+  },
+  {
+   "s": "math",
+   "subj": "算数",
+   "g": 3,
+   "grade": "小3",
+   "units": 15,
+   "steps": 52,
+   "perPass": 426,
+   "uniq": 7838,
+   "figUniq": 401,
+   "figPass": 20,
+   "types": {
+    "num": 379,
+    "ch": 47
+   },
+   "sameRate": 0.041
+  },
+  {
+   "s": "math",
+   "subj": "算数",
+   "g": 4,
+   "grade": "小4",
+   "units": 15,
+   "steps": 57,
+   "perPass": 423,
+   "uniq": 7354,
+   "figUniq": 208,
+   "figPass": 20,
+   "types": {
+    "num": 350,
+    "ord": 8,
+    "ch": 65
+   },
+   "sameRate": 0.051
+  },
+  {
+   "s": "math",
+   "subj": "算数",
+   "g": 5,
+   "grade": "小5",
+   "units": 18,
+   "steps": 64,
+   "perPass": 484,
+   "uniq": 8853,
+   "figUniq": 157,
+   "figPass": 8,
+   "types": {
+    "ch": 68,
+    "num": 408,
+    "ord": 8
+   },
+   "sameRate": 0.05
+  },
+  {
+   "s": "math",
+   "subj": "算数",
+   "g": 6,
+   "grade": "小6",
+   "units": 12,
+   "steps": 47,
+   "perPass": 330,
+   "uniq": 4781,
+   "figUniq": 0,
+   "figPass": 0,
+   "types": {
+    "ch": 34,
+    "num": 290,
+    "pair": 6
+   },
+   "sameRate": 0.034
+  },
+  {
+   "s": "math",
+   "subj": "算数",
+   "g": 7,
+   "grade": "中1",
+   "units": 7,
+   "steps": 35,
+   "perPass": 268,
+   "uniq": 5538,
+   "figUniq": 233,
+   "figPass": 8,
+   "types": {
+    "ch": 93,
+    "num": 159,
+    "ord": 8,
+    "tap": 8
+   },
+   "sameRate": 0.04
+  },
+  {
+   "s": "math",
+   "subj": "算数",
+   "g": 8,
+   "grade": "中2",
+   "units": 7,
+   "steps": 26,
+   "perPass": 190,
+   "uniq": 3532,
+   "figUniq": 54,
+   "figPass": 8,
+   "types": {
+    "ch": 61,
+    "num": 129
+   },
+   "sameRate": 0.033
+  },
+  {
+   "s": "math",
+   "subj": "算数",
+   "g": 9,
+   "grade": "中3",
+   "units": 9,
+   "steps": 34,
+   "perPass": 250,
+   "uniq": 2787,
+   "figUniq": 0,
+   "figPass": 0,
+   "types": {
+    "ch": 153,
+    "num": 89,
+    "ord": 8
+   },
+   "sameRate": 0.027
+  },
+  {
+   "s": "life",
+   "subj": "生活",
+   "g": 1,
+   "grade": "小1",
+   "units": 5,
+   "steps": 19,
+   "perPass": 138,
+   "uniq": 193,
+   "figUniq": 0,
+   "figPass": 0,
+   "types": {
+    "ch": 138
+   },
+   "sameRate": 0.032
+  },
+  {
+   "s": "life",
+   "subj": "生活",
+   "g": 2,
+   "grade": "小2",
+   "units": 5,
+   "steps": 16,
+   "perPass": 113,
+   "uniq": 160,
+   "figUniq": 0,
+   "figPass": 0,
+   "types": {
+    "ch": 113
+   },
+   "sameRate": 0.019
+  },
+  {
+   "s": "sci",
+   "subj": "理科",
+   "g": 3,
+   "grade": "小3",
+   "units": 8,
+   "steps": 21,
+   "perPass": 131,
+   "uniq": 250,
+   "figUniq": 8,
+   "figPass": 8,
+   "types": {
+    "ch": 115,
+    "tap": 8,
+    "num": 8
+   },
+   "sameRate": 0.039
+  },
+  {
+   "s": "sci",
+   "subj": "理科",
+   "g": 4,
+   "grade": "小4",
+   "units": 8,
+   "steps": 27,
+   "perPass": 192,
+   "uniq": 272,
+   "figUniq": 59,
+   "figPass": 12,
+   "types": {
+    "ch": 176,
+    "num": 8,
+    "tap": 4,
+    "ord": 4
+   },
+   "sameRate": 0.003
+  },
+  {
+   "s": "sci",
+   "subj": "理科",
+   "g": 5,
+   "grade": "小5",
+   "units": 8,
+   "steps": 23,
+   "perPass": 156,
+   "uniq": 190,
+   "figUniq": 6,
+   "figPass": 6,
+   "types": {
+    "ch": 142,
+    "tap": 6,
+    "num": 8
+   },
+   "sameRate": 0.029
+  },
+  {
+   "s": "sci",
+   "subj": "理科",
+   "g": 6,
+   "grade": "小6",
+   "units": 9,
+   "steps": 29,
+   "perPass": 212,
+   "uniq": 419,
+   "figUniq": 114,
+   "figPass": 16,
+   "types": {
+    "ch": 188,
+    "tap": 8,
+    "num": 16
+   },
+   "sameRate": 0.035
+  },
+  {
+   "s": "sci",
+   "subj": "理科",
+   "g": 7,
+   "grade": "中1",
+   "units": 13,
+   "steps": 19,
+   "perPass": 131,
+   "uniq": 477,
+   "figUniq": 0,
+   "figPass": 0,
+   "types": {
+    "ch": 86,
+    "num": 45
+   },
+   "sameRate": 0.038
+  },
+  {
+   "s": "sci",
+   "subj": "理科",
+   "g": 8,
+   "grade": "中2",
+   "units": 10,
+   "steps": 21,
+   "perPass": 153,
+   "uniq": 692,
+   "figUniq": 0,
+   "figPass": 0,
+   "types": {
+    "ch": 97,
+    "num": 56
+   },
+   "sameRate": 0.027
+  },
+  {
+   "s": "sci",
+   "subj": "理科",
+   "g": 9,
+   "grade": "中3",
+   "units": 10,
+   "steps": 21,
+   "perPass": 157,
+   "uniq": 527,
+   "figUniq": 0,
+   "figPass": 0,
+   "types": {
+    "ch": 123,
+    "num": 34
+   },
+   "sameRate": 0.015
+  },
+  {
+   "s": "soc",
+   "subj": "社会",
+   "g": 3,
+   "grade": "小3",
+   "units": 4,
+   "steps": 13,
+   "perPass": 100,
+   "uniq": 130,
+   "figUniq": 7,
+   "figPass": 7,
+   "types": {
+    "ch": 93,
+    "tap": 7
+   },
+   "sameRate": 0.005
+  },
+  {
+   "s": "soc",
+   "subj": "社会",
+   "g": 4,
+   "grade": "小4",
+   "units": 4,
+   "steps": 13,
+   "perPass": 105,
+   "uniq": 240,
+   "figUniq": 53,
+   "figPass": 16,
+   "types": {
+    "ch": 89,
+    "tap": 16
+   },
+   "sameRate": 0.018
+  },
+  {
+   "s": "soc",
+   "subj": "社会",
+   "g": 5,
+   "grade": "小5",
+   "units": 4,
+   "steps": 18,
+   "perPass": 130,
+   "uniq": 163,
+   "figUniq": 8,
+   "figPass": 8,
+   "types": {
+    "ch": 122,
+    "tap": 8
+   },
+   "sameRate": 0.006
+  },
+  {
+   "s": "soc",
+   "subj": "社会",
+   "g": 6,
+   "grade": "小6",
+   "units": 5,
+   "steps": 21,
+   "perPass": 153,
+   "uniq": 411,
+   "figUniq": 0,
+   "figPass": 0,
+   "types": {
+    "ch": 153
+   },
+   "sameRate": 0.014
+  },
+  {
+   "s": "soc",
+   "subj": "社会",
+   "g": 7,
+   "grade": "中1",
+   "units": 7,
+   "steps": 19,
+   "perPass": 138,
+   "uniq": 552,
+   "figUniq": 6,
+   "figPass": 6,
+   "types": {
+    "num": 20,
+    "ch": 112,
+    "tap": 6
+   },
+   "sameRate": 0.012
+  },
+  {
+   "s": "soc",
+   "subj": "社会",
+   "g": 8,
+   "grade": "中2",
+   "units": 6,
+   "steps": 14,
+   "perPass": 108,
+   "uniq": 388,
+   "figUniq": 45,
+   "figPass": 8,
+   "types": {
+    "ch": 92,
+    "num": 8,
+    "tap": 8
+   },
+   "sameRate": 0.021
+  },
+  {
+   "s": "soc",
+   "subj": "社会",
+   "g": 9,
+   "grade": "中3",
+   "units": 4,
+   "steps": 18,
+   "perPass": 135,
+   "uniq": 191,
+   "figUniq": 0,
+   "figPass": 0,
+   "types": {
+    "ch": 135
+   },
+   "sameRate": 0.005
+  },
+  {
+   "s": "ja",
+   "subj": "国語",
+   "g": 1,
+   "grade": "小1",
+   "units": 4,
+   "steps": 8,
+   "perPass": 73,
+   "uniq": 439,
+   "figUniq": 0,
+   "figPass": 0,
+   "types": {
+    "ch": 65,
+    "ord": 8
+   },
+   "sameRate": 0
+  },
+  {
+   "s": "ja",
+   "subj": "国語",
+   "g": 2,
+   "grade": "小2",
+   "units": 4,
+   "steps": 10,
+   "perPass": 83,
+   "uniq": 454,
+   "figUniq": 0,
+   "figPass": 0,
+   "types": {
+    "ch": 77,
+    "pair": 6
+   },
+   "sameRate": 0.002
+  },
+  {
+   "s": "ja",
+   "subj": "国語",
+   "g": 3,
+   "grade": "小3",
+   "units": 5,
+   "steps": 10,
+   "perPass": 85,
+   "uniq": 526,
+   "figUniq": 0,
+   "figPass": 0,
+   "types": {
+    "ch": 79,
+    "pair": 6
+   },
+   "sameRate": 0
+  },
+  {
+   "s": "ja",
+   "subj": "国語",
+   "g": 4,
+   "grade": "小4",
+   "units": 5,
+   "steps": 12,
+   "perPass": 105,
+   "uniq": 494,
+   "figUniq": 0,
+   "figPass": 0,
+   "types": {
+    "ch": 99,
+    "pair": 6
+   },
+   "sameRate": 0.003
+  },
+  {
+   "s": "ja",
+   "subj": "国語",
+   "g": 5,
+   "grade": "小5",
+   "units": 4,
+   "steps": 12,
+   "perPass": 101,
+   "uniq": 459,
+   "figUniq": 0,
+   "figPass": 0,
+   "types": {
+    "ch": 95,
+    "pair": 6
+   },
+   "sameRate": 0
+  },
+  {
+   "s": "ja",
+   "subj": "国語",
+   "g": 6,
+   "grade": "小6",
+   "units": 4,
+   "steps": 12,
+   "perPass": 102,
+   "uniq": 492,
+   "figUniq": 0,
+   "figPass": 0,
+   "types": {
+    "ch": 96,
+    "pair": 6
+   },
+   "sameRate": 0
+  },
+  {
+   "s": "ja",
+   "subj": "国語",
+   "g": 7,
+   "grade": "中1",
+   "units": 6,
+   "steps": 12,
+   "perPass": 102,
+   "uniq": 431,
+   "figUniq": 0,
+   "figPass": 0,
+   "types": {
+    "ch": 96,
+    "pair": 6
+   },
+   "sameRate": 0.025
+  },
+  {
+   "s": "ja",
+   "subj": "国語",
+   "g": 8,
+   "grade": "中2",
+   "units": 5,
+   "steps": 12,
+   "perPass": 103,
+   "uniq": 466,
+   "figUniq": 0,
+   "figPass": 0,
+   "types": {
+    "ch": 97,
+    "pair": 6
+   },
+   "sameRate": 0.011
+  },
+  {
+   "s": "ja",
+   "subj": "国語",
+   "g": 9,
+   "grade": "中3",
+   "units": 5,
+   "steps": 10,
+   "perPass": 88,
+   "uniq": 458,
+   "figUniq": 0,
+   "figPass": 0,
+   "types": {
+    "ch": 82,
+    "pair": 6
+   },
+   "sameRate": 0.015
+  },
+  {
+   "s": "en",
+   "subj": "英語",
+   "g": 3,
+   "grade": "小3",
+   "units": 4,
+   "steps": 14,
+   "perPass": 108,
+   "uniq": 740,
+   "figUniq": 60,
+   "figPass": 8,
+   "types": {
+    "ord": 8,
+    "pair": 6,
+    "ch": 72,
+    "match": 6,
+    "tap": 8,
+    "num": 8
+   },
+   "sameRate": 0.001
+  },
+  {
+   "s": "en",
+   "subj": "英語",
+   "g": 4,
+   "grade": "小4",
+   "units": 4,
+   "steps": 12,
+   "perPass": 96,
+   "uniq": 427,
+   "figUniq": 0,
+   "figPass": 0,
+   "types": {
+    "ord": 16,
+    "ch": 72,
+    "num": 8
+   },
+   "sameRate": 0
+  },
+  {
+   "s": "en",
+   "subj": "英語",
+   "g": 5,
+   "grade": "小5",
+   "units": 5,
+   "steps": 12,
+   "perPass": 104,
+   "uniq": 508,
+   "figUniq": 0,
+   "figPass": 0,
+   "types": {
+    "ch": 98,
+    "pair": 6
+   },
+   "sameRate": 0
+  },
+  {
+   "s": "en",
+   "subj": "英語",
+   "g": 6,
+   "grade": "小6",
+   "units": 5,
+   "steps": 13,
+   "perPass": 110,
+   "uniq": 422,
+   "figUniq": 0,
+   "figPass": 0,
+   "types": {
+    "ch": 96,
+    "ord": 8,
+    "pair": 6
+   },
+   "sameRate": 0
+  },
+  {
+   "s": "en",
+   "subj": "英語",
+   "g": 7,
+   "grade": "中1",
+   "units": 7,
+   "steps": 13,
+   "perPass": 118,
+   "uniq": 821,
+   "figUniq": 0,
+   "figPass": 0,
+   "types": {
+    "ch": 110,
+    "ord": 8
+   },
+   "sameRate": 0.069
+  },
+  {
+   "s": "en",
+   "subj": "英語",
+   "g": 8,
+   "grade": "中2",
+   "units": 4,
+   "steps": 12,
+   "perPass": 98,
+   "uniq": 197,
+   "figUniq": 0,
+   "figPass": 0,
+   "types": {
+    "ch": 90,
+    "ord": 8
+   },
+   "sameRate": 0
+  },
+  {
+   "s": "en",
+   "subj": "英語",
+   "g": 9,
+   "grade": "中3",
+   "units": 4,
+   "steps": 11,
+   "perPass": 92,
+   "uniq": 169,
+   "figUniq": 0,
+   "figPass": 0,
+   "types": {
+    "ch": 84,
+    "ord": 8
+   },
+   "sameRate": 0.012
+  }
+ ],
+ "tot": {
+  "steps": 912,
+  "perPass": 7120,
+  "uniq": 65263,
+  "fig": 3895,
+  "types": {
+   "num": 2765,
+   "ch": 4062,
+   "ord": 116,
+   "pair": 78,
+   "match": 12,
+   "tap": 87
+  }
+ }
+}
