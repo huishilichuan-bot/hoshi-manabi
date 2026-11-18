@@ -39,4 +39,4 @@ v1.1.0 は完了（2560f9c）。
 - [x] app.js：保存場所をプロフィールごと（hoshimanabi / hoshimanabi:u:<uid>）、useProfile、boxGone（クリアの印）
 - [x] auth.js：newLogin（クラウドを使う・からっぽのときだけ引きつぎを聞く）、resume、endSession（ログアウトで端末から消す）、onSnapshot、runTransaction で合わせて書く、Google はポップアップ＋やさしいエラー
 - [x] test_v13 77/77（モック）、test_merge 10/10
-- [ ] 本番：2つのブラウザ（2台の端末）で E2E → テストアカウント削除
+- [x] 本番：2つのブラウザ（2台の端末）で E2E 29/29 → テストアカウント削除（tools/test_live14.py, tools/live_cleanup.py）。SW v1.4.0-r2（保存待ち修正を確実に配るため）
