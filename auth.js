@@ -28,11 +28,14 @@ async function realAdapter() {
   const gp = () => { const p = new AU.GoogleAuthProvider(); p.setCustomParameters({ prompt: "select_account" }); return p; };
   return {
     onAuth: (cb) => AU.onAuthStateChanged(auth, (u) => cb(userOf(u))),
-    // Google：ポップアップを使う（Firebase がすすめる方法。Safari のサードパーティ保存ブロックの影響を受けない）。
-    // ポップアップがつかえない環境（iOS 以外）だけリダイレクトにする
+    // Google：ログイン用ヘルパーを同じオリジン（authDomain = huishilichuan-bot.github.io）で配信しているので、
+    // ポップアップもリダイレクトも Safari のストレージ分離の影響を受けない。まずポップアップ、ひらけないときはリダイレクト
     google: async () => {
       try { return await AU.signInWithPopup(auth, gp()); }
-      catch (e) { if (/operation-not-supported-in-this-environment/.test(e.code || "") && !isIOS()) { await AU.signInWithRedirect(auth, gp()); return null; } throw e; }
+      catch (e) {
+        if (/popup-blocked|operation-not-supported-in-this-environment|internal-error|web-storage-unsupported/.test(e.code || "")) { await AU.signInWithRedirect(auth, gp()); return null; }
+        throw e;
+      }
     },
     redirectResult: () => AU.getRedirectResult(auth),
     emailIn: (e, p) => AU.signInWithEmailAndPassword(auth, e, p),

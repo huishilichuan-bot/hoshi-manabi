@@ -5,7 +5,7 @@ window.HM_FIREBASE = {
   sdk: "12.6.0",
   config: {
     apiKey: "AIzaSyBhkx_Il1VZpDKc_cKc3q8gE2Hlf0SH8-4",
-    authDomain: "hoshi-manabi.firebaseapp.com",
+    authDomain: "huishilichuan-bot.github.io", // ログイン用ヘルパーを同じオリジンで配信（https://huishilichuan-bot.github.io/__/auth/）。Safari のストレージ分離でもログインできる
     projectId: "hoshi-manabi",
     storageBucket: "hoshi-manabi.firebasestorage.app",
     messagingSenderId: "399747982554",

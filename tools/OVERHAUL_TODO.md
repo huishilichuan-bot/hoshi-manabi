@@ -40,3 +40,8 @@ v1.1.0 は完了（2560f9c）。
 - [x] auth.js：newLogin（クラウドを使う・からっぽのときだけ引きつぎを聞く）、resume、endSession（ログアウトで端末から消す）、onSnapshot、runTransaction で合わせて書く、Google はポップアップ＋やさしいエラー
 - [x] test_v13 77/77（モック）、test_merge 10/10
 - [x] 本番：2つのブラウザ（2台の端末）で E2E 29/29 → テストアカウント削除（tools/test_live14.py, tools/live_cleanup.py）。SW v1.4.0-r2（保存待ち修正を確実に配るため）
+
+# v1.4.1（iPhone の Google ログイン）
+- [x] huishilichuan-bot/huishilichuan-bot.github.io を作成：/__/auth/（Firebase のヘルパー）、/__/firebase/init.json、.nojekyll、/ → /hoshi-manabi/
+- [x] authDomain = huishilichuan-bot.github.io、Google はポップアップ → ひらけないときリダイレクト（同じオリジンなので Safari でも動く）
+- [ ] オーナー：Google Cloud の OAuth クライアントに承認済みリダイレクトURI https://huishilichuan-bot.github.io/__/auth/handler を追加

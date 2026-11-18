@@ -48,7 +48,7 @@ with sync_playwright() as p:
 
     # 端末1：ゲストで遊んでから、新しいアカウントA を作る → 引きつぎを聞かれる
     c1, D1 = device("D1")
-    ok("本番 v1.4.0", wait(D1, "window.HM_APP && HM_APP.version === '1.4.0'"))
+    ok("本番 v1.4.1", wait(D1, "window.HM_APP && HM_APP.version === '1.4.1'"))
     wait(D1, "HMAuthUI.state().view === 'welcome'"); D1.locator('[data-au="later"]').tap(); D1.wait_for_timeout(500)
     D1.evaluate("(() => { const s = HM_APP.state(); s.totalStars = 6; s.pulls = 6; s.chars.guestchar = { n: 1, t: 1 }; s.settings.nick = 'ゲストくん'; HM_APP.save(); })()")
     D1.locator('.tab[data-tab="settings"]').tap(); D1.wait_for_timeout(500); D1.locator('[data-acct="login"]').tap()
