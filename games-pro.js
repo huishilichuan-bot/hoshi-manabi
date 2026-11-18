@@ -57,7 +57,7 @@
     cv.style.touchAction = "none";
     g.run = (update, draw) => {
       g.loop((dt) => {
-        g.time += dt; update(dt);
+        g.time += dt; update(dt * (g.ts == null ? 1 : g.ts)); if (g.tape) g.tape.update(dt);
         for (const p of g.parts) { p.x += p.vx * dt; p.y += p.vy * dt; p.vx *= 0.96; p.vy *= 0.96; p.vy += (p.g || 0) * dt; p.life -= dt; }
         g.parts = g.parts.filter((p) => p.life > 0); if (g.parts.length > 600) g.parts.splice(0, g.parts.length - 600);
         for (const p of g.pops) { p.y -= 40 * dt; p.life -= dt; } g.pops = g.pops.filter((p) => p.life > 0);
@@ -65,15 +65,62 @@
         c.save(); if (g.shakeA > 0.3) c.translate(rand(-g.shakeA, g.shakeA), rand(-g.shakeA, g.shakeA));
         draw(c);
         if (!g.noAutoParts) g.drawFx();
+        if (g.tape) g.tape.overlay(c);
         c.restore();
         if (g.flashA > 0) { c.globalAlpha = g.flashA; c.fillStyle = g.flashC; c.fillRect(0, 0, W, Hh); c.globalAlpha = 1; }
       });
     };
     g.drawFx = () => { for (const p of g.parts) { c.globalAlpha = Math.max(0, p.life / p.max); c.fillStyle = p.color; c.beginPath(); c.arc(p.x, p.y, p.size, 0, 7); c.fill(); } c.globalAlpha = 1; for (const p of g.pops) { c.globalAlpha = Math.min(1, p.life * 2); txt(c, p.s, p.x, p.y, p.size * (1 + Math.max(0, p.life - 0.7)), p.color); } c.globalAlpha = 1; };
     // 結果：スコア行つき
-    g.end = (win, titleText, lines, drawn) => { if (g.over) return; if (win) { SFX.cheer(); vib([30, 40, 60]); } else SFX.bad(); g.finish(win, drawn, titleText, (lines || []).join(" ／ ")); };
+    g.end = (win, titleText, lines, drawn, metric) => { if (g.over) return; if (win) { SFX.cheer(); vib([30, 40, 60]); } else SFX.bad(); g.finish(win, drawn, titleText, (lines || []).join(" ／ "), metric); };
     window.__pro = g;
     return g;
+  }
+  // ゴールテープ：レース系のゴール演出（テープを描く → 切れる → スロー＋花火＋「GOAL!」 → 結果へ）
+  function goalTape(g) {
+    const T = { broke: false, t: 0, win: false, fw: 0 }; g.tape = T;
+    const tapeCol = (c, a) => { c.strokeStyle = "rgba(255,255,255," + a + ")"; };
+    function checker(c, x, y, w, h, n) { const s = w / n; for (let i = 0; i < n; i++) for (let j = 0; j < Math.ceil(h / s); j++) { c.fillStyle = (i + j) % 2 ? "#111" : "#fff"; c.fillRect(x + i * s, y + j * s, s, Math.min(s, h - j * s)); } }
+    // 横スクロール（横から見た図）：x＝ゴールの位置、gy＝地面
+    T.drawSide = (c, x, gy, h = 120) => {
+      const top = gy - h, chest = gy - 52;
+      c.fillStyle = "rgba(0,0,0,.25)"; c.fillRect(x - 3, gy - 2, 46, 5);
+      // うしろの柱・前の柱・横断幕
+      c.fillStyle = "#ced4da"; c.fillRect(x + 30, top + 8, 7, h - 8); c.fillStyle = "#f8f9fa"; c.fillRect(x - 4, top, 8, h);
+      c.save(); c.translate(x - 4, top - 26); c.fillStyle = "#e03131"; rr(c, 0, 0, 48, 26, 5); c.fill(); checker(c, 3, 3, 42, 6, 7); txt(c, "GOAL", 24, 17, 12, "#fff"); c.restore();
+      checker(c, x - 6, gy - 1, 50, 6, 10);
+      if (!T.broke) { c.lineWidth = 5; c.strokeStyle = "#ff3b5c"; c.beginPath(); c.moveTo(x, chest); c.quadraticCurveTo(x + 17, chest + 6 + Math.sin(g.time * 6) * 2, x + 33, chest - 4); c.stroke(); c.lineWidth = 1.5; tapeCol(c, 0.8); c.beginPath(); c.moveTo(x, chest - 1); c.quadraticCurveTo(x + 17, chest + 5, x + 33, chest - 5); c.stroke(); }
+      else { const k = Math.min(1, T.t * 2.2), sw = Math.sin(T.t * 9) * (1 - Math.min(1, T.t / 2)) * 0.5; for (const [ax, dir] of [[x, 1], [x + 33, -1]]) { c.save(); c.translate(ax, chest); c.rotate(dir * (0.3 + k * 1.1) + sw); c.lineWidth = 5; c.strokeStyle = "#ff3b5c"; c.beginPath(); c.moveTo(0, 0); c.quadraticCurveTo(-dir * 10, 12, -dir * 4, 30); c.stroke(); c.restore(); } }
+    };
+    // たてスクロール／上から見た図：y＝ゴールの線、x0〜x1＝道のはば
+    T.drawTop = (c, y, x0, x1) => {
+      checker(c, x0, y - 6, x1 - x0, 12, Math.max(6, Math.round((x1 - x0) / 12)));
+      c.fillStyle = "#f8f9fa"; c.beginPath(); c.arc(x0 - 6, y, 7, 0, 7); c.arc(x1 + 6, y, 7, 0, 7); c.fill();
+      if (!T.broke) { c.lineWidth = 4; c.strokeStyle = "#ff3b5c"; c.beginPath(); c.moveTo(x0 - 6, y - 14); c.quadraticCurveTo((x0 + x1) / 2, y - 8 + Math.sin(g.time * 6) * 3, x1 + 6, y - 14); c.stroke(); }
+      else { const k = Math.min(1, T.t * 2); c.lineWidth = 4; c.strokeStyle = "#ff3b5c"; const mid = (x0 + x1) / 2; c.beginPath(); c.moveTo(x0 - 6, y - 14); c.quadraticCurveTo(x0 + (mid - x0) * 0.5, y - 14 + 30 * k, x0 + (mid - x0) * (1 - k * 0.6), y - 14 + 46 * k); c.stroke(); c.beginPath(); c.moveTo(x1 + 6, y - 14); c.quadraticCurveTo(x1 - (x1 - mid) * 0.5, y - 14 + 30 * k, x1 - (x1 - mid) * (1 - k * 0.6), y - 14 + 46 * k); c.stroke(); }
+    };
+    // テープを切る（win＝自分が先、label＝下に出す文字）
+    T.cross = (x, y, win, label, main) => {
+      if (T.broke) return; T.broke = true; T.t = 0; T.win = win; T.main = main || (win ? "GOAL!" : "CPUがゴール"); T.label = label || (win ? "1着！" : "あと少しだった…"); T.x = x; T.y = y;
+      g.ts = 0.3; g.flash(win ? "#fff" : "#9fb4ff", 0.55); g.shake(win ? 6 : 3);
+      g.burst(x, y, ["#ff3b5c", "#fff", "#ffd43b"], 30, 260, 0.9, 3.5);
+      if (win) { SFX.cheer(); tone(1047, 0.5, "triangle", 0.12, null, 0.1); vib([40, 30, 80]); } else { SFX.whoosh(); tone(330, 0.5, "triangle", 0.1, 260, 0.05); }
+    };
+    T.update = (rdt) => {
+      if (!T.broke) return; T.t += rdt;
+      if (T.t > 1.0) g.ts = Math.min(1, (g.ts || 0.3) + rdt * 1.5);
+      if (T.win) { T.fw -= rdt; if (T.fw <= 0) { T.fw = 0.22; const fx = rand(g.W * 0.15, g.W * 0.85), fy = rand(g.H * 0.12, g.H * 0.45), cols = [["#ffd43b", "#fff"], ["#ff5fa2", "#fff"], ["#22d3ee", "#fff"], ["#69db7c", "#fff"]][Math.floor(rand(0, 4))]; for (let i = 0; i < 36; i++) { const a = (i / 36) * Math.PI * 2, v = rand(140, 220); g.parts.push({ x: fx, y: fy, vx: Math.cos(a) * v, vy: Math.sin(a) * v, life: 1.1, max: 1.1, color: cols[i % 2], size: 2.6, g: 160 }); } tone(rand(600, 900), 0.18, "sine", 0.05, 200); } }
+    };
+    T.overlay = (c) => {
+      if (!T.broke) return; const k = Math.min(1, T.t / 0.35), W = g.W, Hh = g.H;
+      if (!T.win) { c.fillStyle = "rgba(10,14,40," + Math.min(0.45, T.t * 0.3) + ")"; c.fillRect(0, 0, W, Hh); }
+      c.save(); c.translate(W / 2, Hh * 0.3); const sc = T.win ? 0.4 + k * 0.6 + Math.sin(Math.min(1, T.t / 0.5) * Math.PI) * 0.25 : 0.6 + k * 0.4; c.scale(sc, sc); c.rotate(T.win ? Math.sin(T.t * 3) * 0.04 : 0);
+      if (T.win) { glowOn(c, "#ffd43b", 24); } txt(c, T.main, 0, 0, T.main.length > 7 ? 32 : T.main.length > 4 ? 44 : 64, T.win ? "#ffe066" : "#c9d2ec", "center", 900, "rgba(0,0,0,.6)"); c.shadowBlur = 0; c.restore();
+      if (T.t > 0.35) { c.globalAlpha = Math.min(1, (T.t - 0.35) * 3); txt(c, T.label, W / 2, Hh * 0.3 + 52, 22, T.win ? "#fff" : "#c9d2ec"); c.globalAlpha = 1; }
+    };
+    T.done = (sec = 2.3) => T.broke && T.t >= sec;
+    const glowOn = (c, col, b) => { c.shadowColor = col; c.shadowBlur = b; };
+    return T;
   }
   // バーチャルスティック（左半分）
   function stick(g, side = "left", r = 52) {
@@ -84,5 +131,5 @@
     s.draw = (c) => { if (!s.on) return; c.globalAlpha = 0.35; c.fillStyle = "#fff"; c.beginPath(); c.arc(s.ox, s.oy, r, 0, 7); c.fill(); c.globalAlpha = 0.8; c.beginPath(); c.arc(s.ox + s.dx * r, s.oy + s.dy * r, r * 0.42, 0, 7); c.fill(); c.globalAlpha = 1; };
     return s;
   }
-  window.HMPro = { pro, stick, SFX, tone, noise, vib, rr, txt, clamp, lerp, rand };
+  window.HMPro = { pro, stick, goalTape, SFX, tone, noise, vib, rr, txt, clamp, lerp, rand };
 })();

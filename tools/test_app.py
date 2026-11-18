@@ -34,13 +34,13 @@ try:
     ok("まとめカード", pg.locator(".card-pt").count() == 1 and pg.locator('[data-q="card-go"]').count() == 1)
     pg.click('[data-q="card-go"]'); pg.wait_for_timeout(200)
     ok("クイズ画面", pg.locator(".qz-q").is_visible())
-    # 2秒ブロック
+    # 1秒ブロック
     n0 = E("HM_APP.quiz().results.length")
     t = E("HM_APP.quiz().qs[0].t")
     if t == "ch": pg.locator(".opt").first.click()
     else: pg.click('[data-key="1"]'); pg.click('[data-key="ok"]'); pg.click('[data-key="del"]')
     pg.wait_for_timeout(150)
-    ok("2秒以内の回答をブロック", E("HM_APP.quiz().results.length") == n0 and "ちゃんと読んでね" in pg.inner_text("#toast-root"))
+    ok("1秒以内の回答をブロック", E("HM_APP.quiz().results.length") == n0 and "ちゃんと読んでね" in pg.inner_text("#toast-root"))
     pg.screenshot(path=f"{SHOT}/03-question.png")
     def answer(correct):
         q = E("(() => { const Q = HM_APP.quiz(); Q.shownAt -= 5000; const l = Q.mode==='main'?Q.qs:Q.retry; return l[Q.i]; })()")

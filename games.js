@@ -328,7 +328,7 @@
       g.result = win;
       draw();
       g.phase = "done";
-      const reward = GF.reportGame("climb", diff, win, { time: g.t });
+      const reward = GF.reportGame("climb", diff, win, { time: g.t, metric: { v: Math.round(g.t * 10) / 10, unit: "秒", lower: true, winOnly: true } });
       GF.showResult({
         win,
         title: win ? "登りきった！" : "CPUの勝ち…",
@@ -737,7 +737,7 @@
       if (g.phase === "done") return;
       g.phase = "done";
       draw();
-      const reward = GF.reportGame("arena", diff, win, { time: g.t });
+      const reward = GF.reportGame("arena", diff, win, { time: g.t, metric: { v: Math.round(g.t * 10) / 10, unit: "秒", lower: true, winOnly: true } });
       GF.showResult({ win, title: win ? "勝利！" : "CPUの勝ち", text, reward, onRetry: () => openArena(diff) });
     }
 

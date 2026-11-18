@@ -20,10 +20,12 @@
     g.$ = (s) => body.querySelector(s);
     g.$$ = (s) => Array.from(body.querySelectorAll(s));
     g.status = (t) => { const s = g.$(".hg-status"); if (s) s.innerHTML = t; };
-    g.finish = (win, draw, t, text) => {
+    // metric：記録（{ v, unit, lower:小さいほど良い, winOnly:勝ったときだけ }）。g.metric に入れておいてもよい
+    g.finish = (win, draw, t, text, metric) => {
       if (g.over) return;
       g.over = true; cancelAnimationFrame(g.raf);
-      GF.reportGame(id, diff, !!win, {});
+      let m = metric || (typeof g.metric === "function" ? g.metric(!!win) : g.metric) || null;
+      GF.reportGame(id, diff, !!win, { metric: m });
       setTimeout(() => { if (!g.stopped) GF.showResult({ win: !!win, draw: !!draw, title: t || (win ? "勝ち！" : draw ? "引き分け" : "負け…"), text, onRetry: () => GC.open[id](diff) }); }, 600);
     };
     g.loop = (step) => { let last = null; const f = (ts) => { if (g.stopped || g.over) return; const dt = last == null ? 0 : Math.min(0.05, (ts - last) / 1000); last = ts; step(dt); g.raf = requestAnimationFrame(f); }; g.raf = requestAnimationFrame(f); };

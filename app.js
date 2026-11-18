@@ -31,13 +31,15 @@
   const subjName = (s, g) => (s === "math" ? (g <= 6 ? "算数" : "数学") : subjById(s).n);
   const STARS_TO_UNLOCK = 4;
   const STEP_MIN = 7;
-  const READ_MS = 2000;
+  const READ_MS = 1000;
   const GACHA_RATES = [40, 30, 15, 8.5, 4, 2, 0.5];
   const GACHA_RATES_SR = (() => { const t = GACHA_RATES.slice(2).reduce((a, b) => a + b, 0); return GACHA_RATES.map((r, i) => (i >= 2 ? (r / t) * 100 : 0)); })();
   const SHARD_DUP = [1, 1, 2, 2, 3, 4, 5];
   const STAR_COST = [3, 5, 8, 12, 20]; // ★1〜★5 に必要なかけら
-  const DIFFS = [{ id: "easy", name: "弱い" }, { id: "normal", name: "中" }, { id: "hard", name: "強い" }, { id: "ultra", name: "ウルトラ最強" }];
-  const DIFF_DESC = { easy: "はじめての人向け", normal: "ちょうどいい", hard: "手ごたえあり", ultra: "本気のCPU" };
+  const DIFFS = [{ id: "easy", name: "弱い" }, { id: "normal", name: "中" }, { id: "hard", name: "強い" }, { id: "ultra", name: "最強" }];
+  // ゲームのランク：勝ち1回のポイント（弱い1・中2・強い3・最強5）の合計で決まる
+  const RANK_PT = { easy: 1, normal: 2, hard: 3, ultra: 5 };
+  const RANKS = [[0, "ビギナー", "#adb5bd"], [3, "ブロンズ", "#c87f45"], [10, "シルバー", "#a5b4c8"], [25, "ゴールド", "#f5b700"], [50, "プラチナ", "#5ad1c8"], [100, "ダイヤ", "#74c0fc"], [200, "レジェンド", "#e599f7"]];
   const BGS = [
     { id: "note", n: "ノート", r: -1 }, { id: "sky", n: "青空", r: 1 }, { id: "sunset", n: "夕やけ", r: 2 }, { id: "night", n: "星空", r: 3 },
     { id: "aurora", n: "オーロラ", r: 4 }, { id: "gold", n: "黄金", r: 5 }, { id: "cosmos", n: "にじの宇宙", r: 6 },
@@ -119,6 +121,8 @@
     if (kind === "star") return tone([[784, 0, 0.16], [988, 0.12, 0.16], [1175, 0.24, 0.18], [1568, 0.38, 0.5]]);
     if (kind === "fanfare") return tone([[784, 0, 0.18], [988, 0.12, 0.18], [1175, 0.24, 0.2], [1568, 0.38, 0.5]]);
     if (kind === "soft") return tone([[660, 0, 0.18]]);
+    if (kind === "sad") { tone([[392, 0, 0.34], [370, 0.36, 0.34], [349, 0.72, 0.34], [330, 1.08, 1.1]], "triangle", 0.16); return tone([[196, 0, 0.34], [185, 0.36, 0.34], [175, 0.72, 0.34], [165, 1.08, 1.1]], "sine", 0.1); }
+    if (kind === "victory") { tone([[523, 0, 0.14], [659, 0.12, 0.14], [784, 0.24, 0.14], [1047, 0.36, 0.3], [784, 0.62, 0.12], [1047, 0.74, 0.7]], "triangle", 0.16); return tone([[262, 0, 0.3], [330, 0.36, 0.3], [392, 0.74, 0.8]], "sine", 0.1); }
     if (kind === "tap") return tone([[880, 0, 0.06]], "sine", 0.08);
     if (kind === "block") return tone([[220, 0, 0.12]], "square", 0.06);
     if (kind && kind.startsWith("r")) { const r = +kind.slice(1); const base = [523, 587, 659, 784, 880, 988, 1175]; const ns = []; for (let i = 0; i <= Math.min(6, r + 1); i++) ns.push([base[i] * (r >= 4 ? 1.5 : 1), i * 0.09, 0.3]); if (r >= 4) ns.push([2093, ns.length * 0.09, 0.8]); return tone(ns, r >= 5 ? "triangle" : "sine"); }
@@ -747,13 +751,24 @@
     h += '<p class="foot">全' + GAMES.length + 'ゲーム</p>';
     return h;
   }
+  function gameRank(id) {
+    const rec = state.games[id] || {}; let pt = 0;
+    DIFFS.forEach((d) => { pt += ((rec[d.id] || {}).wins || 0) * RANK_PT[d.id]; });
+    let i = 0; while (i + 1 < RANKS.length && pt >= RANKS[i + 1][0]) i++;
+    return { pt, i, name: RANKS[i][1], color: RANKS[i][2], next: RANKS[i + 1] ? { need: RANKS[i + 1][0] - pt, name: RANKS[i + 1][1] } : null };
+  }
+  const fmtNum = (v) => (Math.round(v * 10) / 10).toLocaleString("ja-JP");
+  function bestText(m) { return m && m.best != null ? fmtNum(m.best) + (m.unit || "") : null; }
   function openGameMenu(id) {
     const g = GAMES.find((x) => x.id === id); if (!g) return;
     if (!gamesOpen()) { toast("🔒 今日の⭐をあと " + (STARS_TO_UNLOCK - starsToday()) + " こ集めるとひらくよ"); return; }
-    const rec = state.games[id] || {};
-    openSheet('<div class="gm-head">' + HMIcons.icon(g.id, g.c, 56) + "<h2>" + esc(g.n) + '</h2></div><p class="small muted">' + esc(g.d) + '</p><div class="diff-list">' + DIFFS.map((d) => { const r = rec[d.id] || { plays: 0, wins: 0 }; return '<button type="button" class="diff-btn ' + d.id + '" data-diff="' + d.id + '"><span class="grow"><b>' + d.name + "</b><small>" + DIFF_DESC[d.id] + '</small></span><span class="diff-r num">' + (r.wins || 0) + "勝/" + (r.plays || 0) + "回</span></button>"; }).join("") + "</div>", {
+    const rec = state.games[id] || {}, rk = gameRank(id);
+    let tw = 0, tp = 0; DIFFS.forEach((d) => { const r = rec[d.id] || {}; tw += r.wins || 0; tp += r.plays || 0; });
+    const btns = DIFFS.map((d, i) => '<button type="button" class="dsel ' + d.id + '" data-diff="' + d.id + '" style="--i:' + i + '"><span class="dsel-n">' + d.name + '</span><span class="dsel-s">' + "★".repeat(i + 1) + "</span></button>").join("");
+    const rows = DIFFS.map((d) => { const r = rec[d.id] || {}; const bt = bestText(r.m); return '<tr><th>' + d.name + '</th><td class="num">' + (r.wins || 0) + "勝 / " + (r.plays || 0) + "回</td><td class=\"num\">" + (bt ? "ベスト " + esc(bt) : "") + "</td></tr>"; }).join("");
+    openSheet('<div class="gm-head">' + HMIcons.icon(g.id, g.c, 56) + "<h2>" + esc(g.n) + '</h2></div><p class="small muted">' + esc(g.d) + '</p><div class="dsel-grid">' + btns + '</div><div class="gm-rec"><div class="gm-rank" style="--rc:' + rk.color + '"><span class="gm-medal">🏅</span><b>' + rk.name + '</b><span class="num">' + rk.pt + 'pt</span></div><table class="gm-tab">' + rows + '</table><p class="gm-tot num">合計 ' + tw + "勝 / " + tp + "回</p></div>", {
       label: g.n,
-      mount: (sh) => sh.addEventListener("click", (e) => { const b = e.target.closest("[data-diff]"); if (b) { closeSheet(true); startGame(id, b.dataset.diff); } }),
+      mount: (sh) => sh.addEventListener("click", (e) => { const b = e.target.closest("[data-diff]"); if (b) { sound("tap"); closeSheet(true); startGame(id, b.dataset.diff); } }),
     });
   }
   function startGame(id, diff) {
@@ -770,7 +785,7 @@
   function openLayer(title, onClose) {
     if (layerOnClose) { const f = layerOnClose; layerOnClose = null; try { f(); } catch (e) {} }
     $("#gl-title").textContent = title;
-    $("#gl-result").hidden = true;
+    $("#gl-result").hidden = true; $("#gl-result").className = "gl-result"; $("#game-layer").classList.remove("rs-dim-lose", "rs-dim-win");
     const oldBody = $("#gl-body"), freshEl = oldBody.cloneNode(false);
     oldBody.replaceWith(freshEl);
     $("#game-layer").hidden = false;
@@ -782,23 +797,74 @@
     if (layerOnClose) { const f = layerOnClose; layerOnClose = null; try { f(); } catch (e) {} }
     if (window.GFGames) try { GFGames.stop(); } catch (e) {}
     if (window.GCGames) try { GCGames.stop(); } catch (e) {}
-    $("#game-layer").hidden = true; $("#gl-body").innerHTML = ""; $("#gl-result").hidden = true;
+    $("#game-layer").hidden = true; $("#gl-body").innerHTML = ""; $("#gl-result").hidden = true; $("#gl-result").className = "gl-result"; $("#game-layer").classList.remove("rs-dim-lose", "rs-dim-win");
     document.body.classList.remove("in-game");
     render();
   }
+  let lastRes = null;
   function showResult(o) {
-    const box = $("#gl-result");
-    box.innerHTML = '<div class="res-card" role="dialog" aria-label="結果"><div class="res-emoji">' + (o.win ? "🏆" : o.draw ? "🤝" : "🌧️") + "</div><h3>" + esc(o.title) + "</h3><p>" + esc(o.text || "") + '</p><div class="actions two"><button type="button" class="btn" id="res-close">ゲーム一覧へ</button><button type="button" class="btn primary" id="res-retry">もう一回</button></div></div>';
+    const box = $("#gl-result"), layer = $("#game-layer");
+    const R = lastRes && Date.now() - lastRes.t < 8000 ? lastRes : null; lastRes = null;
+    const kind = o.win ? "win" : o.draw ? "draw" : "lose";
+    const p = GCArt.charById(state.partner) || { id: "mori" };
+    const stats = [];
+    if (R) {
+      const m = R.metric, u = m ? m.unit || "" : "";
+      if (m && m.winOnly && kind !== "win") {
+        if (m.gap) stats.push([m.gap[0], m.gap[1], "down"]);
+        if (R.prevBest != null) stats.push(["ベスト記録", fmtNum(R.prevBest) + u, ""]);
+      } else if (m && m.v != null) {
+        stats.push([m.label || "今回", fmtNum(m.v) + u, ""]);
+        if (R.newBest && R.prevBest != null) stats.push(["ベスト更新", "+" + fmtNum(Math.abs(m.v - R.prevBest)) + u, "up"]);
+        else if (R.newBest) stats.push(["ベスト", "はじめての記録", "up"]);
+        else if (R.prevBest != null) stats.push(["ベスト " + fmtNum(R.prevBest) + u, "あと " + fmtNum(Math.abs(R.prevBest - m.v)) + u, kind === "win" ? "" : "down"]);
+      }
+      if (kind === "win") {
+        if (R.after.wins === 1) stats.push([R.diffName + "で", "はじめての勝ち！", "up"]);
+        if (R.after.streak >= 2) stats.push(["連勝", R.after.streak + "連勝中", "up"]);
+      } else if (kind === "lose") {
+        if (R.before.streak >= 2) stats.push(["連勝ストップ", R.before.streak + "連勝で止まった", "down"]);
+      }
+      stats.push([R.diffName + "の記録", R.after.wins + "勝 / " + R.after.plays + "回", ""]);
+    }
+    const rk = R ? gameRank(R.game) : null, rankUp = R && R.rankBefore != null && rk && rk.i > R.rankBefore;
+    const statHtml = stats.map((x) => '<div class="rs-row ' + x[2] + '"><span>' + esc(x[0]) + '</span><b class="num">' + esc(x[1]) + "</b></div>").join("");
+    const rankHtml = rk ? '<div class="rs-rank' + (rankUp ? " up" : "") + '" style="--rc:' + rk.color + '"><span>🏅 ' + (rankUp ? "ランクアップ！ " : "ランク ") + "<b>" + rk.name + "</b></span>" + (rk.next ? '<span class="num">次の' + rk.next.name + "まで " + rk.next.need + "pt</span>" : '<span>いちばん上のランク</span>') + "</div>" : "";
+    const head = kind === "win" ? '<div class="rs-rays"></div><div class="rs-trophy">🏆</div>' : kind === "draw" ? '<div class="rs-trophy">🤝</div>' : '<div class="rs-cloud"><span>☁️</span><i></i><i></i><i></i><i></i><i></i></div>';
+    const sub = kind === "win" ? "やったね！" : kind === "draw" ? "いい勝負！" : "おしい…！";
+    box.className = "gl-result rs-" + kind;
+    box.innerHTML = (kind === "lose" ? '<div class="rs-rain">' + Array.from({ length: 26 }, (_, i) => '<i style="--x:' + ((i * 37) % 100) + "%;--d:" + (0.6 + ((i * 13) % 7) / 10) + "s;--dl:" + ((i * 7) % 10) / 10 + 's"></i>').join("") + "</div>" : "") +
+      '<div class="res-card rs-card" role="dialog" aria-label="結果">' + head +
+      '<div class="rs-char">' + charHtml(p.id, 104, "rs-ch") + (kind === "lose" ? '<span class="rs-tear">💧</span>' : kind === "win" ? '<span class="rs-spark">✨</span>' : "") + "</div>" +
+      '<p class="rs-sub">' + sub + "</p><h3 class=\"rs-title\">" + esc(o.title) + "</h3>" + (o.text ? '<p class="rs-text">' + esc(o.text) + "</p>" : "") +
+      (R && R.newBest && R.prevBest != null ? '<div class="rs-best">👑 ベスト更新！</div>' : "") +
+      (statHtml ? '<div class="rs-stats">' + statHtml + "</div>" : "") + rankHtml +
+      '<div class="rs-acts"><button type="button" class="btn primary rs-again" id="res-retry">🔁 もう一回</button><button type="button" class="btn rs-list" id="res-close">ゲーム一覧へ</button></div></div>';
     box.hidden = false;
-    $("#res-close").addEventListener("click", closeLayer);
-    $("#res-retry").addEventListener("click", () => { box.hidden = true; if (o.onRetry) o.onRetry(); });
-    if (o.win) { sound("fanfare"); confetti(70); haptic([30, 40, 60]); }
+    layer.classList.remove("rs-dim-lose", "rs-dim-win"); void layer.offsetWidth;
+    layer.classList.add(kind === "lose" ? "rs-dim-lose" : "rs-dim-win");
+    $("#res-close").addEventListener("click", () => { layer.classList.remove("rs-dim-lose", "rs-dim-win"); closeLayer(); });
+    $("#res-retry").addEventListener("click", () => { sound("tap"); layer.classList.remove("rs-dim-lose", "rs-dim-win"); box.hidden = true; box.className = "gl-result"; if (o.onRetry) o.onRetry(); });
+    if (kind === "win") { sound("victory"); confetti(rankUp || (R && R.newBest) ? 120 : 80); setTimeout(() => { if (!box.hidden) confetti(40); }, 900); haptic([30, 40, 60, 40, 90]); }
+    else if (kind === "draw") { sound("soft"); haptic(20); }
+    else { sound("sad"); haptic([80, 60, 160]); }
   }
-  function reportGame(game, diff, win) {
+  // 記録：勝ち数・回数・連勝・ベスト（metric = { v, unit, lower:小さいほど良い, winOnly:勝ったときだけ記録 }）
+  function reportGame(game, diff, win, extra) {
     state.games[game] = state.games[game] || {};
+    const rankBefore = gameRank(game).i;
     const r = state.games[game][diff] || { plays: 0, wins: 0 };
-    r.plays++; if (win) r.wins++;
+    const before = { plays: r.plays || 0, wins: r.wins || 0, streak: r.streak || 0 };
+    r.plays = before.plays + 1; if (win) r.wins = before.wins + 1;
+    r.streak = win ? before.streak + 1 : 0; r.maxStreak = Math.max(r.maxStreak || 0, r.streak);
+    const metric = extra && extra.metric && isFinite(extra.metric.v) ? extra.metric : null;
+    let prevBest = r.m && r.m.best != null ? r.m.best : null, newBest = false;
+    if (metric && (!metric.winOnly || win)) {
+      const better = prevBest == null || (metric.lower ? metric.v < prevBest : metric.v > prevBest);
+      if (better) { r.m = { best: metric.v, unit: metric.unit || "", lower: !!metric.lower }; newBest = true; }
+    }
     state.games[game][diff] = r; save();
+    lastRes = { t: Date.now(), game, diff, diffName: (DIFFS.find((d) => d.id === diff) || DIFFS[1]).name, win: !!win, before, after: { plays: r.plays, wins: r.wins, streak: r.streak }, metric, prevBest, newBest, rankBefore };
     return null; // ゲームではごほうびなし
   }
   function copyText(text) {
@@ -1030,7 +1096,7 @@
   (() => { const ext = ((window.HMGames && HMGames.list) || []).filter((g) => !DROPPED.includes(g.id)); for (let i = 0; i < GAMES.length; i++) { const r = ext.find((x) => x.id === GAMES[i].id); if (r) GAMES[i] = r; } ext.forEach((x) => { if (!GAMES.some((y) => y.id === x.id)) GAMES.push(x); }); })();
   // スプラッシュ（起動画面）を消す
   (() => { const sp = document.getElementById("splash"); if (!sp) return; const hide = () => { sp.classList.add("out"); setTimeout(() => sp.remove(), 500); }; setTimeout(hide, Math.max(150, 650 - performance.now())); })();
-  window.HM_APP = { state: () => state, save, render, today, dkey, setClockOffset: (ms) => { clockOffset = ms; render(); }, GAMES, gachaPull, rates: () => ({ normal: GACHA_RATES.slice(), sr: GACHA_RATES_SR.slice() }), drawRarity, startStep, findStep, judgeNum, passNeed: HM.passNeed, STARS_TO_UNLOCK, READ_MS, starsToday, gamesOpen, pullsLeft, startGame, version: VERSION, quiz: () => Q, tab: () => tab, exportState: () => JSON.parse(JSON.stringify(state)), importState: (d) => { state = migrate(JSON.parse(JSON.stringify(d))); try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} render(); },
+  window.HM_APP = { state: () => state, save, render, today, dkey, setClockOffset: (ms) => { clockOffset = ms; render(); }, GAMES, gachaPull, rates: () => ({ normal: GACHA_RATES.slice(), sr: GACHA_RATES_SR.slice() }), drawRarity, startStep, findStep, judgeNum, passNeed: HM.passNeed, STARS_TO_UNLOCK, READ_MS, starsToday, gamesOpen, pullsLeft, startGame, openGameMenu, gameRank, version: VERSION, quiz: () => Q, tab: () => tab, exportState: () => JSON.parse(JSON.stringify(state)), importState: (d) => { state = migrate(JSON.parse(JSON.stringify(d))); try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} render(); },
     // プロフィール（保存場所）を切りかえる。data があればそれを使い、なければその場所の記録を読む
     useProfile: (key, data, opt) => { KEY = key || GUEST_KEY; let d = data; if (d === undefined) { try { d = JSON.parse(localStorage.getItem(KEY) || "null"); } catch (e) { d = null; } } state = migrate(d ? JSON.parse(JSON.stringify(d)) : null); try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} if (Q && !$("#quiz").hidden) { try { quitQuiz(); } catch (e) {} } if (opt && opt.home) { tab = "home"; nav = []; navDir = "tab"; } render(); },
     profileKey: () => KEY, GUEST_KEY, charHtml, sound, toast, haptic, openSheet, closeSheet, startBox, startBoss, speak, canSpeak };

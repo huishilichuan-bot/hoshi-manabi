@@ -25,10 +25,10 @@
       '<div class="bg-status" id="bg-status" aria-live="polite"></div><div class="bg-actions" id="bg-actions"></div><div id="bg-extra"></div></div>';
     game.$ = (s) => body.querySelector(s);
     game.status = (t) => { const el = game.$("#bg-status"); if (el) el.textContent = t; };
-    game.finish = (win, draw, title2, text) => {
+    game.finish = (win, draw, title2, text, metric) => {
       if (game.over) return;
       game.over = true;
-      const reward = GF.reportGame(id, diff, !!win, {});
+      const reward = GF.reportGame(id, diff, !!win, { metric: metric || (typeof game.metric === "function" ? game.metric(!!win) : game.metric) || null });
       game.later(() => GF.showResult({ win: !!win, draw: !!draw, title: title2, text, reward, onRetry: () => R.open[id](diff) }), 650);
     };
     // ヒント・待った・投了

@@ -25,10 +25,10 @@
     body.innerHTML = html;
     game.body = body;
     game.$ = (s) => body.querySelector(s);
-    game.finish = (win, draw, t, text) => {
+    game.finish = (win, draw, t, text, metric) => {
       if (game.over) return;
       game.over = true; cancelAnimationFrame(game.raf);
-      const reward = GF.reportGame(id, diff, !!win, {});
+      const reward = GF.reportGame(id, diff, !!win, { metric: metric || (typeof game.metric === "function" ? game.metric(!!win) : game.metric) || null });
       game.later(() => GF.showResult({ win: !!win, draw: !!draw, title: t, text, reward, onRetry: () => R.open[id](diff) }), 500);
     };
     // rAF ループ（dtは最大50msに制限）

@@ -234,16 +234,25 @@
   add("runner", "🏃", "パルクールラン", "#ef8a3a", "タップでジャンプ（空中でもう1回）、下スワイプでスライディング。障害物をかわしてCPUより先に800mへ。", (diff) => {
     const g = X.pro("runner", diff, "パルクールラン"), W = g.W, Hh = g.H, d = g.d;
     const GOALM = 800, gy = Hh - 110, px = 90, TOPV = 340;
-    const me = { y: 0, vy: 0, jumps: 0, slide: 0, v: 200, inv: 0, run: 0 }; let dist = 0, cpuD = 0, obs = [], coins = 0, cs = [], nextO = 500, start = 3, scroll = 0;
+    const me = { y: 0, vy: 0, jumps: 0, slide: 0, v: 200, inv: 0, run: 0 }; let dist = 0, cpuD = 0, obs = [], coins = 0, cs = [], nextO = 500, start = 3, scroll = 0, fin = null, tSec = 0;
+    const tape = X.goalTape(g);
     const cpuV = [26, 29.5, 31.5, 33.5][d];
-    const jump = () => { if (g.over || start > 0) return; if (me.jumps < 2) { me.vy = me.jumps ? -520 : -600; me.jumps++; me.slide = 0; X.SFX.pop(); g.burst(px, gy, "#ced4da", 6, 90, 0.3); } };
-    const slide = () => { if (g.over || start > 0) return; if (me.y < -5) me.vy = 700; else { me.slide = 0.6; X.SFX.whoosh(); } };
+    const jump = () => { if (g.over || start > 0 || fin) return; if (me.jumps < 2) { me.vy = me.jumps ? -520 : -600; me.jumps++; me.slide = 0; X.SFX.pop(); g.burst(px, gy, "#ced4da", 6, 90, 0.3); } };
+    const slide = () => { if (g.over || start > 0 || fin) return; if (me.y < -5) me.vy = 700; else { me.slide = 0.6; X.SFX.whoosh(); } };
     let dn = null; g.onDown = (o) => { dn = o; }; g.onMove = (o) => { if (dn === o && o.y - o.sy > 30) { slide(); dn = null; } }; g.onUp = (o) => { if (dn === o) { if (o.y - o.sy > 30) slide(); else jump(); } dn = null; };
     key(g, (k) => { if (k === "U" || k === "A") jump(); if (k === "D") slide(); });
-    g.dbg = () => ({ me, obs, dist, cpuD, start });
+    g.dbg = () => ({ me, obs, dist, cpuD, start }); g.cheat = (k) => { start = 0; if (k === "win") { dist = GOALM - 3; cpuD = Math.min(cpuD, GOALM - 200); } else { cpuD = GOALM - 1; dist = Math.min(dist, GOALM - 130); } };
     function spawn(x) { const r = Math.random(), k = r < 0.45 ? "box" : r < 0.75 ? "bar" : r < 0.9 ? "tall" : "double"; obs.push({ x, k }); if (Math.random() < 0.6) for (let i = 0; i < 4; i++) cs.push({ x: x + 120 + i * 34, y: k === "bar" ? -20 : -110 - Math.sin((i / 3) * Math.PI) * 40 }); }
     g.run((dt) => {
       if (start > 0) { start -= dt; if (Math.floor(start + dt) !== Math.floor(start)) X.SFX.tick(); return; }
+      if (fin) {
+        // ゴールしたあと：スピードを落としながら走りぬけ、演出が終わったら結果へ
+        me.v = Math.max(fin.win ? 90 : 60, me.v - 260 * dt); me.run += dt * me.v / 40; const fdx = me.v * dt; scroll += fdx; dist += fdx / 10; cpuD += cpuV * dt * (fin.win ? 1 : 0.6);
+        for (const o of obs) o.x -= fdx; for (const cn of cs) cn.x -= fdx; me.vy += 1700 * dt; me.y = Math.min(0, me.y + me.vy * dt); if (me.y >= 0) me.vy = 0;
+        if (tape.done()) { const win = fin.win; g.end(win, win ? "1着でゴール！" : "CPUが先にゴール", ["あなた " + (win ? "ゴール " + (Math.round(fin.time * 10) / 10).toFixed(1) + "秒" : fin.mine + "m"), "CPU " + (win ? fin.cpu + "m" : "ゴール"), "コイン " + coins], false, { v: Math.round(fin.time * 10) / 10, unit: "秒", lower: true, winOnly: true, gap: ["ゴールまで", "あと " + (GOALM - fin.mine) + "m"] }); }
+        return;
+      }
+      tSec += dt;
       me.inv -= dt; me.slide -= dt; me.v = Math.min(TOPV + d * 10, me.v + 180 * dt); me.run += dt * me.v / 40;
       const dx = me.v * dt; dist += dx / 10; cpuD += cpuV * dt; scroll += dx;
       me.vy += 1700 * dt; me.y += me.vy * dt; if (me.y >= 0) { if (me.jumps && me.vy > 300) g.burst(px, gy, "#ced4da", 5, 70, 0.25); me.y = 0; me.vy = 0; me.jumps = 0; }
@@ -253,7 +262,7 @@
         if (me.inv <= 0 && px + 12 > box[0] && px - 12 < box[0] + box[2] && bot > box[1] && top < box[1] + box[3]) { me.inv = 1.2; me.v *= 0.4; X.SFX.hit(); g.shake(8); g.vib(50); g.flash("#ff3b3b", 0.2); g.burst(px, (top + bot) / 2, ["#ffa94d", "#fff"], 16, 180); g.pop(px + 20, top - 20, "つまずいた！", "#ff8787", 15); } }
       for (const cn of cs) { cn.x -= dx; if (!cn.got && Math.abs(cn.x - px) < 18 && Math.abs(gy + cn.y - (top + bot) / 2) < 34) { cn.got = true; coins++; X.SFX.coin(); g.burst(cn.x, gy + cn.y, ["#ffd43b", "#fff"], 8, 120, 0.3); } }
       obs = obs.filter((o) => o.x > -80); cs = cs.filter((c2) => c2.x > -30 && !c2.got);
-      if (dist >= GOALM || cpuD >= GOALM) { const win = dist >= cpuD; g.end(win, win ? "1着でゴール！" : "CPUが先にゴール", ["あなた " + Math.min(GOALM, Math.floor(dist)) + "m", "CPU " + Math.min(GOALM, Math.floor(cpuD)) + "m", "コイン " + coins]); }
+      if (dist >= GOALM || cpuD >= GOALM) { const win = dist >= cpuD; fin = { win, time: tSec, mine: Math.min(GOALM, Math.floor(dist)), cpu: Math.min(GOALM, Math.floor(cpuD)) }; tape.cross(win ? px + 14 : px + (cpuD - dist) * 10, gy - 52, win, win ? "1着！ " + tSec.toFixed(1) + "秒" : "CPUが先にゴール… あと " + (GOALM - fin.mine) + "m"); }
     }, (c) => {
       const sky = c.createLinearGradient(0, 0, 0, gy); sky.addColorStop(0, "#2b2d6e"); sky.addColorStop(0.6, "#e8590c"); sky.addColorStop(1, "#ffd8a8"); c.fillStyle = sky; c.fillRect(0, 0, W, Hh);
       c.fillStyle = "rgba(255,240,200,.9)"; c.beginPath(); c.arc(W * 0.75, gy - 170, 40, 0, 7); c.fill();
@@ -262,6 +271,7 @@
       for (const cn of cs) { const s = Math.abs(Math.cos(g.time * 5 + cn.x * 0.05)); glow(c, "#ffd43b", 10); c.fillStyle = "#fcc419"; c.beginPath(); c.ellipse(cn.x, gy + cn.y, 8 * s + 1, 8, 0, 0, 7); c.fill(); noGlow(c); }
       for (const o of obs) { const b = o.box; if (!b) continue; if (o.k === "bar") { c.fillStyle = "#adb5bd"; c.fillRect(b[0] + 4, b[1] - 60, 5, 60 + b[3]); c.fillRect(b[0] + b[2] - 9, b[1] - 60, 5, 60 + b[3]); const bg2 = c.createLinearGradient(0, b[1], 0, b[1] + b[3]); bg2.addColorStop(0, "#ff6b6b"); bg2.addColorStop(1, "#c92a2a"); c.fillStyle = bg2; rr(c, b[0], b[1], b[2], b[3], 6); c.fill(); c.fillStyle = "#fff"; for (let i = 0; i < 3; i++) c.fillRect(b[0] + 8 + i * 18, b[1] + 6, 9, b[3] - 12); } else { const bg2 = c.createLinearGradient(b[0], 0, b[0] + b[2], 0); bg2.addColorStop(0, "#e67700"); bg2.addColorStop(1, "#a35200"); c.fillStyle = bg2; rr(c, b[0], b[1], b[2], b[3], 4); c.fill(); c.strokeStyle = "rgba(0,0,0,.35)"; c.lineWidth = 2; c.strokeRect(b[0] + 4, b[1] + 4, b[2] - 8, b[3] - 8); c.beginPath(); c.moveTo(b[0] + 4, b[1] + 4); c.lineTo(b[0] + b[2] - 4, b[1] + b[3] - 4); c.stroke(); } }
       const drawRunner = (x, yoff, col, a, phase, sliding, air) => { c.save(); c.globalAlpha = a; c.translate(x, gy + yoff); c.strokeStyle = col; c.fillStyle = col; c.lineWidth = 6; c.lineCap = "round"; if (sliding) { c.beginPath(); c.moveTo(-18, -8); c.lineTo(10, -12); c.stroke(); c.beginPath(); c.arc(16, -18, 8, 0, 7); c.fill(); c.beginPath(); c.moveTo(-18, -8); c.lineTo(-30, -4); c.stroke(); } else { const s = Math.sin(phase), s2 = Math.sin(phase + Math.PI); c.beginPath(); c.moveTo(0, -30); c.lineTo(2, -48); c.stroke(); c.beginPath(); c.arc(4, -57, 8, 0, 7); c.fill(); for (const q of air ? [0.6, -0.4] : [s, s2]) { c.beginPath(); c.moveTo(0, -30); c.lineTo(q * 12, -16); c.lineTo(q * 16 - 4, -2); c.stroke(); } for (const q of air ? [-0.8, 0.8] : [s2, s]) { c.beginPath(); c.moveTo(2, -44); c.lineTo(q * 12 + 4, -34); c.stroke(); } } c.restore(); };
+      const gx = px + (GOALM - dist) * 10 + (fin ? 0 : 0); if (gx > -60 && gx < W + 60) tape.drawSide(c, gx - 16, gy, 130);
       const cdx = (cpuD - dist) * 10; if (Math.abs(cdx) < W) drawRunner(px + cdx, 0, "#ff8fc0", 0.55, g.time * 14, false, false);
       if (me.inv <= 0 || Math.floor(me.inv * 12) % 2 === 0) { c.fillStyle = "rgba(0,0,0,.3)"; c.beginPath(); c.ellipse(px, gy + 2, 16 + me.y * 0.05, 4, 0, 0, 7); c.fill(); drawRunner(px, me.y, "#74c0fc", 1, me.run, me.slide > 0 && me.y >= -2, me.y < -2); }
       c.fillStyle = "rgba(0,0,0,.5)"; rr(c, 10, 10, W - 20, 62, 14); c.fill(); const bx = 24, bw = W - 48; c.fillStyle = "rgba(255,255,255,.18)"; rr(c, bx, 50, bw, 8, 4); c.fill(); txt(c, "🏁", bx + bw, 40, 14, "#fff");

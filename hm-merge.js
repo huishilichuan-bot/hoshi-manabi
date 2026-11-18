@@ -31,11 +31,22 @@
     return out;
   }
   const unionBy = (a, b, key, cap) => { const m = new Map(); for (const it of [...arr(a), ...arr(b)]) { const k = key(it); if (!m.has(k)) m.set(k, it); } let out = [...m.values()]; if (cap && out.length > cap) out = out.slice(out.length - cap); return out; };
+  // ゲームの記録（ゲーム → 強さ → {plays, wins, streak, maxStreak, m:{best, unit, lower}}）
+  function mergeRec(x, y) {
+    if (!x || typeof x !== "object") return y; if (!y || typeof y !== "object") return x;
+    const o = Object.assign({}, x, y);
+    for (const kk of Object.keys(o)) if (typeof x[kk] === "number" || typeof y[kk] === "number") o[kk] = max(x[kk], y[kk]);
+    o.streak = num(x.plays) > num(y.plays) ? num(x.streak) : num(y.streak);
+    const mx = x.m && x.m.best != null ? x.m : null, my = y.m && y.m.best != null ? y.m : null;
+    if (mx && my) o.m = (mx.lower ? mx.best <= my.best : mx.best >= my.best) ? mx : my; else o.m = mx || my || undefined;
+    if (!o.m) delete o.m;
+    return o;
+  }
   function mergeGames(a, b) {
     const out = {};
     for (const k of new Set([...Object.keys(obj(a)), ...Object.keys(obj(b))])) {
       const x = obj(a)[k], y = obj(b)[k];
-      if (x && y && typeof x === "object" && typeof y === "object" && !Array.isArray(x)) { const o = Object.assign({}, x, y); for (const kk of Object.keys(o)) if (typeof x[kk] === "number" || typeof y[kk] === "number") o[kk] = max(x[kk], y[kk]); out[k] = o; }
+      if (x && y && typeof x === "object" && typeof y === "object" && !Array.isArray(x)) { const o = {}; for (const d of new Set([...Object.keys(x), ...Object.keys(y)])) o[d] = mergeRec(x[d], y[d]); out[k] = o; }
       else out[k] = y != null ? y : x;
     }
     return out;

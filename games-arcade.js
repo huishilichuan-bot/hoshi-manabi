@@ -15,16 +15,26 @@
     const trackLen = segs.length * segL, maxV = 7000;
     const names = ["ブレイズ", "ミント", "ストーム", "ルナ", "ボルト"]; const cols = ["#4dabf7", "#69db7c", "#da77f2", "#ffd43b", "#f8f9fa"];
     const cpus = names.map((n, i) => ({ n, col: cols[i], z: (i + 1) * segL * 6, x: [-0.5, 0.5, 0, -0.3, 0.4][i], v: maxV * ([0.62, 0.74, 0.84, 0.92][d] + i * 0.015 + rand(-0.02, 0.02)), lap: 0 }));
-    const P = { x: 0, z: 0, v: 0, lap: 0, drift: 0, boost: 0, meter: 0, steer: 0, bump: 0 }; let start = 3, skyX = 0, finished = false;
+    const P = { x: 0, z: 0, v: 0, lap: 0, drift: 0, boost: 0, meter: 0, steer: 0, bump: 0 }; let start = 3, skyX = 0, finished = false, fin = null, tRace = 0;
+    const tape = X.goalTape(g);
+    // スタート／ゴールのゲート（最終ラップだけテープをはる）
+    const drawArch = (p1) => { const w = p1.w * 1.25, x0 = p1.x - w, x1 = p1.x + w, h = p1.w * 0.75, pw = Math.max(2, p1.w * 0.05); if (w < 6) return; c.fillStyle = "#dee2e6"; c.fillRect(x0 - pw, p1.y - h, pw, h); c.fillRect(x1, p1.y - h, pw, h); const bh = Math.max(4, h * 0.22); c.fillStyle = "#e03131"; c.fillRect(x0 - pw, p1.y - h - bh, x1 - x0 + pw * 2, bh); const n = 12, cw = (x1 - x0) / n; for (let i = 0; i < n; i++) { c.fillStyle = i % 2 ? "#111" : "#fff"; c.fillRect(x0 + i * cw, p1.y - h - bh * 0.25, cw, bh * 0.25); } if (bh > 9) txt(c, P.lap >= LAPS - 1 ? "FINISH" : "START", p1.x, p1.y - h - bh * 0.6, Math.min(30, bh * 0.55), "#fff"); if (P.lap === LAPS - 1 && !tape.broke) { c.strokeStyle = "#ff3b5c"; c.lineWidth = Math.max(1.5, p1.w * 0.03); c.beginPath(); c.moveTo(x0, p1.y - h * 0.32); c.quadraticCurveTo(p1.x, p1.y - h * 0.26 + Math.sin(g.time * 6) * p1.w * 0.01, x1, p1.y - h * 0.32); c.stroke(); } };
     let L = false, R = false; const touches = new Map();
-    g.dbg = () => ({ P, cpus, seg: segAt(P.z + 300), place: place(), start });
+    g.dbg = () => ({ P, cpus, seg: segAt(P.z + 300), place: place(), start }); g.cheat = (k) => { start = 0; P.lap = LAPS - 1; P.z = trackLen - 2200; P.v = maxV * 0.8; cpus.forEach((q) => { q.lap = LAPS - 1; q.z = k === "win" ? trackLen * 0.5 : trackLen - 400; }); };
     const upd = () => { L = R = false; touches.forEach((o) => { if (o.x < W / 2) L = true; else R = true; }); };
     g.onDown = (o) => { touches.set(o.id, o); upd(); }; g.onMove = (o) => { touches.set(o.id, o); upd(); }; g.onUp = (o) => { touches.delete(o.id); upd(); if (P.drift > 0.6 && P.meter > 20) { P.boost = 1.2; P.meter = 0; X.SFX.coin(); g.flash("#ffd43b", 0.25); } P.drift = 0; };
     const segAt = (z) => segs[Math.floor(((z % trackLen) + trackLen) % trackLen / segL) % segs.length];
     const place = () => 1 + cpus.filter((k) => k.lap * trackLen + k.z > P.lap * trackLen + P.z).length;
     g.run((dt) => {
       if (start > 0) { start -= dt; if (Math.floor(start + dt) !== Math.floor(start)) X.SFX.tick(); return; }
-      if (finished) return;
+      if (finished) {
+        // ゴール後：減速しながら走り、ほかの車も走りつづける。演出が終わったら結果へ
+        P.v = Math.max(maxV * 0.25, P.v - maxV * 0.6 * dt); P.z += P.v * dt; P.steer = lerp(P.steer, 0, 0.1); P.x = lerp(P.x, 0, dt);
+        for (const k of cpus) { k.z += k.v * dt; if (k.z >= trackLen) { k.z -= trackLen; k.lap++; } }
+        if (tape.done(2.4)) { const pl = fin.pl; g.end(pl === 1, pl === 1 ? "1位でゴール！" : pl + "位でゴール", ["順位 " + pl + "/" + (cpus.length + 1), "タイム " + (Math.round(fin.time * 10) / 10).toFixed(1) + "秒"], false, { v: Math.round(fin.time * 10) / 10, unit: "秒", lower: true, winOnly: true, gap: ["1位まで", "あと " + (pl - 1) + "台"] }); }
+        return;
+      }
+      tRace += dt;
       const sp = P.v / maxV, seg = segAt(P.z + 300);
       const steer = (R ? 1 : 0) - (L ? 1 : 0); P.steer = lerp(P.steer, steer, 0.2);
       const curveAbs = Math.abs(seg.curve);
@@ -37,7 +47,7 @@
       for (const k of cpus) { const ks = segAt(k.z + 400); k.z += k.v * dt * (1 - Math.abs(ks.curve) * 0.012); k.x = lerp(k.x, clamp(-ks.curve * 0.12 + Math.sin(k.z / 3000 + k.v) * 0.4, -0.8, 0.8), dt); if (k.z >= trackLen) { k.z -= trackLen; k.lap++; }
         const dz = (k.lap * trackLen + k.z) - (P.lap * trackLen + P.z); if (dz > 0 && dz < 260 && Math.abs(k.x - P.x) < 0.35 && P.v > k.v) { P.v = k.v * 0.8; P.x += P.x > k.x ? 0.15 : -0.15; X.SFX.hit(); g.shake(8); g.vib(30); } }
       if (Math.random() < sp * 0.5) X.SFX.engine(sp);
-      if (P.lap >= LAPS) { finished = true; const pl = place(); g.end(pl === 1, pl === 1 ? "1位でゴール！" : pl + "位でゴール", ["順位 " + pl + "/" + (cpus.length + 1)], false); }
+      if (P.lap >= LAPS) { finished = true; const pl = place(); fin = { pl, time: tRace }; tape.cross(W / 2, Hh - 90, pl === 1, pl === 1 ? "1位！ " + tRace.toFixed(1) + "秒" : pl + "位… 1位まであと少し", pl === 1 ? "GOAL!" : pl + "位でゴール"); }
     }, (c) => {
       const sky = c.createLinearGradient(0, 0, 0, Hh * 0.5); sky.addColorStop(0, "#ff922b"); sky.addColorStop(0.6, "#f783ac"); sky.addColorStop(1, "#845ef7"); c.fillStyle = sky; c.fillRect(0, 0, W, Hh);
       c.fillStyle = "#ffe066"; c.beginPath(); c.arc(W * 0.7 + (skyX * 0.2) % W * 0, Hh * 0.22, 34, 0, 7); c.fill();
@@ -54,7 +64,7 @@
         if (s.i < 3) for (let k = -4; k < 4; k++) { c.fillStyle = (k + (s.i % 2)) % 2 ? "#fff" : "#111"; c.fillRect(p1.x + (k * p1.w) / 4, p2.y, p1.w / 4, p1.y - p2.y); }
         maxY = p2.y;
       }
-      for (let n = proj.length - 1; n >= 0; n--) { const { s, p1 } = proj[n]; if (p1.sc <= 0 || p1.y > Hh + 50) continue; if (s.spr) { const sx = p1.x + p1.w * s.spr.side, sz = p1.w * 0.5; if (s.spr.k === "tree") { c.fillStyle = "#6d4c41"; c.fillRect(sx - sz * 0.08, p1.y - sz * 0.5, sz * 0.16, sz * 0.5); c.fillStyle = "#2b8a3e"; c.beginPath(); c.moveTo(sx, p1.y - sz * 1.6); c.lineTo(sx + sz * 0.45, p1.y - sz * 0.4); c.lineTo(sx - sz * 0.45, p1.y - sz * 0.4); c.fill(); } else { c.fillStyle = "#fab005"; rr(c, sx - sz * 0.5, p1.y - sz * 0.9, sz, sz * 0.5, 4); c.fill(); c.fillStyle = "#212529"; c.font = "900 " + Math.max(6, sz * 0.22) + "px system-ui"; c.textAlign = "center"; c.fillText(s.spr.side > 0 ? "<<<" : ">>>", sx, p1.y - sz * 0.58); c.fillStyle = "#868e96"; c.fillRect(sx - 2, p1.y - sz * 0.4, 4, sz * 0.4); } }
+      for (let n = proj.length - 1; n >= 0; n--) { const { s, p1 } = proj[n]; if (p1.sc <= 0 || p1.y > Hh + 50) continue; if (s.i === 0) drawArch(p1); if (s.spr) { const sx = p1.x + p1.w * s.spr.side, sz = p1.w * 0.5; if (s.spr.k === "tree") { c.fillStyle = "#6d4c41"; c.fillRect(sx - sz * 0.08, p1.y - sz * 0.5, sz * 0.16, sz * 0.5); c.fillStyle = "#2b8a3e"; c.beginPath(); c.moveTo(sx, p1.y - sz * 1.6); c.lineTo(sx + sz * 0.45, p1.y - sz * 0.4); c.lineTo(sx - sz * 0.45, p1.y - sz * 0.4); c.fill(); } else { c.fillStyle = "#fab005"; rr(c, sx - sz * 0.5, p1.y - sz * 0.9, sz, sz * 0.5, 4); c.fill(); c.fillStyle = "#212529"; c.font = "900 " + Math.max(6, sz * 0.22) + "px system-ui"; c.textAlign = "center"; c.fillText(s.spr.side > 0 ? "<<<" : ">>>", sx, p1.y - sz * 0.58); c.fillStyle = "#868e96"; c.fillRect(sx - 2, p1.y - sz * 0.4, 4, sz * 0.4); } }
         for (const k of cpus) { if (segAt(k.z) !== s) continue; const dz = k.z - P.z; if (dz < -100) continue; const kx = p1.x + p1.w * k.x, kw = p1.w * 0.32, kh = kw * 0.55; if (kw < 2) continue; c.fillStyle = "rgba(0,0,0,.3)"; c.fillRect(kx - kw / 2, p1.y - kh * 0.2, kw, kh * 0.25); c.fillStyle = k.col; rr(c, kx - kw / 2, p1.y - kh, kw, kh * 0.8, Math.max(1, kw * 0.12)); c.fill(); c.fillStyle = "rgba(20,30,50,.85)"; rr(c, kx - kw * 0.32, p1.y - kh * 1.2, kw * 0.64, kh * 0.4, Math.max(1, kw * 0.08)); c.fill(); c.fillStyle = "#ff6b6b"; c.fillRect(kx - kw * 0.45, p1.y - kh * 0.55, kw * 0.18, kh * 0.12); c.fillRect(kx + kw * 0.27, p1.y - kh * 0.55, kw * 0.18, kh * 0.12); if (kw > 30) txt(c, k.n, kx, p1.y - kh * 1.45, 10, "#fff"); }
       }
       // 自分の車

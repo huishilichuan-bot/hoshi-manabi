@@ -61,7 +61,7 @@ try:
         q = cur(); ok(f"{fmt}: 形式どおり表示", q["t"] == fmt and (pg.locator("#work").count() == 1 or pg.locator(".tapfig").count() == 1))
         n0 = E("HM_APP.quiz().results.length")
         solve(True); pg.wait_for_timeout(120)
-        ok(f"{fmt}: 2秒以内はブロック", E("HM_APP.quiz().results.length") == n0 and "ちゃんと読んでね" in pg.inner_text("#toast-root"))
+        ok(f"{fmt}: 1秒以内はブロック", E("HM_APP.quiz().results.length") == n0 and "ちゃんと読んでね" in pg.inner_text("#toast-root"))
         pg.screenshot(path=f"{SHOT}/fmt-{fmt}-1.png")
         unblock()
         if fmt == "tap": pg.locator(f'.tapfig [data-hit="{q["ans"]}"]').first.tap(force=True)
