@@ -311,6 +311,8 @@
   }
   function curList() { return Q.mode === "retry" ? Q.retry : Q.qs; }
   function showQ() {
+    if (window.HMQ) HMQ.leave();
+    Q.work = null;
     const list = curList(), q = list[Q.i];
     Q.answered = false; Q.input = "";
     const total = list.length;
@@ -326,6 +328,7 @@
     else h += '<div class="qz-q">' + q.q + (say && canSpeak() ? ' <button type="button" class="say-btn" data-q="say" aria-label="英語を聞く">🔊</button>' : "") + "</div>";
     if (q.t === "ch") h += '<div class="opts">' + (q.opts || [q.a].concat(q.o)).map((o, i) => '<button type="button" class="opt" data-opt="' + i + '">' + esc(o) + "</button>").join("") + "</div>";
     else if (q.t === "ord" || q.t === "match" || q.t === "pair" || q.t === "tap") h += workHtml(q);
+    else if (window.HMQ && HMQ.has(q.t)) { Q.work = { plugin: true }; h += HMQ.html(q); }
     else h += '<div class="num-in"><div class="ans-box" id="ans-box"><span id="ans-val" class="num"></span><span class="caret"></span>' + (q.unit ? '<span class="ans-unit">' + esc(q.unit) + "</span>" : "") + "</div>" + keypad(q) + "</div>";
     h += '</div><div class="qz-foot" id="qz-foot"></div>';
     const el = $("#quiz");
@@ -333,7 +336,8 @@
     el.scrollTop = 0;
     Q.shownAt = performance.now();
     const pd = $(".passage", el); if (pd) pd.addEventListener("toggle", () => (Q.passOpen = pd.open));
-    if (Q.work) renderWork();
+    if (Q.work && Q.work.plugin) HMQ.mount(q, el, { ready: (on) => { const b = $("#work-ok"); if (b) b.disabled = !on || Q.answered; }, answer: (g) => answer(g), sound, toast: (m) => toast(esc(m)), haptic });
+    else if (Q.work) renderWork();
   }
   // ---------- 新しい問題形式（並べかえ・線でつなぐ・カード合わせ・図をタップ） ----------
   const PAIR_COL = ["#ff6b6b", "#4dabf7", "#51cf66", "#fcc419", "#cc5de8", "#ff922b"];
@@ -349,7 +353,7 @@
     const hint = q.t === "ord" ? "タップした順にならぶよ（もう一度タップでもどす）" : q.t === "match" ? "左→右の順にタップして線でつなごう" : "同じ組になるカードを2まいずつタップしよう";
     return '<div class="work work-' + q.t + (q.big ? " big-l" : "") + '" id="work"></div><p class="small muted center">' + hint + '</p><button type="button" class="btn primary block" data-q="submit" id="work-ok" disabled>こたえる</button>';
   }
-  function workDone() { const w = Q.work, q = curList()[Q.i]; if (!w) return false; if (q.t === "ord") return w.pick.length === q.items.length; if (q.t === "match") return Object.keys(w.link).length === q.pairs.length; return Object.keys(w.mate).length === w.cards.length; }
+  function workDone() { const w = Q.work, q = curList()[Q.i]; if (!w) return false; if (w.plugin) return HMQ.done(q); if (q.t === "ord") return w.pick.length === q.items.length; if (q.t === "match") return Object.keys(w.link).length === q.pairs.length; return Object.keys(w.mate).length === w.cards.length; }
   function renderWork() {
     const q = curList()[Q.i], w = Q.work, box = $("#work"); if (!box || !w) return;
     let h = "";
@@ -384,12 +388,14 @@
   }
   function workResult() {
     const q = curList()[Q.i], w = Q.work;
+    if (w && w.plugin) return HMQ.result(q);
     if (q.t === "ord") { const text = w.pick.map((i) => q.items[i]).join(" → "); return { ok: text === q.items.join(" → "), text }; }
     if (q.t === "match") { const ok = q.pairs.every((_, i) => w.link[i] === i); return { ok, text: q.pairs.map((p, i) => p[0] + "－" + (w.link[i] != null ? q.pairs[w.link[i]][1] : "？")).join("、") }; }
     const ok = w.cards.every((c, k) => w.cards[w.mate[k]][0] === c[0]); return { ok, text: Object.keys(w.mate).map(Number).filter((k) => k < w.mate[k]).map((k) => q.pairs[w.cards[k][0]][w.cards[k][1]] + "－" + q.pairs[w.cards[w.mate[k]][0]][w.cards[w.mate[k]][1]]).join("、") };
   }
   function workShowResult(q, given) {
     const box = $("#work");
+    if (Q.work && Q.work.plugin) { HMQ.show(q); return; }
     if (q.t === "tap") { $$("[data-hit]").forEach((el) => { if (el.dataset.hit === q.ans) el.classList.add("hit-ok"); else if (el.dataset.hit === given) el.classList.add("hit-ng"); }); return; }
     if (!box) return; box.classList.add("done");
     if (q.t === "ord") $$(".ord-slot").forEach((el, k) => el.classList.add(q.items[Q.work.pick[k]] === q.items[k] ? "right" : "wrong"));

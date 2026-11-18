@@ -8,7 +8,7 @@ if (HM.finalize) HM.finalize();
 const NAME = { math: "算数", ja: "国語", life: "生活", sci: "理科", soc: "社会", en: "英語" };
 const GN = (g) => (g <= 6 ? "小" + g : "中" + (g - 6));
 const SEEDS = +(process.argv[2] || 30);
-const hasFig = (q) => /<svg|class="qrow|<img|data-fig/.test((q.q || "") + (q.svg || "") + (q.fig || "")) || !!q.svg || !!q.fig || q.t === "tap" || q.t === "kanji";
+const hasFig = (q) => /<svg|class="qrow|<img|data-fig/.test((q.q || "") + (q.svg || "") + (q.fig || "")) || !!q.svg || !!q.fig || q.t === "tap";
 const out = { rows: [], tot: { steps: 0, perPass: 0, uniq: 0, fig: 0, types: {} } };
 for (const [s, grades] of Object.entries(HM.SUBJECTS)) for (const [g, units] of Object.entries(grades)) {
   let steps = 0, perPass = 0, figPass = 0, same = 0, pairs = 0; const uq = new Set(), uqFig = new Set(), types = {};
