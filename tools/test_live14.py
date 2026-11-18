@@ -115,7 +115,7 @@ with sync_playwright() as p:
     try:
         with D2.expect_popup(timeout=10000) as pi: D2.locator('[data-au="google"]').tap()
         pop = pi.value; pop.wait_for_load_state(timeout=15000); purl = pop.url
-        ok("Google：ポップアップでGoogleのログイン画面がひらく", "accounts.google.com" in purl or "firebaseapp.com/__/auth" in purl, purl[:80])
+        ok("Google：ポップアップでGoogleのログイン画面がひらく", "accounts.google.com" in purl or "huishilichuan-bot.github.io/__/auth/handler" in purl, purl[:80])
         pop.close()
         ok("Google：ポップアップをとじたらエラーなしで元にもどる", wait(D2, "!document.querySelector('[data-au=\"google\"]').disabled && document.querySelector('#au-err').hidden", 15000))
     except Exception as e:
