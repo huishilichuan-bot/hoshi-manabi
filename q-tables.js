@@ -10,26 +10,30 @@
     const R = rows(txt); uniq(name, R, 0); uniq(name, R, 1);
     if (R.length < 4) throw new Error("表が短い " + name);
     const dirs = o.back ? (o.fwd ? [0, 1] : [1]) : [0];
-    return (d) => {
+    const fn = (d) => {
       const r = pick(R), dir = pick(dirs);
       const ex = r[2] || (o.ex ? o.ex(r[0], r[1]) : "「" + r[0] + "」は「" + r[1] + "」。");
       if (dir === 0) return ch(o.fwd(r[0], r[1]), r[1], shuf(R.filter((x) => x !== r)).map((x) => x[1]), ex, o.opt);
       return ch(o.back(r[1], r[0]), r[0], shuf(R.filter((x) => x !== r)).map((x) => x[0]), ex, o.opt);
     };
+    fn.table = { kind: "pairs", name, rows: R, o };
+    return fn;
   };
   // 分類表：{ラベル: [項目...]}。「次のうち〈ラベル〉はどれ？」または「〈項目〉はどれに入る？」
   HM.groups = function (name, obj, o) {
     const labels = Object.keys(obj), all = new Set();
     labels.forEach((l) => { obj[l] = obj[l].split(/[、,]/).map((x) => x.trim()).filter(Boolean); obj[l].forEach((it) => { if (all.has(it)) throw new Error("分類の重複 " + name + ": " + it); all.add(it); }); });
-    return (d) => {
+    const fn = (d) => {
       const l = pick(labels.filter((x) => obj[x].length)), it = pick(obj[l]);
       if (o.toLabel && (!o.which || U.rng() < 0.5)) return ch(o.toLabel(it), l, shuf(labels.filter((x) => x !== l)), o.ex(it, l), o.opt);
       const others = shuf(labels.filter((x) => x !== l && !(o.not || []).includes(x + ">" + l))).flatMap((x) => obj[x]);
       return ch(o.which(l), it, shuf(others), o.ex(it, l), o.opt);
     };
+    fn.table = { kind: "groups", name, obj, o };
+    return fn;
   };
   // いくつかの作り方をまぜる
-  HM.mix = (...fs) => (d, i) => pick(fs)(d, i);
+  HM.mix = (...fs) => { const f = (d, i) => pick(fs)(d, i); f.parts = fs; return f; };
   // 単元を足す（同じ名前の単元があればステップを後ろに足す）
   HM.addGen = function (subj, grade, unitName, steps, at) {
     const list = ((HM.SUBJECTS[subj] = HM.SUBJECTS[subj] || {})[grade] = HM.SUBJECTS[subj][grade] || []);

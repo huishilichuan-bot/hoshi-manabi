@@ -1,359 +1,357 @@
 {
- "seeds": 200,
- "generatedChecked": 1020842,
- "uniqueQuestions": 242749,
+ "seeds": 20,
+ "generatedChecked": 216388,
+ "uniqueQuestions": 107537,
  "stats": {
-  "chk": 576798,
-  "ord": 16865,
-  "qx": 151794,
-  "pairchk": 3600,
-  "ordx": 1600,
-  "expr": 22000,
-  "tap": 17335,
-  "sys": 4000,
-  "eqn": 4800
+  "chk": 92900,
+  "ord": 1688,
+  "tf": 56200,
+  "qx": 20350,
+  "pairchk": 360,
+  "ordx": 160,
+  "expr": 2856,
+  "tap": 1732,
+  "sys": 636,
+  "eqn": 620,
+  "tiles": 15520,
+  "sort": 2640,
+  "multi": 4480,
+  "kanji": 14864
  },
  "problems": 0,
  "cover": {
   "math:1": {
    "units": 12,
-   "steps": 50,
-   "filled": 50,
-   "gen": 50,
+   "steps": 72,
+   "filled": 72,
+   "gen": 72,
    "bank": 0,
    "bankQ": 0
   },
   "math:2": {
    "units": 12,
+   "steps": 73,
+   "filled": 73,
+   "gen": 73,
+   "bank": 0,
+   "bankQ": 0
+  },
+  "math:3": {
+   "units": 15,
+   "steps": 82,
+   "filled": 82,
+   "gen": 82,
+   "bank": 0,
+   "bankQ": 0
+  },
+  "math:4": {
+   "units": 15,
+   "steps": 87,
+   "filled": 87,
+   "gen": 87,
+   "bank": 0,
+   "bankQ": 0
+  },
+  "math:5": {
+   "units": 18,
+   "steps": 100,
+   "filled": 100,
+   "gen": 100,
+   "bank": 0,
+   "bankQ": 0
+  },
+  "math:6": {
+   "units": 12,
+   "steps": 71,
+   "filled": 71,
+   "gen": 71,
+   "bank": 0,
+   "bankQ": 0
+  },
+  "math:7": {
+   "units": 7,
+   "steps": 48,
+   "filled": 48,
+   "gen": 48,
+   "bank": 0,
+   "bankQ": 0
+  },
+  "math:8": {
+   "units": 7,
+   "steps": 39,
+   "filled": 39,
+   "gen": 39,
+   "bank": 0,
+   "bankQ": 0
+  },
+  "math:9": {
+   "units": 9,
    "steps": 50,
    "filled": 50,
    "gen": 50,
    "bank": 0,
    "bankQ": 0
   },
-  "math:3": {
-   "units": 15,
-   "steps": 52,
-   "filled": 52,
-   "gen": 52,
-   "bank": 0,
-   "bankQ": 0
-  },
-  "math:4": {
-   "units": 15,
-   "steps": 57,
-   "filled": 57,
-   "gen": 57,
-   "bank": 0,
-   "bankQ": 0
-  },
-  "math:5": {
-   "units": 18,
-   "steps": 64,
-   "filled": 64,
-   "gen": 64,
-   "bank": 0,
-   "bankQ": 0
-  },
-  "math:6": {
-   "units": 12,
-   "steps": 47,
-   "filled": 47,
-   "gen": 47,
-   "bank": 0,
-   "bankQ": 0
-  },
-  "math:7": {
-   "units": 7,
-   "steps": 35,
-   "filled": 35,
-   "gen": 35,
-   "bank": 0,
-   "bankQ": 0
-  },
-  "math:8": {
-   "units": 7,
-   "steps": 26,
-   "filled": 26,
-   "gen": 26,
-   "bank": 0,
-   "bankQ": 0
-  },
-  "math:9": {
-   "units": 9,
-   "steps": 34,
-   "filled": 34,
-   "gen": 34,
-   "bank": 0,
-   "bankQ": 0
-  },
   "life:1": {
    "units": 5,
-   "steps": 19,
-   "filled": 19,
-   "gen": 3,
+   "steps": 32,
+   "filled": 32,
+   "gen": 16,
    "bank": 16,
    "bankQ": 134
   },
   "life:2": {
    "units": 5,
-   "steps": 16,
-   "filled": 16,
-   "gen": 3,
+   "steps": 29,
+   "filled": 29,
+   "gen": 16,
    "bank": 13,
    "bankQ": 102
   },
   "sci:3": {
    "units": 8,
-   "steps": 21,
-   "filled": 21,
-   "gen": 7,
+   "steps": 37,
+   "filled": 37,
+   "gen": 23,
    "bank": 14,
    "bankQ": 83
   },
   "sci:4": {
    "units": 8,
-   "steps": 27,
-   "filled": 27,
-   "gen": 6,
+   "steps": 41,
+   "filled": 41,
+   "gen": 20,
    "bank": 21,
    "bankQ": 185
   },
   "sci:5": {
    "units": 8,
-   "steps": 23,
-   "filled": 23,
-   "gen": 7,
+   "steps": 38,
+   "filled": 38,
+   "gen": 22,
    "bank": 16,
    "bankQ": 133
   },
   "sci:6": {
    "units": 9,
-   "steps": 29,
-   "filled": 29,
-   "gen": 7,
+   "steps": 47,
+   "filled": 47,
+   "gen": 25,
    "bank": 22,
    "bankQ": 178
   },
   "sci:7": {
    "units": 13,
-   "steps": 19,
-   "filled": 19,
-   "gen": 12,
+   "steps": 41,
+   "filled": 41,
+   "gen": 34,
    "bank": 7,
    "bankQ": 38
   },
   "sci:8": {
    "units": 10,
-   "steps": 21,
-   "filled": 21,
-   "gen": 12,
+   "steps": 35,
+   "filled": 35,
+   "gen": 26,
    "bank": 9,
    "bankQ": 69
   },
   "sci:9": {
    "units": 10,
-   "steps": 21,
-   "filled": 21,
-   "gen": 8,
+   "steps": 38,
+   "filled": 38,
+   "gen": 25,
    "bank": 13,
    "bankQ": 112
   },
   "soc:3": {
    "units": 4,
-   "steps": 13,
-   "filled": 13,
-   "gen": 2,
+   "steps": 20,
+   "filled": 20,
+   "gen": 9,
    "bank": 11,
    "bankQ": 95
   },
   "soc:4": {
    "units": 4,
-   "steps": 13,
-   "filled": 13,
-   "gen": 6,
+   "steps": 22,
+   "filled": 22,
+   "gen": 15,
    "bank": 7,
    "bankQ": 65
   },
   "soc:5": {
    "units": 4,
-   "steps": 18,
-   "filled": 18,
-   "gen": 4,
+   "steps": 30,
+   "filled": 30,
+   "gen": 16,
    "bank": 14,
    "bankQ": 129
   },
   "soc:6": {
    "units": 5,
-   "steps": 21,
-   "filled": 21,
-   "gen": 4,
+   "steps": 31,
+   "filled": 31,
+   "gen": 14,
    "bank": 17,
    "bankQ": 166
   },
   "soc:7": {
    "units": 7,
-   "steps": 19,
-   "filled": 19,
-   "gen": 7,
+   "steps": 34,
+   "filled": 34,
+   "gen": 22,
    "bank": 12,
    "bankQ": 98
   },
   "soc:8": {
    "units": 6,
-   "steps": 14,
-   "filled": 14,
-   "gen": 5,
+   "steps": 25,
+   "filled": 25,
+   "gen": 16,
    "bank": 9,
    "bankQ": 76
   },
   "soc:9": {
    "units": 4,
-   "steps": 18,
-   "filled": 18,
-   "gen": 1,
+   "steps": 26,
+   "filled": 26,
+   "gen": 9,
    "bank": 17,
    "bankQ": 170
   },
   "ja:1": {
-   "units": 4,
-   "steps": 8,
-   "filled": 8,
-   "gen": 6,
-   "bank": 2,
-   "bankQ": 11
+   "units": 6,
+   "steps": 35,
+   "filled": 35,
+   "gen": 13,
+   "bank": 22,
+   "bankQ": 171
   },
   "ja:2": {
-   "units": 4,
-   "steps": 10,
-   "filled": 10,
-   "gen": 5,
-   "bank": 5,
-   "bankQ": 45
+   "units": 8,
+   "steps": 60,
+   "filled": 60,
+   "gen": 15,
+   "bank": 45,
+   "bankQ": 365
   },
   "ja:3": {
-   "units": 5,
-   "steps": 10,
-   "filled": 10,
-   "gen": 7,
-   "bank": 3,
-   "bankQ": 15
+   "units": 10,
+   "steps": 71,
+   "filled": 71,
+   "gen": 18,
+   "bank": 53,
+   "bankQ": 415
   },
   "ja:4": {
-   "units": 5,
-   "steps": 12,
-   "filled": 12,
-   "gen": 7,
-   "bank": 5,
-   "bankQ": 49
+   "units": 11,
+   "steps": 85,
+   "filled": 85,
+   "gen": 22,
+   "bank": 63,
+   "bankQ": 453
   },
   "ja:5": {
-   "units": 4,
-   "steps": 12,
-   "filled": 12,
-   "gen": 6,
-   "bank": 6,
-   "bankQ": 53
+   "units": 9,
+   "steps": 74,
+   "filled": 74,
+   "gen": 18,
+   "bank": 56,
+   "bankQ": 439
   },
   "ja:6": {
-   "units": 4,
-   "steps": 12,
-   "filled": 12,
-   "gen": 6,
-   "bank": 6,
-   "bankQ": 55
+   "units": 9,
+   "steps": 74,
+   "filled": 74,
+   "gen": 18,
+   "bank": 56,
+   "bankQ": 437
   },
   "ja:7": {
-   "units": 6,
-   "steps": 12,
-   "filled": 12,
-   "gen": 8,
-   "bank": 4,
-   "bankQ": 26
+   "units": 16,
+   "steps": 130,
+   "filled": 130,
+   "gen": 28,
+   "bank": 102,
+   "bankQ": 750
   },
   "ja:8": {
-   "units": 5,
-   "steps": 12,
-   "filled": 12,
-   "gen": 7,
-   "bank": 5,
-   "bankQ": 37
+   "units": 14,
+   "steps": 121,
+   "filled": 121,
+   "gen": 26,
+   "bank": 95,
+   "bankQ": 749
   },
   "ja:9": {
-   "units": 5,
-   "steps": 10,
-   "filled": 10,
-   "gen": 7,
-   "bank": 3,
-   "bankQ": 20
+   "units": 13,
+   "steps": 108,
+   "filled": 108,
+   "gen": 25,
+   "bank": 83,
+   "bankQ": 596
   },
   "en:3": {
    "units": 4,
-   "steps": 14,
-   "filled": 14,
-   "gen": 11,
+   "steps": 19,
+   "filled": 19,
+   "gen": 16,
    "bank": 3,
    "bankQ": 32
   },
   "en:4": {
    "units": 4,
-   "steps": 12,
-   "filled": 12,
-   "gen": 9,
+   "steps": 17,
+   "filled": 17,
+   "gen": 14,
    "bank": 3,
    "bankQ": 32
   },
   "en:5": {
    "units": 5,
-   "steps": 12,
-   "filled": 12,
-   "gen": 8,
+   "steps": 22,
+   "filled": 22,
+   "gen": 18,
    "bank": 4,
    "bankQ": 38
   },
   "en:6": {
    "units": 5,
-   "steps": 13,
-   "filled": 13,
-   "gen": 8,
+   "steps": 23,
+   "filled": 23,
+   "gen": 18,
    "bank": 5,
    "bankQ": 54
   },
   "en:7": {
    "units": 7,
-   "steps": 13,
-   "filled": 13,
-   "gen": 10,
+   "steps": 26,
+   "filled": 26,
+   "gen": 23,
    "bank": 3,
    "bankQ": 28
   },
   "en:8": {
    "units": 4,
-   "steps": 12,
-   "filled": 12,
-   "gen": 6,
+   "steps": 21,
+   "filled": 21,
+   "gen": 15,
    "bank": 6,
    "bankQ": 64
   },
   "en:9": {
    "units": 4,
-   "steps": 11,
-   "filled": 11,
-   "gen": 6,
+   "steps": 20,
+   "filled": 20,
+   "gen": 15,
    "bank": 5,
    "bankQ": 52
   }
  },
  "warns": {
-  "short_set": {
-   "n": 2,
-   "sample": [
-    "math 1 / 10より おおきい かず / 11〜20 9/10",
-    "math 6 / 場合の数 / 条件に合う場合 4/5"
-   ]
-  },
   "bank_ex_not_contain_answer": {
-   "n": 3114,
+   "n": 1254,
    "sample": [
     "math 3 / 三角形と角 / 角 :: 角の大きさは何で決まる？ => 辺の開きぐあい",
     "math 3 / 三角形と角 / 角 :: 角の大きさは何で決まる？ => 辺の開きぐあい",

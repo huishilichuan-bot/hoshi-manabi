@@ -86,6 +86,26 @@
   };
   // 問題バンクをまとめて登録：[単元名, [[ステップ名, "1行1問の文字列"], ...]]
   HM.bank = (subj, grade, cnt, units) => HM.addUnits(subj, grade, units.map(([un, steps]) => { const u = HM.unit(un, steps.map(([sn, txt, c]) => [sn, (Array.isArray(txt) ? txt : txt.split("\n")).map((x) => x.trim()).filter(Boolean), c || cnt])); steps.forEach((s, i) => { if (s[3]) u.steps[i].pass = s[3]; }); return u; }));
+  // となり同士で答えが同じものを、少し後ろの問題と入れかえて離す（〇×は同じ答えが3つ続かないように）
+  HM.spreadSame = function (out) {
+    const A = (q) => String(q.a);
+    const bad = (i) => i > 0 && (out[i].t === "tf" ? i > 1 && A(out[i]) === A(out[i - 1]) && A(out[i - 1]) === A(out[i - 2]) : A(out[i]) === A(out[i - 1]));
+    for (let pass = 0; pass < 3; pass++) {
+      let moved = false;
+      for (let i = 1; i < out.length; i++) {
+        if (!bad(i)) continue;
+        for (let j = 0; j < out.length; j++) {
+          if (j === i || j === i - 1) continue;
+          [out[i], out[j]] = [out[j], out[i]];
+          const ok = [i - 1, i, i + 1, j - 1, j, j + 1, j + 2, i + 2].every((k) => k < 1 || k >= out.length || !bad(k));
+          if (ok) { moved = true; break; }
+          [out[i], out[j]] = [out[j], out[i]];
+        }
+      }
+      if (!moved) break;
+    }
+    return out;
+  };
   // 1ステップ分の問題をつくる（易→難の順）
   HM.makeSet = function (step, seed) {
     const r0 = HM.mulberry(seed == null ? (Math.random() * 1e9) >>> 0 : seed);
@@ -96,7 +116,12 @@
       for (let i = 0; i < n; i++) {
         const d = n > 1 ? i / (n - 1) : 1;
         let q = null;
-        for (let t = 0; t < 60; t++) { const c = step.src(d, i); if (!c) continue; if (!seen.has(c.q + "|" + c.a)) { q = c; break; } }
+        // となりの問題と答えが同じにならないように（〇×は3つ続かないように）
+        const p1 = out.length ? String(out[out.length - 1].a) : null, p2 = out.length > 1 ? String(out[out.length - 2].a) : null;
+        const adjOk = (c) => (c.t === "tf" ? !(String(c.a) === p1 && p1 === p2) : String(c.a) !== p1);
+        let fallback = null;
+        for (let t = 0; t < 80; t++) { const c = step.src(d, i); if (!c) continue; if (seen.has(c.q + "|" + c.a)) continue; if (adjOk(c)) { q = c; break; } if (!fallback) fallback = c; }
+        if (!q) q = fallback;
         if (q) { seen.add(q.q + "|" + q.a); out.push(q); }
       }
     } else if (Array.isArray(step.src)) {
@@ -107,6 +132,7 @@
       if (!step.shuffle) idx.sort((a, b) => a - b);
       out = idx.map((i) => Object.assign({}, all[i]));
     }
+    HM.spreadSame(out);
     out.forEach((q) => { if (q.t === "ch") q.opts = HM.U.shuf([q.a].concat(q.o)); if (step.pass && !q.pass) q.pass = step.pass; });
     HM.setRng(Math.random);
     return out;

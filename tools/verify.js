@@ -5,6 +5,7 @@ const ROOT = path.join(__dirname, "..");
 require(path.join(ROOT, "q-util.js"));
 const FILES = fs.readFileSync(path.join(ROOT, "index.html"), "utf8").match(/q-[a-z0-9-]+\.js/g).filter((f) => f !== "q-util.js");
 [...new Set(FILES)].forEach((f) => require(path.join(ROOT, f)));
+if (HM.finalize) HM.finalize();
 const SEEDS = +process.argv[2] || 200;
 
 // ---- 独立した有理数（BigIntで誤差なし） ----
@@ -76,7 +77,7 @@ function check(q, where) {
   const fail = (m) => problems.push(where + " :: " + m + " :: " + String(q.q).replace(/<[^>]+>/g, " ").slice(0, 90) + " => " + q.a);
   if (!q.ex || String(q.ex).length < 4) fail("解説なし");
   if (q.a == null || /undefined|NaN|null|Infinity/.test(String(q.a) + q.q + q.ex + (q.o || []).join("|"))) return fail("値が不正");
-  const A = parseAns(q.a);
+  const A = /^(tf|tiles|sort|multi|kanji|match|pair|ord|tap)$/.test(q.t) ? null : parseAns(q.a);
   // 1) 問題文の式を読みなおして計算（生成プログラムとは別の計算）
   if (q.qx) { let v; try { v = evalBoth(norm(q.q)); } catch (e) { return fail("式が読めない " + norm(q.q)); } const qv = { v: v.ex, fl: v.fl, pi: false }; if (!valEq(qv, A)) return fail("問題文の式の値と答えがちがう(" + (v.ex ? qstr(v.ex) : v.fl) + ")"); stats.qx = (stats.qx || 0) + 1; }
   // 2) 検算式（chk）を独立に計算して照合
@@ -133,12 +134,57 @@ function check(q, where) {
     const hit = q.hits.find((h) => h[0] === q.ans); if (!hit) return fail("正解の場所がない"); if (hit[1] !== q.a) return fail("正解の名前がちがう");
     stats.tap = (stats.tap || 0) + 1;
   }
+  // ---- v1.5 の新しい形式 ----
+  if (q.t === "tf") {
+    if (q.a !== "〇" && q.a !== "×") return fail("〇×の答えがない");
+    if (q.tfOf) {
+      const same = String(q.tfOf.cand) === String(q.tfOf.a);
+      if (same !== (q.a === "〇")) return fail("〇×の判定が元の答えとちがう");
+      if (!same) { const X = parseAns(q.tfOf.a), Y = parseAns(q.tfOf.cand); if (X && Y && valEq(X, Y)) return fail("〇×：まちがいの答えが正解と同じ値"); }
+      if (!String(q.q).includes(String(q.tfOf.cand))) return fail("〇×：問題に答えの候補が出ていない");
+      if (q.base) check(q.base, where + " (元の問題)");
+    }
+    stats.tf = (stats.tf || 0) + 1;
+  }
+  if (q.t === "tiles") {
+    if (!Array.isArray(q.pieces) || q.pieces.length < 2) return fail("カードが足りない");
+    if (q.pieces.join(q.sep == null ? "" : q.sep) !== q.a) return fail("カードの答えがちがう");
+    if ((q.extra || []).some((x) => q.pieces.includes(x))) return fail("まぎらわしいカードが正解の文字と同じ");
+    stats.tiles = (stats.tiles || 0) + 1;
+  }
+  if (q.t === "sort") {
+    if (!Array.isArray(q.bins) || q.bins.length < 2) return fail("箱が足りない");
+    if (new Set(q.bins).size !== q.bins.length) return fail("箱の名前が重複");
+    const names = q.items.map((x) => x[0]); if (new Set(names).size !== names.length) return fail("カードが重複");
+    if (q.items.some((x) => !(x[1] >= 0 && x[1] < q.bins.length))) return fail("箱の番号が不正");
+    if (q.bins.some((_, bi) => !q.items.some((x) => x[1] === bi))) return fail("空の箱がある");
+    if (q.sortSrc) for (const [it, bi] of q.items) if (!(q.sortSrc[q.bins[bi]] || []).includes(it)) return fail("分類表とちがう " + it);
+    stats.sort = (stats.sort || 0) + 1;
+  }
+  if (q.t === "multi") {
+    if (!Array.isArray(q.ans) || !q.ans.length) return fail("正解がない");
+    if (new Set(q.opts).size !== q.opts.length) return fail("選択肢が重複");
+    if (q.ans.some((a) => !q.opts.includes(a))) return fail("正解が選択肢にない");
+    if (q.ans.length >= q.opts.length) return fail("まちがいの選択肢がない");
+    if (q.a !== q.ans.slice().sort().join("・")) return fail("答えの文字がちがう");
+    if (q.multiSrc) { for (const o of q.opts) if (q.ans.includes(o) !== q.multiSrc.yes.includes(o)) return fail("分類表とちがう " + o); }
+    stats.multi = (stats.multi || 0) + 1;
+  }
+  if (q.t === "nl") {
+    const want = q.av != null ? q.av : parseFloat(q.a); const k = (want - q.min) / q.step;
+    if (!(want >= q.min - 1e-9 && want <= q.max + 1e-9)) return fail("数直線の答えが範囲外");
+    if (Math.abs(k - Math.round(k)) > 1e-6) return fail("数直線の答えが目もりの上にない");
+    if (q.chk != null) { let v; try { v = evalBoth(String(q.chk)); } catch (e) { return fail("数直線の検算式が読めない"); } if (Math.abs((v.ex ? qf(v.ex) : v.fl) - want) > 1e-9) return fail("数直線の検算がちがう"); }
+    stats.nl = (stats.nl || 0) + 1;
+  }
+  if (q.t === "kanji") { if (!q.kj || [...q.kj].length !== 1 || !(q.sc > 0)) return fail("漢字問題の字・画数がない"); stats.kanji = (stats.kanji || 0) + 1; }
+  if (q.t === "ch" && q.figAsk && !q.svg && !/<svg/.test(q.q)) return fail("図の問題なのに図がない");
   if (q.say != null && (!/^[A-Za-z0-9 ,.'?!-]+$/.test(q.say))) return fail("読み上げ文が英語でない");
   if (q.sayIsAnswer && q.say !== q.a) return fail("聞きとりの答えと音声がちがう");
   // 連立方程式：クラメルの公式で独立に解く
   if (q.sys) { const [[a, b, e], [c, d, f]] = q.sys; const D = a * d - b * c; if (D === 0) return fail("連立が解けない"); const x = qd(Q(e * d - b * f), Q(D)), y = qd(Q(a * f - e * c), Q(D)); const want = q.want === "y" ? y : x; if (!A || !qeq(A.v, want)) return fail("連立の解がちがう"); stats.sys = (stats.sys || 0) + 1; }
   // バンク問題：解説に正解が書かれているか（2つ目の根拠との照合）
-  if (q.bank) { const key = String(q.a).replace(/[（(].*?[)）]/g, "").trim(); if (!String(q.ex).includes(key)) W("bank_ex_not_contain_answer", where + " :: " + q.q.slice(0, 40) + " => " + q.a); for (const o of q.o) if (String(q.ex).includes("答えは" + o) || String(q.ex).includes("正解は" + o)) fail("解説がまちがい選択肢を正解としている"); }
+  if (q.bank && q.o) { const key = String(q.a).replace(/[（(].*?[)）]/g, "").trim(); if (!String(q.ex).includes(key)) W("bank_ex_not_contain_answer", where + " :: " + q.q.slice(0, 40) + " => " + q.a); for (const o of q.o) if (String(q.ex).includes("答えは" + o) || String(q.ex).includes("正解は" + o)) fail("解説がまちがい選択肢を正解としている"); }
 }
 
 // ---- 国語・英語の表チェック（表そのものの重複・矛盾） ----
@@ -151,6 +197,8 @@ if (HM.JA) {
 const allKJ = HM.JA ? [].concat(...Object.values(HM.JA.KJT)) : [];
 function langCheck(q, where) {
   const fail = (m) => problems.push(where + " :: " + m + " :: " + q.q);
+  if (q.t === "kanji") return;
+  if (q.t === "tf" && q.base) return langCheck(q.base, where + " (元の問題)");
   if (q.kj) { const rs = allKJ.filter((w) => w[0] === q.kj).map((w) => w[1]); if (!rs.includes(q.a)) fail("読みが表とちがう"); for (const o of q.o) if (rs.includes(o)) fail("まちがい選択肢も正しい読み"); }
   if (q.kjw) { for (const o of q.o) if (allKJ.some((w) => w[0] === o && w[1] === q.kjw)) fail("まちがい選択肢も同じ読みの漢字: " + o); if (!allKJ.some((w) => w[0] === q.a && w[1] === q.kjw)) fail("書きの正解が表とちがう"); }
   if (q.kjpair) { for (const [k, y] of q.pairs) if (!allKJ.some((w) => w[0] === k && w[1] === y)) fail("カードの読みが表とちがう " + k); for (const [k] of q.pairs) for (const [, y2] of q.pairs) if (allKJ.some((w) => w[0] === k && w[1] === y2) && !q.pairs.some((p) => p[0] === k && p[1] === y2)) fail("別の組み合わせも正しい " + k + y2); }

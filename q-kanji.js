@@ -31,8 +31,10 @@
   const CH = 8, PER_UNIT = 40;
   for (const g in ENT) {
     const list = ENT[g], units = [];
-    for (let u0 = 0, un = 1; u0 < list.length; u0 += PER_UNIT, un++) {
-      const part = list.slice(u0, u0 + PER_UNIT), steps = [];
+    // 単元の大きさをそろえる（最後の単元が少なすぎないように）
+    const nU = Math.ceil(list.length / PER_UNIT), SZ = Math.ceil(list.length / nU);
+    for (let u0 = 0, un = 1; u0 < list.length; u0 += SZ, un++) {
+      const part = list.slice(u0, u0 + SZ), steps = [];
       for (let c0 = 0, cn = 1; c0 < part.length; c0 += CH, cn++) {
         const ch = part.slice(c0, c0 + CH), lab = ch.map((e) => e.k).join("");
         steps.push(["なぞる「" + lab + "」", ch.map((e) => mk(e, e.words[0], +g, "trace")), ch.length]);
@@ -43,7 +45,7 @@
       const pool = []; part.forEach((e) => e.words.forEach((w, wi) => pool.push([e, w, wi])));
       steps.push(["まとめ（ほかのことばで）", (d) => { const sel = pool.filter((p) => (d < 0.5 ? p[2] === 0 : p[2] > 0) || pool.length < 12); const p = sel[Math.floor(HM.U.rng() * sel.length)] || pool[0]; return mk(p[0], p[1], +g, "write"); }, 10]);
       const n = Math.ceil(list.length / PER_UNIT) > 1 ? "漢字を書こう " + "①②③④⑤⑥⑦⑧⑨⑩"[un - 1] : "漢字を書こう";
-      const unit = HM.unit(n, steps);
+      const unit = HM.unit(n, steps); unit.kanji = true;
       unit.steps.forEach((s) => { if (/^書く/.test(s.n)) s.shuffle = true; });
       units.push(unit);
     }
