@@ -91,16 +91,18 @@ function schedule(ms, why) {
   if (!S.user || S.timer) return;
   S.timer = setTimeout(() => { S.timer = null; push(why || "timer"); }, Math.max(0, ms));
 }
+// 書きこみ中ならそれが終わるのを待ってから（ログアウト前の保存が途中で切れないように）
 async function push(why) {
+  if (S.inflight) { try { await S.inflight; } catch (e) {} }
   if (!S.user || S.paused || !S.ready) return;
   const auto = why === "step" || why === "milestone";
   if (auto && Date.now() - S.lastPush < MIN_GAP) { schedule(S.lastPush + MIN_GAP - Date.now(), "timer"); return; }
-  if (S.busy) { S.again = true; return; }
+  if (S.inflight) return push(why);
   const st = APP().exportState(), h = hashOf(st);
   if (h === S.lastHash) { S.dirty = false; if (S.status !== "saved" && S.status !== "offline") setStatus("saved"); return; }
   clearTimeout(S.timer); S.timer = null;
   const uid = S.user.uid, gen = S.gen;
-  S.busy = true;
+  let done; S.inflight = new Promise((r) => (done = r));
   try {
     S.lastPush = Date.now(); setStatus("saving");
     const out = await S.fb.mergeWrite(uid, (doc) => {
@@ -120,12 +122,13 @@ async function push(why) {
     if (gen !== S.gen) return;
     S.dirty = true; setStatus(navigator.onLine === false || /unavailable|network|offline|failed-precondition/.test((e && e.code) || "") ? "offline" : "error");
     schedule(RETRY_MS, "retry");
-  } finally { S.busy = false; if (S.again) { S.again = false; if (S.dirty && gen === S.gen) push("retry"); } }
+  } finally { S.inflight = null; done(); }
 }
+const unsaved = () => !!(S.user && S.ready && hashOf(APP().exportState()) !== S.lastHash);
 window.HMSync = {
   dirty() { if (!S.user || S.applying) return; S.dirty = true; },
   flush: (why) => push(why || "hidden"),
-  status: () => ({ status: S.status, user: S.user, savedAt: S.savedAt, dirty: S.dirty, lastPush: S.lastPush, writes: S.writes, timer: !!S.timer, ready: S.ready, profile: APP().profileKey() }),
+  status: () => ({ status: S.status, user: S.user, savedAt: S.savedAt, dirty: S.dirty || unsaved(), lastPush: S.lastPush, writes: S.writes, timer: !!S.timer, ready: S.ready, profile: APP().profileKey() }),
 };
 // ほかの端末で変わったとき（クラウドの記録が更新されたとき）
 async function onRemote(doc, fromCache) {
@@ -323,7 +326,7 @@ async function logout() {
   if (!confirm("ログアウトしますか？\n記録はアカウントに保存されています。この端末からはアカウントの記録が消えて、ログイン画面にもどります。")) return;
   try {
     await push("hidden");
-    if (S.dirty && !confirm("まだアカウントに保存できていない記録があります。インターネットにつないでからログアウトすると、その記録も保存されます。\nこのままログアウトしますか？")) return;
+    if (unsaved() && !confirm("まだアカウントに保存できていない記録があります。インターネットにつないでからログアウトすると、その記録も保存されます。\nこのままログアウトしますか？")) return;
     S.paused = true;
     await S.fb.signOut();
   } catch (e) { S.paused = false; APP().toast(jaError(e)); return; }
@@ -339,6 +342,7 @@ async function deleteAccount() {
 async function doDelete() {
   const uid = S.user && S.user.uid; if (!uid) return;
   S.paused = true; if (S.unsub) { try { S.unsub(); } catch (e) {} S.unsub = null; }
+  if (S.inflight) { try { await S.inflight; } catch (e) {} }
   try {
     await S.fb.deleteDoc(uid);
     await S.fb.deleteUser();

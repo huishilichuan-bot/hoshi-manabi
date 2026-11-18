@@ -150,10 +150,15 @@ try:
     hide_show(); pg.wait_for_timeout(600)
     cloud = json.loads(E("__HM_FB_MOCK.db.docs['u0'].data")); loc = E("(() => { const s = HM_APP.state(); return [s.totalStars, Object.keys(s.chars)]; })()")
     ok("同時に遊んでも、なかまは両方・⭐はへらない（クラウドと端末が同じ）", "localchar" in cloud["chars"] and "ipadchar" in cloud["chars"] and cloud["totalStars"] >= before + 2 and loc[0] == cloud["totalStars"] and "ipadchar" in loc[1], [cloud["totalStars"], before, loc])
+    # 4c) 保存のとちゅうでログアウトしても、記録はアカウントに残る
+    E("(() => { const s = HM_APP.state(); s.chars.lastminute = { n: 1, t: 9 }; HM_APP.save(); __HM_FB_MOCK.delay = 900; })()")
+    E("HMSync.flush()"); pg.wait_for_timeout(100)
     # 5) ログアウト → この端末からアカウントの記録が消えて、ログイン画面へ
     E("window.__keys0 = Object.keys(localStorage)")
-    tap('[data-acct="logout"]'); pg.wait_for_timeout(900)
+    tap('[data-acct="logout"]'); pg.wait_for_timeout(2500)
     ok("ログアウトでログイン画面にもどる", view() == "welcome")
+    E("__HM_FB_MOCK.delay = 250")
+    ok("保存のとちゅうでログアウトしても記録はアカウントに残る", "lastminute" in json.loads(E("__HM_FB_MOCK.db.docs['u0'].data"))["chars"])
     keys = E("Object.keys(localStorage)")
     ok("ログアウトで端末のアカウントの記録を消す", not any(k.startswith("hoshimanabi:u:") or k.startswith("hoshimanabi-sync:") or k == "hoshimanabi-active" for k in keys), keys)
     ok("ログアウト後はまっさらなゲスト（前のアカウントの⭐なし）", E("HM_APP.state().totalStars") == 0 and E("HM_APP.profileKey()") == "hoshimanabi" and not E("HMAuthUI.state().user"))
