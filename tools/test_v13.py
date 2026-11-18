@@ -80,7 +80,11 @@ try:
     pg.locator("#au-submit").tap(); pg.wait_for_timeout(60)
     ok("読みこみ中の表示（スピナー・ボタン無効）", pg.locator("#au-submit.busy").count() == 1 and pg.locator("#au-submit").is_disabled())
     shot("05-loading")
+    ok("新しいアカウント＋ゲストの記録あり → 引きつぎを聞く", wait_view("carry") and "⭐ 7" in pg.locator(".au-carry-box").inner_text())
+    shot("05b-carry")
+    tap('[data-au="carry-yes"]')
     ok("登録できたら完了画面", wait_view("done"))
+    ok("引きついだらゲストの記録はアカウントへ移る（プロフィールはアカウント用）", E("HM_APP.profileKey()") == "hoshimanabi:u:u0" and E("localStorage.getItem('hoshimanabi')") is None and E("localStorage.getItem('hoshimanabi-active')") == "u0")
     shot("06-done")
     pg.wait_for_timeout(600)
     doc = E("__HM_FB_MOCK.db.docs['u0']")
@@ -135,10 +139,27 @@ try:
     wr = W(); pg.reload(); pg.wait_for_timeout(2500)
     ok("ログインしたまま起動しなおしても書かない", E("HMAuthUI.state().status") == "saved" and E("__HM_FB_MOCK.writes") == 0, [E("HMAuthUI.state().status"), E("__HM_FB_MOCK.writes")])
     tap('.tab[data-tab="settings"]'); pg.wait_for_timeout(400)
-    # 5) ログアウト → 同じメールで登録しようとするとエラー → まちがったパスワード → ネット → 回数
-    tap('[data-acct="logout"]'); pg.wait_for_timeout(700)
-    ok("ログアウトでゲスト欄にもどる", pg.locator(".acct-card.guest").count() == 1)
-    tap('[data-acct="login"]'); tap('[data-au="to-email"]'); tap('[data-au="mode-signup"]')
+    # 4b) ほかの端末で変わったら自動で反映（onSnapshot）・同時に遊んでも⭐はへらない
+    pg.wait_for_timeout(600)
+    E("__HM_FB_MOCK.remoteEdit('u0', (d) => { d.totalStars += 5; d.chars.remotechar = { n: 1, t: 1 }; d.settings.nick = 'iPadくん'; })"); pg.wait_for_timeout(600)
+    r = E("(() => { const s = HM_APP.state(); return [s.totalStars, !!s.chars.remotechar, s.settings.nick]; })()")
+    ok("ほかの端末の変更が自動で反映（書きこみなし）", r[1] and r[2] == "iPadくん", r)
+    before = E("HM_APP.state().totalStars"); wb = E("__HM_FB_MOCK.writes")
+    E("(() => { const s = HM_APP.state(); s.totalStars += 1; s.chars.localchar = { n: 1, t: 2 }; HM_APP.save(); })()")
+    E("__HM_FB_MOCK.remoteEdit('u0', (d) => { d.totalStars += 2; d.chars.ipadchar = { n: 1, t: 3 }; })"); pg.wait_for_timeout(600)
+    hide_show(); pg.wait_for_timeout(600)
+    cloud = json.loads(E("__HM_FB_MOCK.db.docs['u0'].data")); loc = E("(() => { const s = HM_APP.state(); return [s.totalStars, Object.keys(s.chars)]; })()")
+    ok("同時に遊んでも、なかまは両方・⭐はへらない（クラウドと端末が同じ）", "localchar" in cloud["chars"] and "ipadchar" in cloud["chars"] and cloud["totalStars"] >= before + 2 and loc[0] == cloud["totalStars"] and "ipadchar" in loc[1], [cloud["totalStars"], before, loc])
+    # 5) ログアウト → この端末からアカウントの記録が消えて、ログイン画面へ
+    E("window.__keys0 = Object.keys(localStorage)")
+    tap('[data-acct="logout"]'); pg.wait_for_timeout(900)
+    ok("ログアウトでログイン画面にもどる", view() == "welcome")
+    keys = E("Object.keys(localStorage)")
+    ok("ログアウトで端末のアカウントの記録を消す", not any(k.startswith("hoshimanabi:u:") or k.startswith("hoshimanabi-sync:") or k == "hoshimanabi-active" for k in keys), keys)
+    ok("ログアウト後はまっさらなゲスト（前のアカウントの⭐なし）", E("HM_APP.state().totalStars") == 0 and E("HM_APP.profileKey()") == "hoshimanabi" and not E("HMAuthUI.state().user"))
+    ok("ログアウトで同期の受信を止める", "unlisten" in E("__HM_FB_MOCK.calls"))
+    shot("07b-after-logout")
+    tap('[data-au="to-email"]'); tap('[data-au="mode-signup"]')
     pg.locator("#au-email").fill("kid@example.com"); pg.locator("#au-pw").fill("hoshi2026"); tap("#au-submit"); pg.wait_for_timeout(500)
     ok("登録ずみメールのエラー＋ログインへ", "もう登録されている" in pg.locator("#au-err").inner_text() and pg.locator('#au-err [data-au="mode-login"]').count() == 1)
     shot("08-error-in-use")
@@ -160,15 +181,19 @@ try:
     tap('.au-back'); tap('[data-au="back"]')
     ok("もどるボタンでようこそ画面", view() == "welcome")
 
-    # 6) クラウドの記録と合わせる（⭐は多い方・なかまは両方）
+    # 6) 記録があるアカウントにログイン → アカウントの記録だけを使う（ゲストの記録は混ぜない）
     E("""(() => { const d = __HM_FB_MOCK.db; d.docs['g-kid'] = { data: JSON.stringify({ totalStars: 20, pulls: 20, pullsUsed: 20, chars: { cloudchar: { n: 1, t: 1 } }, updatedAt: 1 }), updatedAt: 1, v: 1 }; sessionStorage.setItem('mockdb', JSON.stringify(d)); })()""")
-    E("(() => { const s = HM_APP.state(); s.totalStars = 9; s.pulls = 9; s.pullsUsed = 5; HM_APP.save(); localStorage.removeItem('hoshimanabi-owner'); })()")
+    E("(() => { const s = HM_APP.state(); s.totalStars = 9; s.pulls = 9; s.pullsUsed = 5; HM_APP.save(); })()")
     tap('[data-au="google"]')
     ok("Googleでログイン", wait_view("done") and E("HMAuthUI.state().user.provider") == "google.com")
     pg.wait_for_timeout(500)
-    s = E("(() => { const s = HM_APP.state(); return { t: s.totalStars, left: s.pulls - s.pullsUsed, c: !!s.chars.cloudchar, n: Object.keys(s.chars).length }; })()")
-    ok("合わせた記録：⭐は多い方・ガチャのこりはへらない・なかまは両方", s["t"] == 20 and s["left"] == 4 and s["c"] and s["n"] >= 2, s)
+    s = E("(() => { const s = HM_APP.state(); return { t: s.totalStars, left: s.pulls - s.pullsUsed, c: !!s.chars.cloudchar }; })()")
+    ok("アカウントの記録を使う（ゲストの⭐9は混ぜない・引きつぎも聞かない）", s["t"] == 20 and s["left"] == 0 and s["c"], s)
+    ok("ゲストの記録は別に残る", json.loads(E("localStorage.getItem('hoshimanabi')"))["totalStars"] == 9)
     tap('[data-au="close"]')
+    # 6b) 起動しなおしても同じアカウントのまま（端末のコピーで表示 → クラウドと合わせる）
+    pg.reload(); pg.wait_for_timeout(2500)
+    ok("起動しなおしてもアカウントの記録", E("HM_APP.profileKey()") == "hoshimanabi:u:g-kid" and E("HM_APP.state().totalStars") == 20 and E("HMAuthUI.state().view") is None)
 
     # 7) アカウント削除（もう一度ログインが必要なとき）
     E("__HM_FB_MOCK.recentLogin = false")
@@ -184,7 +209,14 @@ try:
     ok("ドキュメント→ユーザーの順に削除", calls[-4:] == ["deldoc", "deluser", "reauthG", "deldoc"] or (calls.count("deluser") == 2 and calls.index("deldoc") < calls.index("deluser")), calls[-6:])
     ok("クラウドの記録が消えた", E("!__HM_FB_MOCK.db.docs['g-kid'] && !__HM_FB_MOCK.db.users['g-kid']"))
     pg.wait_for_timeout(400)
-    ok("削除後はゲスト欄", pg.locator(".acct-card.guest").count() == 1)
+    ok("削除後はログイン画面・端末にアカウントの記録なし", view() == "welcome" and E("HM_APP.profileKey()") == "hoshimanabi" and not any(k.startswith("hoshimanabi:u:") for k in E("Object.keys(localStorage)")))
+    # 9) Google のエラーをやさしく
+    for code, words in [("auth/popup-blocked", "もう一度"), ("auth/account-exists-with-different-credential", "メールアドレスで続ける"), ("auth/network-request-failed", "インターネット"), ("auth/unauthorized-domain", "メールアドレスで続ける"), ("auth/web-storage-unsupported", "プライベートブラウズ")]:
+        E(f"__HM_FB_MOCK.failNext = '{code}'"); tap('[data-au="google"]'); pg.wait_for_timeout(500)
+        if code == "auth/popup-blocked": shot("14-google-error")
+        ok(f"Googleエラー {code.split('/')[1]} → やさしい案内", words in pg.locator("#au-err").inner_text() and "auth/" not in pg.locator("#au-err").inner_text(), pg.locator("#au-err").inner_text())
+    E("__HM_FB_MOCK.failNext = 'auth/popup-closed-by-user'"); tap('[data-au="google"]'); pg.wait_for_timeout(500)
+    ok("自分でとじたときはエラーを出さない", pg.locator("#au-err").is_hidden())
 
     # 8) ページ
     for name in ["privacy", "terms"]:
@@ -196,7 +228,7 @@ try:
     t = open(os.path.join(ROOT, "privacy.html"), encoding="utf-8").read()
     ok("privacy：Firebase・Google・localStorage・広告なし・販売なし・支払いなし・削除方法", all(k in t for k in ["Firebase", "Google でログイン", "localStorage", "広告は表示しません", "売ったり", "支払い", "アカウントを削除する"]))
     sw = open(os.path.join(ROOT, "sw.js"), encoding="utf-8").read()
-    ok("SW：v1.3.1・Firebase 通信はキャッシュしない", 'hoshi-manabi-v1.3.1' in sw and "googleapis" in sw and "firebase" in sw)
+    ok("SW：v1.4.0・Firebase 通信はキャッシュしない", 'hoshi-manabi-v1.4.0' in sw and "googleapis" in sw and "firebase" in sw)
     ok("本物の Firebase への通信なし（にせものを使用）", not net, net[:3])
     br.close()
 finally:

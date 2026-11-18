@@ -43,7 +43,7 @@
   // まだ何もしていない端末（はじめて開いただけ）の記録か
   function isBlank(st) {
     const days = Object.values(obj(st.days));
-    return !num(st.totalStars) && !num(st.pullsUsed) && !Object.keys(obj(st.progress)).length && !arr(st.wrongBox).length && !num(st.bestCombo) && days.every((d) => !Object.keys(obj(d.steps)).length) && !(obj(st.settings).nick);
+    return !num(st.totalStars) && !num(st.pullsUsed) && !Object.keys(obj(st.progress)).length && !arr(st.wrongBox).length && !num(st.bestCombo) && !Object.keys(obj(st.chars)).some((k) => k !== "mori") && !Object.keys(obj(st.bossWins)).length && days.every((d) => !Object.keys(obj(d.steps)).length) && !(obj(st.settings).nick);
   }
   // 設定は新しい方を使い、空の項目（名前など）はもう一方でうめる
   function fillSettings(newer, older) {
@@ -72,7 +72,10 @@
     out.bossWins = Object.assign({}, obj(C.bossWins), obj(L.bossWins));
     out.boxCleared = max(L.boxCleared, C.boxCleared);
     out.bestCombo = max(L.bestCombo, C.bestCombo);
-    out.wrongBox = unionBy(L.wrongBox, C.wrongBox, (x) => x && x.k, 150);
+    // まちがえた問題ボックス：両方を合わせ、どちらかでクリアした（印のある）問題はのぞく
+    out.boxGone = {};
+    for (const src of [obj(L.boxGone), obj(C.boxGone)]) for (const k of Object.keys(src)) out.boxGone[k] = Math.max(num(out.boxGone[k]), num(src[k]));
+    out.wrongBox = unionBy(L.wrongBox, C.wrongBox, (x) => x && x.k, 150).filter((x) => !(x && out.boxGone[x.k] && num(out.boxGone[x.k]) >= num(x.t)));
     out.reports = unionBy(L.reports, C.reports, (x) => x && x.t + "|" + x.q, 200);
     out.gachaLog = unionBy(L.gachaLog, C.gachaLog, (x) => JSON.stringify(x), 300);
     out.settings = fillSettings(newer.settings, (newer === L ? C : L).settings);

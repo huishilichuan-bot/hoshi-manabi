@@ -34,3 +34,9 @@ v1.1.0 は完了（2560f9c）。
 - [x] 30秒の自動保存をやめる。保存はステップの終わり・かくした/とじた（visibilitychange/pagehide）・ガチャ/ボス勝利（3分以内はまとめる）だけ。内容が同じなら書かない（ハッシュ）。起動しなおしでも書かない
 - [x] 「今すぐ保存」ボタン削除（同期状態の表示は残す）
 - [x] test_v13 62/62（30分のまね：書きこみ10回）、SW hoshi-manabi-v1.3.1
+
+# v1.4.0（アカウントが本物・端末ごとに分ける・同時ログイン）
+- [x] app.js：保存場所をプロフィールごと（hoshimanabi / hoshimanabi:u:<uid>）、useProfile、boxGone（クリアの印）
+- [x] auth.js：newLogin（クラウドを使う・からっぽのときだけ引きつぎを聞く）、resume、endSession（ログアウトで端末から消す）、onSnapshot、runTransaction で合わせて書く、Google はポップアップ＋やさしいエラー
+- [x] test_v13 77/77（モック）、test_merge 10/10
+- [ ] 本番：2つのブラウザ（2台の端末）で E2E → テストアカウント削除

@@ -1,8 +1,11 @@
 /* ほしまなび — 勉強して⭐を集める学習アプリ（小1〜中3）。課金・お金の機能はありません。 */
 (() => {
   "use strict";
-  const VERSION = "1.3.1";
-  const KEY = "hoshimanabi";
+  const VERSION = "1.4.0";
+  // 記録はプロフィールごとに分けて保存：ゲスト＝"hoshimanabi"、アカウント＝"hoshimanabi:u:<uid>"（ログアウトで消す）
+  const GUEST_KEY = "hoshimanabi";
+  let KEY = GUEST_KEY;
+  try { const act = localStorage.getItem("hoshimanabi-active"); if (act) KEY = "hoshimanabi:u:" + act; } catch (e) {}
   const SCHEMA = 1;
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -67,7 +70,7 @@
   function fresh() {
     return { schema: SCHEMA, created: now(), settings: { sound: true, haptic: true, nick: "", vol: 0.8 }, days: {}, totalStars: 0, pulls: 0, pullsUsed: 0,
       chars: { mori: { n: 1, shards: 0, star: 0, t: now() } }, partner: "mori", look: { bg: "note", maru: "red", title: "first" },
-      progress: {}, last: null, reports: [], gachaLog: [], games: {}, wrongBox: [], bossWins: {}, boxCleared: 0, bestCombo: 0 };
+      progress: {}, last: null, reports: [], gachaLog: [], games: {}, wrongBox: [], boxGone: {}, bossWins: {}, boxCleared: 0, bestCombo: 0 };
   }
   function migrate(s) {
     if (!s || typeof s !== "object") return fresh();
@@ -614,13 +617,18 @@
     if (state.wrongBox.some((x) => x.k === k)) return;
     const c = Object.assign({}, q); delete c.opts; delete c.__src; delete c.__k;
     state.wrongBox.push({ k, s: src.s, g: src.g, un: src.un, sn: src.sn, q: c, t: now() });
+    if (state.boxGone) delete state.boxGone[k];
     while (state.wrongBox.length > 150) state.wrongBox.shift();
   }
   function boxRemove(q) {
     const src = q.__src || { s: Q.s, g: Q.g, un: Q.unit ? Q.unit.n : "" };
     const k = q.__k || boxKey(src.s, src.g, src.un, q);
     const i = (state.wrongBox || []).findIndex((x) => x.k === k); if (i < 0) return false;
-    state.wrongBox.splice(i, 1); return true;
+    state.wrongBox.splice(i, 1);
+    // ほかの端末と合わせたときに、クリアした問題がもどってこないように印を残す
+    state.boxGone = state.boxGone || {}; state.boxGone[k] = now();
+    const ks = Object.keys(state.boxGone); if (ks.length > 400) ks.sort((a, b) => state.boxGone[a] - state.boxGone[b]).slice(0, ks.length - 400).forEach((x) => delete state.boxGone[x]);
+    return true;
   }
   function startBox() {
     const b = state.wrongBox || []; if (!b.length) { toast("ボックスはからっぽ！ 全部クリアしてるよ"); return; }
@@ -1022,7 +1030,10 @@
   (() => { const ext = ((window.HMGames && HMGames.list) || []).filter((g) => !DROPPED.includes(g.id)); for (let i = 0; i < GAMES.length; i++) { const r = ext.find((x) => x.id === GAMES[i].id); if (r) GAMES[i] = r; } ext.forEach((x) => { if (!GAMES.some((y) => y.id === x.id)) GAMES.push(x); }); })();
   // スプラッシュ（起動画面）を消す
   (() => { const sp = document.getElementById("splash"); if (!sp) return; const hide = () => { sp.classList.add("out"); setTimeout(() => sp.remove(), 500); }; setTimeout(hide, Math.max(150, 650 - performance.now())); })();
-  window.HM_APP = { state: () => state, save, render, today, dkey, setClockOffset: (ms) => { clockOffset = ms; render(); }, GAMES, gachaPull, rates: () => ({ normal: GACHA_RATES.slice(), sr: GACHA_RATES_SR.slice() }), drawRarity, startStep, findStep, judgeNum, passNeed: HM.passNeed, STARS_TO_UNLOCK, READ_MS, starsToday, gamesOpen, pullsLeft, startGame, version: VERSION, quiz: () => Q, tab: () => tab, exportState: () => JSON.parse(JSON.stringify(state)), importState: (d) => { state = migrate(JSON.parse(JSON.stringify(d))); try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} render(); }, charHtml, sound, toast, haptic, openSheet, closeSheet, startBox, startBoss, speak, canSpeak };
+  window.HM_APP = { state: () => state, save, render, today, dkey, setClockOffset: (ms) => { clockOffset = ms; render(); }, GAMES, gachaPull, rates: () => ({ normal: GACHA_RATES.slice(), sr: GACHA_RATES_SR.slice() }), drawRarity, startStep, findStep, judgeNum, passNeed: HM.passNeed, STARS_TO_UNLOCK, READ_MS, starsToday, gamesOpen, pullsLeft, startGame, version: VERSION, quiz: () => Q, tab: () => tab, exportState: () => JSON.parse(JSON.stringify(state)), importState: (d) => { state = migrate(JSON.parse(JSON.stringify(d))); try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} render(); },
+    // プロフィール（保存場所）を切りかえる。data があればそれを使い、なければその場所の記録を読む
+    useProfile: (key, data, opt) => { KEY = key || GUEST_KEY; let d = data; if (d === undefined) { try { d = JSON.parse(localStorage.getItem(KEY) || "null"); } catch (e) { d = null; } } state = migrate(d ? JSON.parse(JSON.stringify(d)) : null); try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} if (Q && !$("#quiz").hidden) { try { quitQuiz(); } catch (e) {} } if (opt && opt.home) { tab = "home"; nav = []; navDir = "tab"; } render(); },
+    profileKey: () => KEY, GUEST_KEY, charHtml, sound, toast, haptic, openSheet, closeSheet, startBox, startBoss, speak, canSpeak };
 
   // テスト用：?clock=+86400000 のように時計をずらせる
   try { const c = new URLSearchParams(location.search).get("clock"); if (c) clockOffset = +c || 0; } catch (e) {}
