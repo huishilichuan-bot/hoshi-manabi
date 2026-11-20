@@ -924,3 +924,30 @@ html.rmotion *, html.rmotion *::before, html.rmotion *::after { animation-durati
 .hint-i b { display: inline-block; margin-right: 8px; padding: 1px 8px; border-radius: 99px; background: #fcc419; color: #3d3200; font-size: 11.5px; }
 @keyframes hintIn { from { opacity: 0; transform: translateY(-4px); } }
 .opt.elim { opacity: .3; text-decoration: line-through; }
+/* ===== v1.5.1 モード選択（強さえらび） ===== */
+.mode-sel { position: fixed; inset: 0; z-index: 9000; display: grid; justify-items: center; align-content: safe center; gap: 14px; overflow-y: auto; padding: calc(env(safe-area-inset-top) + 20px) 18px calc(env(safe-area-inset-bottom) + 20px); background: linear-gradient(160deg, #4dabf7 0%, #1c7ed6 45%, #74c0fc 100%); animation: msIn .25s ease-out; }
+.mode-sel::before { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(115deg, rgba(255,255,255,.10) 0 18px, rgba(255,255,255,0) 18px 60px); pointer-events: none; }
+.mode-sel.out { opacity: 0; transition: opacity .2s; }
+@keyframes msIn { from { opacity: 0; transform: scale(1.03); } to { opacity: 1; transform: none; } }
+.ms-panel { position: relative; width: min(100%, 380px); background: linear-gradient(#f8f9fa, #e9ecef); border: 3px solid #fff; border-radius: 16px; box-shadow: 0 0 0 2px #ced4da, 0 14px 40px rgba(0,0,0,.3); padding: 12px 14px 14px; display: grid; gap: 10px; }
+.ms-title { margin: 0; text-align: center; font-size: 31px; font-weight: 900; letter-spacing: .04em; color: #ffd43b; background: linear-gradient(#fff3bf 0%, #ffd43b 45%, #f08c00 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; -webkit-text-stroke: 1.5px #8a5a00; filter: drop-shadow(0 2px 0 #5c3d00); }
+.ms-game { display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 800; color: #495057; }
+.ms-game::before, .ms-game::after { content: ""; flex: 1; height: 2px; background: #adb5bd; border-radius: 2px; }
+.ms-game span { display: inline-flex; align-items: center; gap: 6px; }
+.ms-game svg, .ms-game .gi { width: 24px; height: 24px; }
+.ms-slot { background: #adb5bd; border-radius: 12px; padding: 6px 6px 4px; box-shadow: inset 0 2px 4px rgba(0,0,0,.25); animation: msPop .35s cubic-bezier(.2,1.5,.4,1) both; animation-delay: calc(var(--i) * 60ms); }
+@keyframes msPop { from { opacity: 0; transform: translateY(10px) scale(.96); } to { opacity: 1; transform: none; } }
+.ms-btn { display: block; width: 100%; border: 3px solid #1b1d3a; border-radius: 10px; padding: 8px 8px; font-size: 23px; font-weight: 900; color: #fff; letter-spacing: .08em; -webkit-text-stroke: 1px #1b1d3a; text-shadow: 0 2px 0 rgba(0,0,0,.35); box-shadow: inset 0 3px 0 rgba(255,255,255,.55), inset 0 -5px 0 rgba(0,0,0,.22), 0 3px 0 #1b1d3a; cursor: pointer; transition: transform .08s; }
+.ms-btn:active { transform: translateY(2px) scale(.98); }
+.ms-blue { background: linear-gradient(#74c0fc, #1c7ed6 55%, #1971c2); }
+.ms-red { background: linear-gradient(#ff8787, #e03131 55%, #c92a2a); }
+.ms-green { background: linear-gradient(#8ce99a, #37b24d 55%, #2b8a3e); }
+.ms-purple { background: linear-gradient(#d0bfff, #7048e8 55%, #5f3dc4); }
+.ms-rec { display: flex; justify-content: flex-end; align-items: center; gap: 6px; margin-top: 5px; }
+.ms-best { min-width: 96px; text-align: right; background: #e7f5ff; color: #1b1d3a; font-weight: 900; font-size: 14px; border-radius: 6px; padding: 1px 8px; }
+.ms-rank { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 13px; font-weight: 900; background: #dee2e6; color: #868e96; border: 2px solid #fff; }
+.ms-rank.rA { background: #ffe066; color: #8a5a00; } .ms-rank.rB { background: #d0ebff; color: #1864ab; } .ms-rank.rC { background: #ffd8a8; color: #a14d00; }
+.ms-top { position: relative; justify-self: center; display: inline-flex; align-items: center; gap: 8px; padding: 10px 26px; font-size: 20px; font-weight: 900; color: #5c3d00; background: linear-gradient(#fff9db, #ffec99); border: 3px solid #e8a400; border-radius: 10px; box-shadow: inset 0 0 0 2px #fff, 0 3px 0 #8a5a00; cursor: pointer; }
+.ms-top:active { transform: translateY(2px); }
+.ms-home { font-size: 22px; line-height: 1; }
+html.rmotion .mode-sel, html.rmotion .ms-slot { animation: none; }

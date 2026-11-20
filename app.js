@@ -886,17 +886,21 @@
   }
   const fmtNum = (v) => (Math.round(v * 10) / 10).toLocaleString("ja-JP");
   function bestText(m) { return m && m.best != null ? fmtNum(m.best) + (m.unit || "") : null; }
+  // 強さごとのランク（A/B/C）：A＝3勝以上で勝率6割以上、B＝1勝以上、C＝まだ勝っていない（あそんだことがある）
+  function diffRank(r) { if (!r || !r.plays) return null; const w = r.wins || 0; if (w >= 3 && w / r.plays >= 0.6) return "A"; if (w >= 1) return "B"; return "C"; }
+  const DCOL = { easy: "green", normal: "blue", hard: "red", ultra: "purple" };
+  function closeModeSel(instant) { const el = document.getElementById("mode-sel"); if (!el) return; if (instant) { el.remove(); return; } el.classList.add("out"); setTimeout(() => el.remove(), 220); }
   function openGameMenu(id) {
     const g = GAMES.find((x) => x.id === id); if (!g) return;
     if (!gamesOpen()) { toast("🔒 今日の⭐をあと " + (STARS_TO_UNLOCK - starsToday()) + " こ集めるとひらくよ"); return; }
-    const rec = state.games[id] || {}, rk = gameRank(id);
-    let tw = 0, tp = 0; DIFFS.forEach((d) => { const r = rec[d.id] || {}; tw += r.wins || 0; tp += r.plays || 0; });
-    const btns = DIFFS.map((d, i) => '<button type="button" class="dsel ' + d.id + '" data-diff="' + d.id + '" style="--i:' + i + '"><span class="dsel-n">' + d.name + '</span><span class="dsel-s">' + "★".repeat(i + 1) + "</span></button>").join("");
-    const rows = DIFFS.map((d) => { const r = rec[d.id] || {}; const bt = bestText(r.m); return '<tr><th>' + d.name + '</th><td class="num">' + (r.wins || 0) + "勝 / " + (r.plays || 0) + "回</td><td class=\"num\">" + (bt ? "ベスト " + esc(bt) : "") + "</td></tr>"; }).join("");
-    openSheet('<div class="gm-head">' + HMIcons.icon(g.id, g.c, 56) + "<h2>" + esc(g.n) + '</h2></div><p class="small muted">' + esc(g.d) + '</p><div class="dsel-grid">' + btns + '</div><div class="gm-rec"><div class="gm-rank" style="--rc:' + rk.color + '"><span class="gm-medal">🏅</span><b>' + rk.name + '</b><span class="num">' + rk.pt + 'pt</span></div><table class="gm-tab">' + rows + '</table><p class="gm-tot num">合計 ' + tw + "勝 / " + tp + "回</p></div>", {
-      label: g.n,
-      mount: (sh) => sh.addEventListener("click", (e) => { const b = e.target.closest("[data-diff]"); if (b) { sound("tap"); closeSheet(true); startGame(id, b.dataset.diff); } }),
-    });
+    closeModeSel(true);
+    const rec = state.games[id] || {};
+    const btns = DIFFS.map((d, i) => { const r = rec[d.id] || {}, bt = bestText(r.m), rk = diffRank(r);
+      return '<div class="ms-slot" style="--i:' + i + '"><button type="button" class="ms-btn ms-' + DCOL[d.id] + '" data-diff="' + d.id + '">' + d.name + '</button><div class="ms-rec"><span class="ms-best num">' + (bt ? esc(bt) : "－") + '</span><span class="ms-rank' + (rk ? " r" + rk : "") + '">' + (rk || "－") + "</span></div></div>"; }).join("");
+    const el = document.createElement("div"); el.id = "mode-sel"; el.className = "mode-sel"; el.setAttribute("role", "dialog"); el.setAttribute("aria-label", g.n + " モード選択");
+    el.innerHTML = '<div class="ms-panel"><h2 class="ms-title">モード選択</h2><div class="ms-game"><span>' + HMIcons.icon(g.id, g.c, 28, g.e) + esc(g.n) + "</span></div>" + btns + '</div><button type="button" class="ms-top" data-ms="top"><span class="ms-home">⌂</span>トップにもどる</button>';
+    document.body.appendChild(el);
+    el.addEventListener("click", (e) => { const b = e.target.closest("[data-diff]"); if (b) { sound("tap"); closeModeSel(true); startGame(id, b.dataset.diff); return; } if (e.target.closest('[data-ms="top"]') || e.target === el) { sound("tap"); closeModeSel(); } });
   }
   function startGame(id, diff) {
     if (!gamesOpen()) return;

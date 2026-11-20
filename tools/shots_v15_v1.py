@@ -14,7 +14,7 @@ try:
     pg.goto(f"http://localhost:{PORT}/index.html"); pg.wait_for_timeout(800)
     pg.evaluate("(() => { const s = HM_APP.state(); s.days[HM_APP.today()] = { stars: 4, steps: {} }; s.games.runner = { easy: { plays: 5, wins: 3, streak: 2, m: { best: 24.3, unit: '秒', lower: true } }, normal: { plays: 2, wins: 1 } }; HM_APP.save(); HM_APP.render(); })()")
     pg.evaluate("HM_APP.openGameMenu('runner')"); pg.wait_for_timeout(900); pg.screenshot(path=f"{OUT}/v1-diff-select.png")
-    pg.evaluate("document.querySelector('.dsel.easy').click()"); pg.wait_for_timeout(500)
+    pg.evaluate("document.querySelector('[data-diff="easy"]').click()"); pg.wait_for_timeout(500)
     for kind in ["lose", "win"]:
         if kind == "win": pg.evaluate("HM_APP.startGame('runner','easy')"); pg.wait_for_timeout(500)
         pg.evaluate(f"window.__pro.cheat('{kind}')"); pg.wait_for_timeout(500 if kind == "lose" else 350)
