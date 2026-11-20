@@ -92,9 +92,9 @@ try:
     pg.click('[data-q="quit"]'); pg.wait_for_timeout(200)
     # 別のステップで⭐を3つ → 合計4でゲーム解放
     pg.click('.tab[data-tab="games"]'); pg.wait_for_timeout(200)
-    ok("⭐4未満はゲームにロック", pg.locator(".app-ic.locked").count() == 50 and not E("HM_APP.gamesOpen()"), pg.locator(".app-ic").count())
+    ok("⭐4未満はゲームにロック", pg.locator(".app-ic.locked").count() == E("HM_APP.GAMES.length") >= 100 and not E("HM_APP.gamesOpen()"), pg.locator(".app-ic").count())
     pg.screenshot(path=f"{SHOT}/07-games-locked.png")
-    for (s, g, u, st) in [("ja", 7, 0, 0), ("en", 7, 1, 0), ("sci", 5, 0, 0)]:
+    for (s, g, u, st) in [("math", 7, 0, 0), ("en", 7, 1, 0), ("sci", 5, 0, 0)]:
         E(f"HM_APP.startStep('{s}',{g},{u},{st},{{noCard:true}})"); pg.wait_for_timeout(150)
         for i in range(E("HM_APP.quiz().n")): answer(True); next_()
         pg.wait_for_timeout(200)
@@ -102,7 +102,7 @@ try:
         pg.wait_for_timeout(150)
     ok("⭐4でゲーム解放", E("HM_APP.starsToday()") == 4 and E("HM_APP.gamesOpen()"))
     pg.click('.tab[data-tab="games"]'); pg.wait_for_timeout(200)
-    ok("ゲーム50個のアイコン（ロック解除）", pg.locator(".app-ic").count() == 50 and pg.locator(".app-ic.locked").count() == 0)
+    ok("ゲーム106個のアイコン（ロック解除）", pg.locator(".app-ic").count() == 106 and pg.locator(".app-ic.locked").count() == 0)
     pg.screenshot(path=f"{SHOT}/08-games-open.png")
     # ⭐を減らさない・日付リセット
     total = E("HM_APP.state().totalStars")
@@ -141,7 +141,7 @@ try:
     ok("設定に報告一覧", pg.locator(".rep").count() == 1)
     # 全50ゲーム × 4難易度 を開いてエラーがないか
     ids = E("HM_APP.GAMES.map(g=>g.id)")
-    ok("ゲームは50種・重複なし", len(ids) == 50 and len(set(ids)) == 50, len(ids))
+    ok("ゲームは106種・重複なし", len(ids) == 106 and len(set(ids)) == 106, len(ids))
     errors_before = len(errors)
     bad = []
     for gid in ids:

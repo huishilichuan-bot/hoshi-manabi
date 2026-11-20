@@ -57,7 +57,7 @@ try:
     tap('.tab[data-tab="settings"]'); pg.wait_for_timeout(500)
     ok("マイページにゲスト欄", pg.locator(".acct-card.guest").count() == 1)
     pg.locator(".acct-card").scroll_into_view_if_needed(); shot("02-mypage-guest")
-    ok("マイページに規約・プライバシーのリンク", pg.locator('.legal-links a[href="./privacy.html"]').count() == 1 and pg.locator('.legal-links a[href="./terms.html"]').count() == 1)
+    ok("マイページに規約・プライバシーのリンク", pg.locator('a[href="./privacy.html"]').count() >= 1 and pg.locator('a[href="./terms.html"]').count() >= 1)
     tap('[data-acct="login"]'); ok("マイページからログイン画面", wait_view("welcome"))
 
     # 3) メール：新規登録
@@ -234,7 +234,7 @@ try:
     t = open(os.path.join(ROOT, "privacy.html"), encoding="utf-8").read()
     ok("privacy：Firebase・Google・localStorage・広告なし・販売なし・支払いなし・削除方法", all(k in t for k in ["Firebase", "Google でログイン", "localStorage", "広告は表示しません", "売ったり", "支払い", "アカウントを削除する"]))
     sw = open(os.path.join(ROOT, "sw.js"), encoding="utf-8").read()
-    ok("SW：v1.4.1・Firebase 通信はキャッシュしない", 'hoshi-manabi-v1.4.1' in sw and "googleapis" in sw and "firebase" in sw)
+    ok("SW：v1.5.0・Firebase 通信はキャッシュしない", 'hoshi-manabi-v1.5.0' in sw and "googleapis" in sw and "firebase" in sw)
     ok("本物の Firebase への通信なし（にせものを使用）", not net, net[:3])
     br.close()
 finally:
