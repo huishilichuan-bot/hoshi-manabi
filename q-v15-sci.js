@@ -50,7 +50,7 @@
     return fig(200, 100, bar(14, a === "N" ? "S" : "N", a) + bar(126, b, b === "N" ? "S" : "N") + T(100, 88, "← ？ →", { size: 12, color: COL.mute })); };
   const magQ = () => { const a = pick(["N", "S"]), b = pick(["N", "S"]), same = a === b; return ch(ask("向かい合った極（" + a + "極と" + b + "極）を近づけると、どうなる？", magSvg(a, b)), same ? "しりぞけ合う" : "引き合う", [same ? "引き合う" : "しりぞけ合う", "何も起こらない", "くっついたあと はなれる"], "ちがう極（NとS）は引き合い、同じ極（NとN、SとS）はしりぞけ合う。"); };
   // てんびん（重いほうが下がる）
-  const balSvg = (l, r) => { const tilt = l > r ? 1 : l < r ? -1 : 0, a = tilt * 0.18, cx = 110, cy = 46, dx = Math.cos(a) * 80, dy = Math.sin(a) * 80;
+  const balSvg = (l, r) => { const tilt = l > r ? 1 : l < r ? -1 : 0, a = -tilt * 0.18, cx = 110, cy = 46, dx = Math.cos(a) * 80, dy = Math.sin(a) * 80;
     let s = PG([[cx, cy], [cx - 14, 130], [cx + 14, 130]], { fill: "#dee2e6" }) + L([cx - dx, cy - dy], [cx + dx, cy + dy], { w: 4 });
     const pan = (x, y, g) => L([x, y], [x - 16, y + 34], { w: 1.2 }) + L([x, y], [x + 16, y + 34], { w: 1.2 }) + RC(x - 20, y + 34, 40, 6, { fill: "#adb5bd", w: 1.5 }) + T(x, y + 52, g + "g", { size: 13, bold: true });
     return fig(220, 150, s + pan(cx - dx, cy - dy, l) + pan(cx + dx, cy + dy, r)); };
@@ -71,7 +71,7 @@
     return fig(140, 140, s); };
   const moonQ = () => { const k = pick(["満月", "半月", "三日月"]); return ch(ask("この月の形を何という？", moonSvg(k)), k, ["満月", "半月", "三日月", "新月"].filter((x) => x !== k).slice(0, 3), k === "満月" ? "まるく光って見えるのが満月。" : k === "半月" ? "半分だけ光って見えるのが半月。" : "細く光って見えるのが三日月。"); };
   // 気温のグラフ（晴れの日：昼すぎに最高）
-  const tempGraph = () => { const hrs = [9, 10, 11, 12, 13, 14, 15], peak = pick([1, 2, 3, 4, 5]), b = R(12, 20); const vals = hrs.map((h, i) => b + Math.max(0, 8 - Math.abs(i - peak) * 2) + (i > peak ? 1 : 0)); const mx = Math.max(...vals), at = hrs[vals.indexOf(mx)];
+  const tempGraph = () => { const hrs = [9, 10, 11, 12, 13, 14, 15], peak = pick([3, 4, 5, 5]), b = R(12, 20); const vals = hrs.map((h, i) => b + Math.max(0, 8 - Math.abs(i - peak) * 2) + (i > peak ? 1 : 0)); const mx = Math.max(...vals), at = hrs[vals.indexOf(mx)];
     return R(0, 1) ? num(ask("グラフで、気温がいちばん高いのは何時？", FG.lineGraph(hrs.map((h) => h + "時"), vals, 2, "℃", { min: Math.floor((b - 2) / 2) * 2 })), at, "グラフの点がいちばん上にあるのは " + at + "時（" + mx + "℃）。", { unit: "時", chk: String(at) }) : num(ask("グラフで、いちばん高い気温は何℃？", FG.lineGraph(hrs.map((h) => h + "時"), vals, 2, "℃", { min: Math.floor((b - 2) / 2) * 2 })), mx, "いちばん上の点は " + mx + "℃（" + at + "時）。", { unit: "℃", chk: String(mx) }); };
   const thermoQ = () => { const t = R(-5, 35); return num(ask("温度計は何℃をさしている？", FG.thermo(t)), t, "赤い液の先の目もりを、真横から読む。" + t + "℃。", { unit: "℃", chk: String(t) }); };
   // 電池のつなぎ方（直列・へい列）

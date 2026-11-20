@@ -6,20 +6,20 @@
    "g": 1,
    "grade": "小1",
    "units": 12,
-   "steps": 78,
-   "perPass": 714,
-   "uniq": 8619,
-   "figUniq": 3979,
-   "figPass": 244,
+   "steps": 148,
+   "perPass": 1414,
+   "uniq": 23287,
+   "figUniq": 9846,
+   "figPass": 531,
    "types": {
-    "num": 349,
-    "ch": 215,
-    "ord": 8,
-    "tf": 128,
-    "pair": 6,
+    "num": 514,
+    "ch": 561,
+    "ord": 20,
+    "tf": 299,
+    "pair": 12,
     "nl": 8
    },
-   "sameRate": 0.062
+   "sameRate": 0.037
   },
   {
    "s": "math",
@@ -27,21 +27,21 @@
    "g": 2,
    "grade": "小2",
    "units": 12,
-   "steps": 81,
-   "perPass": 740,
-   "uniq": 12605,
-   "figUniq": 1388,
-   "figPass": 97,
+   "steps": 151,
+   "perPass": 1440,
+   "uniq": 29113,
+   "figUniq": 3481,
+   "figPass": 208,
    "types": {
-    "num": 438,
-    "ch": 140,
-    "nl": 8,
-    "tf": 132,
+    "num": 656,
+    "ch": 463,
+    "nl": 14,
+    "tf": 279,
     "match": 6,
     "multi": 8,
-    "ord": 8
+    "ord": 14
    },
-   "sameRate": 0.061
+   "sameRate": 0.038
   },
   {
    "s": "math",
@@ -49,19 +49,19 @@
    "g": 3,
    "grade": "小3",
    "units": 15,
-   "steps": 89,
-   "perPass": 744,
-   "uniq": 14571,
-   "figUniq": 1235,
-   "figPass": 68,
+   "steps": 149,
+   "perPass": 1464,
+   "uniq": 32363,
+   "figUniq": 2831,
+   "figPass": 140,
    "types": {
-    "num": 394,
-    "ch": 176,
-    "nl": 22,
-    "tf": 150,
+    "num": 642,
+    "ch": 504,
+    "nl": 38,
+    "tf": 278,
     "multi": 2
    },
-   "sameRate": 0.071
+   "sameRate": 0.04
   },
   {
    "s": "math",
@@ -69,20 +69,20 @@
    "g": 4,
    "grade": "小4",
    "units": 15,
-   "steps": 95,
-   "perPass": 750,
-   "uniq": 14257,
-   "figUniq": 1798,
-   "figPass": 100,
+   "steps": 157,
+   "perPass": 1494,
+   "uniq": 31754,
+   "figUniq": 3666,
+   "figPass": 156,
    "types": {
-    "num": 376,
+    "num": 563,
     "ord": 8,
-    "tf": 160,
-    "ch": 195,
-    "nl": 6,
+    "tf": 339,
+    "ch": 565,
+    "nl": 14,
     "multi": 5
    },
-   "sameRate": 0.076
+   "sameRate": 0.043
   },
   {
    "s": "math",
@@ -90,18 +90,18 @@
    "g": 5,
    "grade": "小5",
    "units": 18,
-   "steps": 108,
-   "perPass": 869,
-   "uniq": 16088,
-   "figUniq": 1090,
-   "figPass": 79,
+   "steps": 163,
+   "perPass": 1529,
+   "uniq": 31179,
+   "figUniq": 1954,
+   "figPass": 112,
    "types": {
-    "ch": 226,
-    "num": 455,
-    "tf": 180,
-    "ord": 8
+    "ch": 562,
+    "num": 639,
+    "tf": 317,
+    "ord": 11
    },
-   "sameRate": 0.074
+   "sameRate": 0.046
   },
   {
    "s": "math",
@@ -109,19 +109,19 @@
    "g": 6,
    "grade": "小6",
    "units": 12,
-   "steps": 77,
-   "perPass": 586,
-   "uniq": 9491,
-   "figUniq": 602,
-   "figPass": 48,
+   "steps": 158,
+   "perPass": 1558,
+   "uniq": 30803,
+   "figUniq": 1816,
+   "figPass": 96,
    "types": {
-    "ch": 140,
-    "num": 314,
-    "sort": 6,
-    "tf": 120,
-    "pair": 6
+    "ch": 574,
+    "num": 654,
+    "sort": 20,
+    "tf": 283,
+    "pair": 27
    },
-   "sameRate": 0.073
+   "sameRate": 0.031
   },
   {
    "s": "math",
@@ -129,21 +129,21 @@
    "g": 7,
    "grade": "中1",
    "units": 7,
-   "steps": 63,
-   "perPass": 494,
-   "uniq": 9398,
-   "figUniq": 1288,
-   "figPass": 101,
+   "steps": 136,
+   "perPass": 1589,
+   "uniq": 36299,
+   "figUniq": 4698,
+   "figPass": 241,
    "types": {
-    "ch": 208,
-    "num": 180,
+    "ch": 861,
+    "num": 346,
     "ord": 8,
-    "nl": 8,
-    "multi": 12,
-    "tf": 70,
-    "tap": 8
+    "nl": 30,
+    "multi": 45,
+    "tf": 271,
+    "tap": 28
    },
-   "sameRate": 0.051
+   "sameRate": 0.022
   },
   {
    "s": "math",
@@ -151,18 +151,18 @@
    "g": 8,
    "grade": "中2",
    "units": 7,
-   "steps": 47,
-   "perPass": 371,
-   "uniq": 7067,
-   "figUniq": 1093,
-   "figPass": 68,
+   "steps": 130,
+   "perPass": 1616,
+   "uniq": 35174,
+   "figUniq": 5121,
+   "figPass": 282,
    "types": {
-    "ch": 126,
-    "num": 170,
-    "tf": 70,
-    "multi": 5
+    "ch": 745,
+    "num": 547,
+    "tf": 307,
+    "multi": 17
    },
-   "sameRate": 0.069
+   "sameRate": 0.023
   },
   {
    "s": "math",
@@ -170,19 +170,19 @@
    "g": 9,
    "grade": "中3",
    "units": 9,
-   "steps": 62,
-   "perPass": 490,
-   "uniq": 6676,
-   "figUniq": 1152,
-   "figPass": 76,
+   "steps": 139,
+   "perPass": 1645,
+   "uniq": 30938,
+   "figUniq": 3638,
+   "figPass": 165,
    "types": {
-    "ch": 239,
-    "tf": 100,
-    "num": 137,
-    "ord": 8,
-    "multi": 6
+    "ch": 934,
+    "tf": 358,
+    "num": 321,
+    "ord": 17,
+    "multi": 15
    },
-   "sameRate": 0.073
+   "sameRate": 0.033
   },
   {
    "s": "life",
@@ -190,19 +190,19 @@
    "g": 1,
    "grade": "小1",
    "units": 5,
-   "steps": 32,
-   "perPass": 246,
-   "uniq": 932,
+   "steps": 49,
+   "perPass": 416,
+   "uniq": 2468,
    "figUniq": 0,
    "figPass": 0,
    "types": {
-    "ch": 138,
-    "tf": 50,
+    "ch": 258,
+    "tf": 100,
     "tiles": 16,
     "sort": 18,
     "multi": 24
    },
-   "sameRate": 0.072
+   "sameRate": 0.049
   },
   {
    "s": "life",
@@ -210,19 +210,19 @@
    "g": 2,
    "grade": "小2",
    "units": 5,
-   "steps": 28,
-   "perPass": 213,
-   "uniq": 909,
+   "steps": 51,
+   "perPass": 443,
+   "uniq": 2910,
    "figUniq": 0,
    "figPass": 0,
    "types": {
-    "ch": 113,
-    "tf": 50,
+    "ch": 278,
+    "tf": 115,
     "sort": 18,
     "multi": 24,
     "tiles": 8
    },
-   "sameRate": 0.085
+   "sameRate": 0.047
   },
   {
    "s": "sci",
@@ -230,21 +230,21 @@
    "g": 3,
    "grade": "小3",
    "units": 8,
-   "steps": 37,
-   "perPass": 266,
-   "uniq": 1551,
-   "figUniq": 8,
-   "figPass": 8,
+   "steps": 54,
+   "perPass": 402,
+   "uniq": 2453,
+   "figUniq": 324,
+   "figPass": 69,
    "types": {
-    "ch": 115,
-    "tf": 80,
+    "ch": 212,
+    "tf": 113,
     "sort": 18,
     "multi": 32,
-    "tap": 8,
-    "match": 5,
-    "num": 8
+    "tap": 10,
+    "num": 12,
+    "match": 5
    },
-   "sameRate": 0.108
+   "sameRate": 0.08
   },
   {
    "s": "sci",
@@ -252,22 +252,22 @@
    "g": 4,
    "grade": "小4",
    "units": 8,
-   "steps": 41,
-   "perPass": 314,
-   "uniq": 852,
-   "figUniq": 144,
-   "figPass": 13,
+   "steps": 66,
+   "perPass": 583,
+   "uniq": 2960,
+   "figUniq": 741,
+   "figPass": 73,
    "types": {
-    "ch": 176,
-    "tf": 80,
-    "num": 8,
+    "ch": 343,
+    "tf": 142,
+    "num": 36,
     "match": 10,
-    "tiles": 16,
+    "tiles": 24,
     "multi": 16,
-    "tap": 4,
+    "tap": 8,
     "ord": 4
    },
-   "sameRate": 0.094
+   "sameRate": 0.053
   },
   {
    "s": "sci",
@@ -275,21 +275,21 @@
    "g": 5,
    "grade": "小5",
    "units": 8,
-   "steps": 37,
-   "perPass": 278,
-   "uniq": 731,
-   "figUniq": 6,
-   "figPass": 6,
+   "steps": 68,
+   "perPass": 618,
+   "uniq": 3378,
+   "figUniq": 719,
+   "figPass": 74,
    "types": {
-    "ch": 142,
-    "tf": 80,
+    "ch": 373,
+    "tf": 158,
     "multi": 16,
     "match": 10,
-    "tap": 6,
-    "tiles": 16,
-    "num": 8
+    "tap": 15,
+    "tiles": 24,
+    "num": 22
    },
-   "sameRate": 0.103
+   "sameRate": 0.052
   },
   {
    "s": "sci",
@@ -297,22 +297,22 @@
    "g": 6,
    "grade": "小6",
    "units": 9,
-   "steps": 46,
-   "perPass": 361,
-   "uniq": 1356,
-   "figUniq": 198,
-   "figPass": 19,
+   "steps": 71,
+   "perPass": 643,
+   "uniq": 3944,
+   "figUniq": 1159,
+   "figPass": 81,
    "types": {
-    "ch": 188,
-    "tf": 90,
-    "tap": 8,
+    "ch": 361,
+    "tf": 170,
+    "tap": 17,
     "tiles": 32,
     "match": 5,
     "multi": 16,
-    "num": 16,
+    "num": 36,
     "sort": 6
    },
-   "sameRate": 0.092
+   "sameRate": 0.061
   },
   {
    "s": "sci",
@@ -320,21 +320,21 @@
    "g": 7,
    "grade": "中1",
    "units": 13,
-   "steps": 40,
-   "perPass": 316,
-   "uniq": 2177,
-   "figUniq": 0,
-   "figPass": 0,
+   "steps": 65,
+   "perPass": 664,
+   "uniq": 4928,
+   "figUniq": 403,
+   "figPass": 91,
    "types": {
-    "ch": 86,
-    "tf": 130,
-    "num": 45,
+    "ch": 238,
+    "tf": 212,
+    "num": 159,
     "sort": 18,
     "multi": 24,
     "tiles": 8,
     "match": 5
    },
-   "sameRate": 0.148
+   "sameRate": 0.077
   },
   {
    "s": "sci",
@@ -342,19 +342,19 @@
    "g": 8,
    "grade": "中2",
    "units": 10,
-   "steps": 35,
-   "perPass": 279,
-   "uniq": 1810,
-   "figUniq": 0,
-   "figPass": 0,
+   "steps": 65,
+   "perPass": 704,
+   "uniq": 8098,
+   "figUniq": 1709,
+   "figPass": 103,
    "types": {
-    "ch": 97,
-    "tf": 100,
+    "ch": 294,
+    "tf": 229,
+    "num": 155,
     "tiles": 16,
-    "num": 56,
     "match": 10
    },
-   "sameRate": 0.129
+   "sameRate": 0.057
   },
   {
    "s": "sci",
@@ -362,21 +362,21 @@
    "g": 9,
    "grade": "中3",
    "units": 10,
-   "steps": 37,
-   "perPass": 296,
-   "uniq": 1654,
-   "figUniq": 0,
-   "figPass": 0,
+   "steps": 68,
+   "perPass": 732,
+   "uniq": 6128,
+   "figUniq": 1004,
+   "figPass": 79,
    "types": {
-    "ch": 123,
-    "tf": 90,
+    "ch": 359,
+    "tf": 218,
     "tiles": 16,
-    "num": 34,
+    "num": 106,
     "match": 5,
     "sort": 12,
     "multi": 16
    },
-   "sameRate": 0.113
+   "sameRate": 0.054
   },
   {
    "s": "soc",
@@ -384,19 +384,19 @@
    "g": 3,
    "grade": "小3",
    "units": 4,
-   "steps": 20,
-   "perPass": 161,
-   "uniq": 594,
-   "figUniq": 7,
-   "figPass": 7,
+   "steps": 33,
+   "perPass": 302,
+   "uniq": 1567,
+   "figUniq": 294,
+   "figPass": 56,
    "types": {
-    "ch": 93,
-    "tap": 7,
-    "tf": 40,
+    "ch": 201,
+    "tap": 10,
+    "tf": 70,
     "tiles": 16,
     "match": 5
    },
-   "sameRate": 0.09
+   "sameRate": 0.052
   },
   {
    "s": "soc",
@@ -404,19 +404,19 @@
    "g": 4,
    "grade": "小4",
    "units": 4,
-   "steps": 22,
-   "perPass": 182,
-   "uniq": 974,
-   "figUniq": 52,
-   "figPass": 16,
+   "steps": 35,
+   "perPass": 338,
+   "uniq": 2477,
+   "figUniq": 169,
+   "figPass": 37,
    "types": {
-    "ch": 89,
-    "tf": 40,
+    "ch": 173,
+    "tf": 91,
     "tiles": 32,
     "match": 5,
-    "tap": 16
+    "tap": 37
    },
-   "sameRate": 0.081
+   "sameRate": 0.048
   },
   {
    "s": "soc",
@@ -424,21 +424,22 @@
    "g": 5,
    "grade": "小5",
    "units": 4,
-   "steps": 30,
-   "perPass": 226,
-   "uniq": 659,
-   "figUniq": 8,
-   "figPass": 8,
+   "steps": 46,
+   "perPass": 396,
+   "uniq": 2006,
+   "figUniq": 166,
+   "figPass": 37,
    "types": {
-    "ch": 122,
-    "tap": 8,
-    "tf": 40,
+    "ch": 246,
+    "tap": 12,
+    "tf": 72,
     "tiles": 32,
     "sort": 6,
     "multi": 8,
-    "match": 10
+    "match": 10,
+    "num": 10
    },
-   "sameRate": 0.063
+   "sameRate": 0.04
   },
   {
    "s": "soc",
@@ -446,17 +447,17 @@
    "g": 6,
    "grade": "小6",
    "units": 5,
-   "steps": 31,
-   "perPass": 243,
-   "uniq": 1044,
+   "steps": 50,
+   "perPass": 471,
+   "uniq": 3268,
    "figUniq": 0,
    "figPass": 0,
    "types": {
-    "ch": 153,
-    "tf": 50,
+    "ch": 325,
+    "tf": 106,
     "tiles": 40
    },
-   "sameRate": 0.075
+   "sameRate": 0.046
   },
   {
    "s": "soc",
@@ -464,22 +465,22 @@
    "g": 7,
    "grade": "中1",
    "units": 7,
-   "steps": 34,
-   "perPass": 265,
-   "uniq": 1962,
-   "figUniq": 6,
-   "figPass": 6,
+   "steps": 51,
+   "perPass": 500,
+   "uniq": 4752,
+   "figUniq": 665,
+   "figPass": 47,
    "types": {
-    "num": 20,
-    "tf": 70,
-    "ch": 112,
-    "tap": 6,
+    "num": 70,
+    "tf": 116,
+    "ch": 248,
+    "tap": 9,
     "tiles": 24,
     "sort": 12,
     "multi": 16,
     "match": 5
    },
-   "sameRate": 0.094
+   "sameRate": 0.056
   },
   {
    "s": "soc",
@@ -487,21 +488,21 @@
    "g": 8,
    "grade": "中2",
    "units": 6,
-   "steps": 25,
-   "perPass": 206,
-   "uniq": 1200,
-   "figUniq": 44,
-   "figPass": 8,
+   "steps": 50,
+   "perPass": 529,
+   "uniq": 3978,
+   "figUniq": 514,
+   "figPass": 97,
    "types": {
-    "ch": 92,
-    "tf": 60,
-    "num": 8,
-    "tiles": 24,
-    "tap": 8,
+    "ch": 300,
+    "tf": 112,
+    "num": 42,
+    "tiles": 32,
+    "tap": 29,
     "sort": 6,
     "multi": 8
    },
-   "sameRate": 0.102
+   "sameRate": 0.046
   },
   {
    "s": "soc",
@@ -509,17 +510,17 @@
    "g": 9,
    "grade": "中3",
    "units": 4,
-   "steps": 26,
-   "perPass": 207,
-   "uniq": 606,
+   "steps": 50,
+   "perPass": 567,
+   "uniq": 3372,
    "figUniq": 0,
    "figPass": 0,
    "types": {
-    "ch": 135,
-    "tf": 40,
+    "ch": 387,
+    "tf": 148,
     "tiles": 32
    },
-   "sameRate": 0.07
+   "sameRate": 0.036
   },
   {
    "s": "ja",
@@ -608,20 +609,20 @@
    "g": 5,
    "grade": "小5",
    "units": 9,
-   "steps": 74,
-   "perPass": 596,
-   "uniq": 2108,
+   "steps": 81,
+   "perPass": 680,
+   "uniq": 2885,
    "figUniq": 0,
    "figPass": 0,
    "types": {
-    "kanji": 436,
-    "ch": 95,
-    "pair": 6,
-    "tf": 30,
+    "kanji": 496,
+    "ch": 113,
+    "pair": 9,
+    "tf": 33,
     "tiles": 24,
     "match": 5
    },
-   "sameRate": 0.019
+   "sameRate": 0.017
   },
   {
    "s": "ja",
@@ -629,20 +630,20 @@
    "g": 6,
    "grade": "小6",
    "units": 9,
-   "steps": 74,
-   "perPass": 593,
-   "uniq": 2189,
+   "steps": 84,
+   "perPass": 713,
+   "uniq": 3335,
    "figUniq": 0,
    "figPass": 0,
    "types": {
-    "kanji": 432,
-    "ch": 96,
-    "pair": 6,
-    "tf": 30,
+    "kanji": 516,
+    "ch": 119,
+    "pair": 11,
+    "tf": 38,
     "tiles": 24,
     "match": 5
    },
-   "sameRate": 0.018
+   "sameRate": 0.016
   },
   {
    "s": "ja",
@@ -673,13 +674,13 @@
    "g": 8,
    "grade": "中2",
    "units": 14,
-   "steps": 121,
-   "perPass": 988,
-   "uniq": 3024,
+   "steps": 125,
+   "perPass": 1048,
+   "uniq": 3410,
    "figUniq": 0,
    "figPass": 0,
    "types": {
-    "kanji": 802,
+    "kanji": 862,
     "ch": 97,
     "pair": 6,
     "tf": 40,
@@ -688,7 +689,7 @@
     "multi": 8,
     "match": 5
    },
-   "sameRate": 0.014
+   "sameRate": 0.013
   },
   {
    "s": "ja",
@@ -696,22 +697,22 @@
    "g": 9,
    "grade": "中3",
    "units": 13,
-   "steps": 108,
-   "perPass": 829,
-   "uniq": 2562,
+   "steps": 125,
+   "perPass": 1084,
+   "uniq": 4203,
    "figUniq": 0,
    "figPass": 0,
    "types": {
-    "kanji": 656,
-    "ch": 82,
-    "pair": 6,
-    "tf": 50,
+    "kanji": 836,
+    "ch": 133,
+    "pair": 11,
+    "tf": 69,
     "tiles": 16,
     "sort": 6,
     "multi": 8,
     "match": 5
    },
-   "sameRate": 0.022
+   "sameRate": 0.018
   },
   {
    "s": "en",
@@ -719,22 +720,22 @@
    "g": 3,
    "grade": "小3",
    "units": 4,
-   "steps": 19,
-   "perPass": 154,
-   "uniq": 1211,
-   "figUniq": 60,
+   "steps": 34,
+   "perPass": 334,
+   "uniq": 4187,
+   "figUniq": 172,
    "figPass": 8,
    "types": {
-    "ord": 8,
-    "pair": 6,
-    "ch": 72,
-    "match": 6,
+    "ord": 36,
+    "pair": 26,
+    "ch": 155,
+    "match": 10,
     "tap": 8,
-    "tf": 30,
+    "tf": 59,
     "tiles": 16,
-    "num": 8
+    "num": 24
    },
-   "sameRate": 0.07
+   "sameRate": 0.038
   },
   {
    "s": "en",
@@ -742,19 +743,19 @@
    "g": 4,
    "grade": "小4",
    "units": 4,
-   "steps": 17,
-   "perPass": 142,
-   "uniq": 901,
+   "steps": 36,
+   "perPass": 370,
+   "uniq": 4051,
    "figUniq": 0,
    "figPass": 0,
    "types": {
-    "ord": 16,
-    "ch": 72,
-    "tf": 30,
+    "ord": 46,
+    "ch": 223,
+    "tf": 62,
     "tiles": 16,
-    "num": 8
+    "num": 23
    },
-   "sameRate": 0.078
+   "sameRate": 0.035
   },
   {
    "s": "en",
@@ -762,19 +763,19 @@
    "g": 5,
    "grade": "小5",
    "units": 5,
-   "steps": 22,
-   "perPass": 191,
-   "uniq": 1411,
+   "steps": 39,
+   "perPass": 395,
+   "uniq": 4648,
    "figUniq": 0,
    "figPass": 0,
    "types": {
-    "ch": 98,
-    "tf": 50,
+    "ch": 238,
+    "tf": 94,
     "tiles": 32,
-    "pair": 6,
+    "pair": 26,
     "match": 5
    },
-   "sameRate": 0.093
+   "sameRate": 0.048
   },
   {
    "s": "en",
@@ -782,20 +783,20 @@
    "g": 6,
    "grade": "小6",
    "units": 5,
-   "steps": 23,
-   "perPass": 197,
-   "uniq": 1250,
+   "steps": 42,
+   "perPass": 425,
+   "uniq": 4299,
    "figUniq": 0,
    "figPass": 0,
    "types": {
-    "ch": 96,
-    "tf": 50,
+    "ch": 239,
+    "tf": 93,
     "tiles": 32,
-    "ord": 8,
-    "pair": 6,
+    "ord": 38,
+    "pair": 18,
     "match": 5
    },
-   "sameRate": 0.09
+   "sameRate": 0.044
   },
   {
    "s": "en",
@@ -803,18 +804,18 @@
    "g": 7,
    "grade": "中1",
    "units": 7,
-   "steps": 25,
-   "perPass": 228,
-   "uniq": 2530,
+   "steps": 40,
+   "perPass": 453,
+   "uniq": 5225,
    "figUniq": 0,
    "figPass": 0,
    "types": {
-    "ch": 110,
-    "tf": 70,
+    "ch": 275,
+    "tf": 115,
     "tiles": 40,
-    "ord": 8
+    "ord": 23
    },
-   "sameRate": 0.105
+   "sameRate": 0.057
   },
   {
    "s": "en",
@@ -822,19 +823,19 @@
    "g": 8,
    "grade": "中2",
    "units": 4,
-   "steps": 21,
-   "perPass": 175,
-   "uniq": 993,
+   "steps": 42,
+   "perPass": 490,
+   "uniq": 4045,
    "figUniq": 0,
    "figPass": 0,
    "types": {
-    "ch": 90,
-    "tf": 40,
+    "ch": 342,
+    "tf": 103,
     "tiles": 32,
     "ord": 8,
     "match": 5
    },
-   "sameRate": 0.079
+   "sameRate": 0.037
   },
   {
    "s": "en",
@@ -842,39 +843,39 @@
    "g": 9,
    "grade": "中3",
    "units": 4,
-   "steps": 20,
-   "perPass": 169,
-   "uniq": 889,
+   "steps": 44,
+   "perPass": 529,
+   "uniq": 4425,
    "figUniq": 0,
    "figPass": 0,
    "types": {
-    "ch": 84,
-    "tf": 40,
+    "ch": 348,
+    "tf": 128,
     "tiles": 32,
-    "ord": 8,
+    "ord": 16,
     "match": 5
    },
-   "sameRate": 0.083
+   "sameRate": 0.033
   }
  ],
  "tot": {
-  "steps": 2126,
-  "perPass": 17123,
-  "uniq": 147601,
-  "fig": 14158,
+  "steps": 3276,
+  "perPass": 31622,
+  "uniq": 395060,
+  "fig": 45090,
   "types": {
-   "num": 3032,
-   "ch": 5047,
-   "ord": 116,
-   "tf": 2850,
-   "pair": 78,
-   "nl": 52,
-   "match": 137,
-   "multi": 262,
-   "sort": 138,
-   "tap": 87,
-   "tiles": 720,
-   "kanji": 4604
+   "num": 5577,
+   "ch": 13063,
+   "ord": 257,
+   "tf": 5927,
+   "pair": 170,
+   "nl": 104,
+   "match": 141,
+   "multi": 316,
+   "sort": 152,
+   "tap": 183,
+   "tiles": 744,
+   "kanji": 4988
   }
  }
 }

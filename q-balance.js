@@ -17,7 +17,7 @@
   const strip = (s) => String(s || "").replace(/<[^>]+>/g, "");
   const OPT_DEP = /次の|つぎの|どれ|どっち|どちら|いちばん|一番|最も|もっとも|正しいもの|まちが|あてはまらない|ではない|でない|ないもの|ないのは|ちがうもの|仲間はずれ|なかまはずれ|ふさわしくない|誤って|あやまって|ア〜|ア～|①|②|下の|上の|右の|左の|図|グラフ|表/;
   const LABEL_ANS = /^(あ|い|う|え|ア|イ|ウ|エ|A|B|C|D|わからない|同じ|おなじ|どちらも|どれも|ない|ある|はい|いいえ|〇|×|正しい|まちがい)$/;
-  function stepSize(st) { if (typeof st.src === "function") return st.cnt || 10; if (Array.isArray(st.src)) return Math.min(st.cnt || 6, st.src.length); return 0; }
+  function stepSize(st) { if (typeof st.src === "function") { if (st._sz == null) { const n = st.cnt || 10, seen = new Set(); try { for (let k = 0; k < n * 3 && seen.size < n; k++) { const q = st.src(0.5, k % n); if (q) seen.add(q.q + "|" + q.a); } } catch (e) {} st._sz = seen.size; } return st._sz; } if (Array.isArray(st.src)) return Math.min(st.cnt || 6, st.src.length); return 0; }
   function sampler(st) {
     if (Array.isArray(st.src)) { const all = st.src.map((x) => (typeof x === "string" ? HM.parseBankLine(x) : x)); return () => Object.assign({}, pick(all)); }
     if (typeof st.src === "function") return (d, i) => { try { return st.src(d, i); } catch (e) { return null; } };
