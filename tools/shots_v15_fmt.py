@@ -1,7 +1,7 @@
 # v1.5 新しい問題形式（〇×・なかま分け・文字カード・全部えらぶ・数直線・漢字）を実際に操作して画面を撮る
 import subprocess, sys, time, os, json
 from playwright.sync_api import sync_playwright
-NOAUTH = "Object.defineProperty(window, 'HM_FIREBASE', { configurable: true, get() { return { enabled: false }; }, set() {} });"
+NOAUTH = "Object.defineProperty(window, 'HM_FIREBASE', { configurable: true, get() { return { enabled: false }; }, set() {} }); try{localStorage.setItem('hoshimanabi:consent',JSON.stringify({v:'2026-11-20',t:1}))}catch(e){}"
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__))); OUT = os.path.join(ROOT, "screenshots", "v15"); os.makedirs(OUT, exist_ok=True)
 PORT = 8813
 srv = subprocess.Popen([sys.executable, "-m", "http.server", str(PORT)], cwd=ROOT, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL); time.sleep(0.8)

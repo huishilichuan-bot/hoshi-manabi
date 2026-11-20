@@ -1,7 +1,7 @@
 # UI のスクショ（before/after 用）：python tools/shots_ui.py before|after
 import subprocess, sys, time, os
 from playwright.sync_api import sync_playwright
-NOAUTH = "Object.defineProperty(window, 'HM_FIREBASE', { configurable: true, get() { return { enabled: false }; }, set() {} });"  # 旧テストではログイン画面を出さない
+NOAUTH = "Object.defineProperty(window, 'HM_FIREBASE', { configurable: true, get() { return { enabled: false }; }, set() {} }); try{localStorage.setItem('hoshimanabi:consent',JSON.stringify({v:'2026-11-20',t:1}))}catch(e){}"  # 旧テストではログイン画面を出さない
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 tag = sys.argv[1]; SHOT = os.path.join(ROOT, "screenshots", "v12"); os.makedirs(SHOT, exist_ok=True)
 PORT = 8774

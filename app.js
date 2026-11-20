@@ -70,7 +70,7 @@
 
   // ---------- 保存 ----------
   function fresh() {
-    return { schema: SCHEMA, created: now(), settings: { sound: true, haptic: true, nick: "", vol: 0.8 }, days: {}, totalStars: 0, pulls: 0, pullsUsed: 0,
+    return { schema: SCHEMA, created: now(), settings: { sound: true, haptic: true, nick: "", vol: 0.8, bgm: true, bgmVol: 0.5, remind: false, remindAt: "17:00", fs: "m", rmotion: false, grade: 0, hint: true }, days: {}, totalStars: 0, pulls: 0, pullsUsed: 0,
       chars: { mori: { n: 1, shards: 0, star: 0, t: now() } }, partner: "mori", look: { bg: "note", maru: "red", title: "first" },
       progress: {}, last: null, reports: [], gachaLog: [], games: {}, wrongBox: [], boxGone: {}, bossWins: {}, boxCleared: 0, bestCombo: 0 };
   }
@@ -140,6 +140,65 @@
       speechSynthesis.speak(u); return true;
     } catch (e) { return false; }
   }
+  // ---------- BGM（WebAudioでその場で作る、オリジナルのやさしい曲） ----------
+  const BGM = { on: false, timer: null, step: 0, next: 0, gain: null, unlocked: false, song: 0 };
+  const BGM_SONGS = [
+    { bpm: 92, chords: [[60, 64, 67], [57, 60, 64], [53, 57, 60], [55, 59, 62]], mel: [76, 74, 72, 74, 76, 79, 76, 74, 72, 69, 72, 74, 76, 74, 72, 71] },
+    { bpm: 84, chords: [[53, 57, 60], [55, 59, 62], [52, 55, 59], [57, 60, 64]], mel: [72, 74, 76, 79, 77, 76, 74, 72, 74, 76, 72, 69, 71, 72, 74, 76] },
+  ];
+  function bgmWanted() {
+    const st = state.settings;
+    if (!st.bgm || !(st.bgmVol > 0.01) || !BGM.unlocked || document.hidden) return false;
+    if (window.HM_CONSENT && !HM_CONSENT.ok) return false;
+    const qz = $("#quiz"), gl = $("#game-layer");
+    return !(qz && !qz.hidden) && !(gl && !gl.hidden);
+  }
+  function bgmNote(f, t, dur, type, v) {
+    const o = actx.createOscillator(), g = actx.createGain();
+    o.type = type; o.frequency.value = 440 * Math.pow(2, (f - 69) / 12);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(v, t + 0.03); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g).connect(BGM.gain); o.start(t); o.stop(t + dur + 0.05);
+  }
+  function bgmTick() {
+    if (!actx || !BGM.on) return;
+    const sg = BGM_SONGS[BGM.song], spb = 60 / sg.bpm / 2;
+    while (BGM.next < actx.currentTime + 0.4) {
+      const i = BGM.step, bar = Math.floor(i / 8) % sg.chords.length, ch = sg.chords[bar];
+      if (i % 8 === 0) ch.forEach((n) => bgmNote(n - 12, BGM.next, spb * 7.5, "sine", 0.05));
+      if (i % 2 === 0) bgmNote(ch[(i / 2) % 3], BGM.next, spb * 1.6, "triangle", 0.035);
+      const m = sg.mel[i % sg.mel.length]; if (i % 2 === 0 || i % 8 === 3) bgmNote(m, BGM.next, spb * 1.8, "triangle", 0.05);
+      BGM.step++; BGM.next += spb;
+      if (BGM.step % (8 * sg.chords.length * 4) === 0) BGM.song = (BGM.song + 1) % BGM_SONGS.length;
+    }
+  }
+  function bgmUpdate() {
+    const want = bgmWanted();
+    if (want) {
+      try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); if (actx.state === "suspended") actx.resume(); } catch (e) { return; }
+      if (!BGM.gain) { BGM.gain = actx.createGain(); BGM.gain.connect(actx.destination); }
+      BGM.gain.gain.setTargetAtTime(0.9 * state.settings.bgmVol, actx.currentTime, 0.3);
+      if (!BGM.on) { BGM.on = true; BGM.next = actx.currentTime + 0.1; BGM.timer = setInterval(bgmTick, 150); }
+    } else if (BGM.on) {
+      BGM.on = false; clearInterval(BGM.timer);
+      try { BGM.gain.gain.setTargetAtTime(0.0001, actx.currentTime, 0.08); } catch (e) {}
+      const old = BGM.gain; BGM.gain = null; setTimeout(() => { try { old.disconnect(); } catch (e) {} }, 600);
+    }
+  }
+  ["pointerdown", "keydown"].forEach((ev) => document.addEventListener(ev, () => { if (!BGM.unlocked) { BGM.unlocked = true; setTimeout(bgmUpdate, 0); } }, { capture: true, passive: true }));
+  document.addEventListener("visibilitychange", () => { bgmUpdate(); if (!document.hidden) checkRemind(); });
+  setInterval(() => { bgmUpdate(); checkRemind(); }, 1500);
+  // ---------- 毎日のおしらせ（決めた時刻をすぎて、その日の⭐がまだ0のとき） ----------
+  function checkRemind() {
+    const st = state.settings; if (!st.remind) return;
+    const d = new Date(Date.now() + clockOffset), [hh, mm] = String(st.remindAt || "17:00").split(":").map(Number);
+    if (d.getHours() * 60 + d.getMinutes() < hh * 60 + mm) return;
+    const k = today(); if (st.remindDone === k || starsToday() > 0) return;
+    st.remindDone = k; save();
+    const msg = "今日の⭐をあつめよう！ 1ステップ6割で⭐1こ、⭐4こでゲームがひらくよ";
+    if (document.hidden && "Notification" in window && Notification.permission === "granted") {
+      try { navigator.serviceWorker && navigator.serviceWorker.ready.then((r) => r.showNotification("ほしまなび", { body: msg, icon: "./icons/icon-192.png", tag: "hm-remind" })).catch(() => new Notification("ほしまなび", { body: msg })); } catch (e) {}
+    } else toast("⏰ " + msg, 4500);
+  }
   function haptic(p) { if (state.settings.haptic && navigator.vibrate) { try { navigator.vibrate(p || 12); } catch (e) {} } }
   function toast(msg, ms) {
     const root = $("#toast-root"), el = document.createElement("div");
@@ -176,7 +235,13 @@
   let navDir = "tab";
   let nav = []; // 勉強タブの中の階層 [{v:"grades",s}, {v:"units",s,g}, {v:"steps",s,g,u}]
   function setTab(t) { if (t === tab && t === "study" && nav.length) { nav = []; navDir = "back"; } else navDir = "tab"; tab = t; if (t !== "study") nav = []; render(); window.scrollTo(0, 0); }
+  function applyDisplay() {
+    const de = document.documentElement, st = state.settings;
+    de.classList.toggle("fs-s", st.fs === "s"); de.classList.toggle("fs-l", st.fs === "l"); de.classList.toggle("fs-xl", st.fs === "xl");
+    de.classList.toggle("rmotion", !!st.rmotion);
+  }
   function applyLook() {
+    applyDisplay();
     document.body.dataset.bg = state.look.bg;
     document.body.dataset.maru = state.look.maru;
   }
@@ -205,6 +270,7 @@
     $("#topbar").classList.toggle("large", !(tab === "study" && nav.length));
     const bl = $("#back-btn"); if (bl && !bl.hidden) { const pv = nav[nav.length - 2]; bl.innerHTML = '<span class="chev">‹</span>' + esc(!pv ? "学ぶ" : pv.v === "grades" ? subjById(pv.s).n : pv.v === "units" ? subjName(pv.s, pv.g) + gradeName(pv.g) : "もどる"); }
     mountPartner();
+    bgmUpdate();
   }
   function charLevelFor(id) { const e = state.chars[id]; const s = e ? e.star || 0 : 0; return [5, 15, 15, 30, 30, 50][s]; }
   function charHtml(id, size, cls = "") { return '<div class="char ' + cls + '" style="width:' + size + "px;height:" + size + 'px">' + GCArt.charSvg(id, charLevelFor(id), { size }) + "</div>"; }
@@ -269,7 +335,7 @@
     }
     if (top.v === "grades") {
       const s = subjById(top.s);
-      return { title: s.n, html: '<p class="lead">学年をえらぼう</p><div class="grade-grid">' + gradesOf(top.s).map((g) => { const us = S()[top.s][g]; let d = 0, t = 0; us.forEach((u, ui) => { const r = unitStats(top.s, g, ui); d += r.done; t += r.total; }); return '<button type="button" class="grade" data-grade="' + g + '" style="--sc:' + s.c + '"><b>' + gradeName(g) + "</b><small>" + esc(subjName(top.s, g)) + "</small>" + bar(d, t) + "</button>"; }).join("") + "</div>" };
+      return { title: s.n, html: '<p class="lead">学年をえらぼう</p><div class="grade-grid">' + gradesOf(top.s).map((g) => { const us = S()[top.s][g]; let d = 0, t = 0; us.forEach((u, ui) => { const r = unitStats(top.s, g, ui); d += r.done; t += r.total; }); return '<button type="button" class="grade" data-grade="' + g + '" style="--sc:' + s.c + '"><b>' + gradeName(g) + "</b>" + (g === state.settings.grade ? '<span class="my-g">じぶんの学年</span>' : "") + "<small>" + esc(subjName(top.s, g)) + "</small>" + bar(d, t) + "</button>"; }).join("") + "</div>" };
     }
     if (top.v === "units") {
       const us = S()[top.s][top.g];
@@ -326,6 +392,8 @@
     const say = sayText(q);
     if (q.listen) h += '<div class="qz-q">' + q.q + "</div>" + (canSpeak() ? '<button type="button" class="say-big" data-q="say"><span>🔊</span><b>タップして聞こう</b><small>何回でも聞けるよ</small></button>' : '<div class="say-text">' + esc(say) + "</div>");
     else h += '<div class="qz-q">' + fracHtml(q.q) + (say && canSpeak() ? ' <button type="button" class="say-btn" data-q="say" aria-label="英語を聞く">🔊</button>' : "") + "</div>";
+    Q.hintN = 0;
+    if (state.settings.hint !== false && hintsFor(q).length) h += '<div class="hint-row"><button type="button" class="hint-btn" data-q="hint">💡 ヒント</button></div><div class="hint-box" id="hint-box"></div>';
     if (q.t === "ch") h += '<div class="opts">' + (q.opts || [q.a].concat(q.o)).map((o, i) => '<button type="button" class="opt" data-opt="' + i + '">' + fracHtml(esc(o)) + "</button>").join("") + "</div>";
     else if (q.t === "ord" || q.t === "match" || q.t === "pair" || q.t === "tap") h += workHtml(q);
     else if (window.HMQ && HMQ.has(q.t)) { Q.work = { plugin: true }; h += HMQ.html(q); }
@@ -338,6 +406,45 @@
     const pd = $(".passage", el); if (pd) pd.addEventListener("toggle", () => (Q.passOpen = pd.open));
     if (Q.work && Q.work.plugin) HMQ.mount(q, el, { ready: (on) => { const b = $("#work-ok"); if (b) b.disabled = !on || Q.answered; }, answer: (g) => answer(g), sound, toast: (m) => toast(esc(m)), haptic });
     else if (Q.work) renderWork();
+  }
+  // ---------- ヒント（3段階まで。答えそのものは出さない） ----------
+  const HINT_TYPE = {
+    tf: "文の中の、ことば・数・条件を1つずつたしかめよう。1か所でもちがえば ×。",
+    sort: "1つずつ「どちらのなかまかな？」と考えて、自信のあるものから入れよう。",
+    multi: "選択肢を1つずつ読んで、正しいものだけをえらぼう。1つとはかぎらないよ。",
+    tiles: "文の初めにくることば（主語）を先に見つけよう。",
+    nl: "目もり1つ分がいくつかを、先に数えよう。",
+    kanji: "部首（へん・つくり）と、画の順番を思い出そう。",
+    ord: "いちばん最初になるものを先に見つけよう。",
+    match: "自信のあるペアからつないで、のこりをへらそう。",
+    pair: "同じ意味・同じ答えになるカードをさがそう。",
+    tap: "図の中の印（直角マーク・同じ長さの印・数字）をよく見よう。",
+  };
+  function hintsFor(q) {
+    if (q.__hints) return q.__hints;
+    const out = [], ans = String(q.a == null ? "" : q.a).replace(/[{}]/g, "");
+    const leaks = (x) => { const y = x.replace(/[{}]/g, ""); if (ans && y.includes(ans)) return true; if (/^-?[\d.]+$/.test(ans)) return new RegExp("(^|[^\\d.])" + ans.replace(/[.]/g, "\\.") + "($|[^\\d.])").test(y); return false; };
+    if (HINT_TYPE[q.t]) out.push(HINT_TYPE[q.t]);
+    else if (/<svg/.test(q.q || "")) out.push("図の数字や印（直角マーク・同じ長さの印・目もり）に注目しよう。");
+    else if (q.t === "num" || q.t === "input" || (!q.t && !q.o)) out.push("わかっている数と、聞かれていることを書き出してから計算しよう。");
+    else out.push("問題文のキーワードに注目して、ちがう選択肢から消していこう。");
+    const sent = String(q.ex || "").replace(/([。．！？\n])/g, "$1\u0001").split("\u0001").map((x) => x.trim()).filter((x) => x.length > 4 && !leaks(x));
+    if (sent.length) out.push(sent[0]);
+    if (q.t === "ch" && (q.opts || q.o || []).length >= 3) out.push("__elim");
+    else if (sent.length > 1) out.push(sent[1]);
+    q.__hints = out.slice(0, 3);
+    return q.__hints;
+  }
+  function showHint() {
+    const q = curList()[Q.i], hs = hintsFor(q); if (Q.answered || Q.hintN >= hs.length) return;
+    const hv = hs[Q.hintN++], box = $("#hint-box"); if (!box) return;
+    if (hv === "__elim") {
+      const opts = q.opts || [q.a].concat(q.o); let n = 0;
+      $$(".opt").forEach((b) => { if (n < Math.max(1, opts.length - 2) && opts[+b.dataset.opt] !== q.a && !b.disabled) { b.disabled = true; b.classList.add("elim"); n++; } });
+      box.insertAdjacentHTML("beforeend", '<div class="hint-i"><b>ヒント' + Q.hintN + "</b>ちがう答えを" + n + "つ消したよ。</div>");
+    } else box.insertAdjacentHTML("beforeend", '<div class="hint-i"><b>ヒント' + Q.hintN + "</b>" + fracHtml(esc(hv)) + "</div>");
+    const b = $(".hint-btn"); if (b) { if (Q.hintN >= hs.length) { b.disabled = true; b.textContent = "💡 ヒントはここまで"; } else b.textContent = "💡 もう1つヒント（" + Q.hintN + "/" + hs.length + "）"; }
+    sound("tap");
   }
   // ---------- 新しい問題形式（並べかえ・線でつなぐ・カード合わせ・図をタップ） ----------
   const PAIR_COL = ["#ff6b6b", "#4dabf7", "#51cf66", "#fcc419", "#cc5de8", "#ff922b"];
@@ -752,10 +859,22 @@
   }
 
   // ---------- ゲーム ----------
+  const GENRES = [["all", "すべて", "✨"], ["sports", "スポーツ", "⚽"], ["race", "レース", "🏁"], ["shoot", "シューティング", "🎯"], ["action", "アクション", "🏃"], ["puzzle", "パズル", "🧩"], ["battle", "バトル", "⚔️"], ["board", "ボード", "♟️"], ["card", "カード", "🃏"]];
+  const GENRE_OF = { baseball: "sports", golf: "sports", soccer: "sports", bowling: "sports", basket: "sports", hockey: "sports", climb: "sports",
+    racing: "race", runner: "race", highway: "race", starfighter: "shoot", meteor: "shoot", bubble: "shoot",
+    breakout: "action", mole: "action", flappy: "action", snake: "action", tower: "action", fall: "action",
+    g2048: "puzzle", sudoku: "puzzle", coin: "puzzle", slide: "puzzle", lights: "puzzle", hanoi: "puzzle", nonogram: "puzzle", flood: "puzzle", pipes: "puzzle", blockfit: "puzzle", make10: "puzzle", mines: "puzzle", simon: "puzzle",
+    arena: "battle", royale: "battle",
+    chess: "board", reversi: "board", gomoku: "board", shogi: "board", connect4: "board", ultimate: "board", dots: "board", mancala: "board", checkers: "board", hex: "board", battleship: "board", hasami: "board",
+    memory: "card", pyramid: "card", sevens: "card", oldmaid: "card" };
+  const genreOf = (g) => g.genre || GENRE_OF[g.id] || "action";
+  let gameGenre = "all";
   function viewGames() {
     const open = gamesOpen(), n = starsToday();
+    const list = GAMES.filter((g) => gameGenre === "all" || genreOf(g) === gameGenre);
     let h = '<div class="gate ' + (open ? "open" : "") + '">' + (open ? "🎮 今日はゲームで遊べるよ！（⭐" + n + "）" : "🔒 今日の⭐が " + STARS_TO_UNLOCK + " こになるとひらきます（今 " + n + " こ）") + "</div>";
-    h += '<div class="app-grid">' + GAMES.map((g, i) => '<button type="button" class="app-ic ' + (open ? "" : "locked") + '" data-game="' + g.id + '" style="--i:' + (i % 24) + '"><span class="ai">' + HMIcons.icon(g.id, g.c, 62) + (g.pro ? '<span class="newb">NEW</span>' : "") + (open ? "" : '<span class="lock">🔒</span>') + "</span><span class=\"an\">" + esc(g.n) + "</span></button>").join("") + "</div>";
+    h += '<div class="genre-bar" role="tablist" aria-label="ジャンル">' + GENRES.map(([k, l, e]) => { const c = k === "all" ? GAMES.length : GAMES.filter((g) => genreOf(g) === k).length; return c ? '<button type="button" role="tab" class="genre-chip' + (gameGenre === k ? " on" : "") + '" aria-selected="' + (gameGenre === k) + '" data-genre="' + k + '"><span>' + e + "</span>" + l + "<small>" + c + "</small></button>" : ""; }).join("") + "</div>";
+    h += '<div class="app-grid">' + list.map((g, i) => '<button type="button" class="app-ic ' + (open ? "" : "locked") + '" data-game="' + g.id + '" style="--i:' + (i % 24) + '"><span class="ai">' + HMIcons.icon(g.id, g.c, 62, g.e) + (g.pro ? '<span class="newb">NEW</span>' : "") + (open ? "" : '<span class="lock">🔒</span>') + "</span><span class=\"an\">" + esc(g.n) + "</span></button>").join("") + "</div>";
     h += '<p class="foot">全' + GAMES.length + 'ゲーム</p>';
     return h;
   }
@@ -976,25 +1095,87 @@
 
   // ---------- 設定 ----------
   function viewSettings() {
-    const p = GCArt.charById(state.partner), nb = Object.keys(state.bossWins || {}).length, nd = Object.values(state.progress).filter((x) => x.passed).length;
-    let h = '<div class="me-card">' + charHtml(p.id, 72, "r" + p.rarity) + '<div class="grow"><b class="me-n">' + esc(state.settings.nick || "なまえ未設定") + '</b><span class="chip-t">🏅 ' + esc(titleName()) + "</span></div></div>";
+    const p = GCArt.charById(state.partner), nb = Object.keys(state.bossWins || {}).length, nd = Object.values(state.progress).filter((x) => x.passed).length, st = state.settings;
+    const ic = (e, c) => '<span class="ios-ic" style="background:' + c + '">' + e + "</span>";
+    const tg = (k) => '<input type="checkbox" class="ios-sw" data-set="' + k + '" ' + (st[k] ? "checked" : "") + ">";
+    const row = (e, c, label, right, opt = {}) => "<" + (opt.tag || "div") + ' class="ios-row' + (opt.cls ? " " + opt.cls : "") + '"' + (opt.attr || "") + ">" + ic(e, c) + '<span class="ios-l">' + label + (opt.sub ? "<small>" + opt.sub + "</small>" : "") + '</span><span class="ios-r">' + (right || "") + "</span></" + (opt.tag || "div") + ">";
+    const nav = (e, c, label, act, val, sub) => row(e, c, label, (val ? '<span class="ios-v">' + val + "</span>" : "") + '<span class="ios-chev">›</span>', { tag: "button", attr: ' type="button" data-act="' + act + '"', sub });
+    const grp = (title, rows, foot) => (title ? '<div class="ios-h">' + title + "</div>" : "") + '<div class="ios-group">' + rows.join("") + "</div>" + (foot ? '<p class="ios-f">' + foot + "</p>" : "");
+    const gradeLabel = st.grade ? gradeName(st.grade) : "えらばない";
+    let h = '<button type="button" class="ios-profile" data-act="set-profile">' + charHtml(p.id, 64, "r" + p.rarity) + '<span class="grow"><b class="me-n">' + esc(st.nick || "なまえ未設定") + '</b><span class="chip-t">🏅 ' + esc(titleName()) + '</span><small class="ios-sub">' + esc(gradeLabel) + " ・ プロフィールを編集</small></span><span class=\"ios-chev\">›</span></button>";
     h += '<div class="me-stats"><div><b class="num">' + state.totalStars + "</b><small>累計⭐</small></div><div><b class=\"num\">" + nd + "</b><small>合格ステップ</small></div><div><b class=\"num\">" + nb + "</b><small>ボス撃破</small></div><div><b class=\"num\">" + (state.bestCombo || 0) + "</b><small>最高コンボ</small></div></div>";
     if ((state.wrongBox || []).length) h += '<button type="button" class="box-card" data-act="box"><span class="bx-i">📦</span><span class="grow"><b>まちがえた問題ボックス</b><small>' + state.wrongBox.length + " 問 ・ これまでのクリア " + (state.boxCleared || 0) + ' 問</small></span><span class="go">▶</span></button>';
-    h += '<div id="acct-sec">' + (window.HMAuthUI ? HMAuthUI.sectionHtml() : "") + "</div>";
-    h += '<div class="sec">設定</div>';
-    h += '<div class="card set"><label class="sw"><span>🔈 音量</span><input type="range" min="0" max="1" step="0.1" id="vol" value="' + (state.settings.vol == null ? 0.8 : state.settings.vol) + '"></label>';
-    h += '<label class="sw"><span>効果音（ピコーンなど）</span><input type="checkbox" data-set="sound" ' + (state.settings.sound ? "checked" : "") + '></label><label class="sw"><span>振動（対応している端末のみ）</span><input type="checkbox" data-set="haptic" ' + (state.settings.haptic ? "checked" : "") + '></label><label class="field"><span>なまえ（マイページとチェスの友だち対戦で表示）</span><input class="input" id="nick" maxlength="12" value="' + esc(state.settings.nick) + '"></label></div>';
-    h += '<div class="sec">問題の報告 <span class="muted">' + state.reports.length + "件</span></div>";
+    h += '<div class="ios-h">アカウント</div><div id="acct-sec">' + (window.HMAuthUI ? HMAuthUI.sectionHtml() : "") + "</div>";
+    const vol = st.vol == null ? 0.8 : st.vol, bv = st.bgmVol == null ? 0.5 : st.bgmVol;
+    h += grp("サウンド", [
+      row("🔔", "#ff6b6b", "効果音", tg("sound")),
+      row("🔈", "#ff922b", "効果音の音量", '<input type="range" class="ios-range" min="0" max="1" step="0.1" id="vol" value="' + vol + '"><b class="ios-pct" id="vol-v">' + Math.round(vol * 100) + "</b>", { cls: "rng" }),
+      row("🎵", "#cc5de8", "BGM", tg("bgm"), { sub: "メニューで流れるオリジナル曲" }),
+      row("🎚️", "#845ef7", "BGMの音量", '<input type="range" class="ios-range" min="0" max="1" step="0.1" id="bgmvol" value="' + bv + '"><b class="ios-pct" id="bgmvol-v">' + Math.round(bv * 100) + "</b>", { cls: "rng" }),
+      row("📳", "#5c7cfa", "振動", tg("haptic"), { sub: "対応している端末で、正解やミスのときにふるえます" }),
+    ]);
+    const perm = "Notification" in window ? Notification.permission : "none";
+    h += grp("通知", [
+      row("⏰", "#fab005", "毎日のおしらせ", tg("remind"), { sub: "その日の⭐が0のとき、時刻をすぎたらおしらせ" }),
+      row("🕔", "#fd7e14", "おしらせの時刻", '<input type="time" class="ios-time" id="remind-at" value="' + esc(st.remindAt || "17:00") + '">'),
+    ].concat(perm === "default" ? [nav("📣", "#20c997", "端末の通知を使う", "notif-perm", "", "アプリを開いていないタブのときも通知でおしらせ")] : perm === "granted" ? [row("📣", "#20c997", "端末の通知", '<span class="ios-v">オン</span>')] : []));
+    const seg = (k, opts) => '<span class="ios-seg">' + opts.map(([v, l]) => '<button type="button" data-seg="' + k + '" data-v="' + v + '" class="' + (String(st[k]) === String(v) ? "on" : "") + '">' + l + "</button>").join("") + "</span>";
+    h += grp("表示", [
+      row("🔤", "#339af0", "文字の大きさ", seg("fs", [["s", "小"], ["m", "ふつう"], ["l", "大"], ["xl", "特大"]]), { cls: "segrow" }),
+      row("🌀", "#22b8cf", "動きをへらす", tg("rmotion"), { sub: "アニメーションを短くします" }),
+    ]);
+    h += grp("学習", [
+      nav("🎒", "#51cf66", "自分の学年", "set-grade", gradeLabel, "教科をえらぶと、その学年の単元がすぐ開きます"),
+      row("💡", "#fcc419", "ヒントボタン", tg("hint"), { sub: "問題で「💡ヒント」を3段階まで出せます" }),
+    ].concat((state.wrongBox || []).length ? [nav("📦", "#ff8787", "まちがえた問題ボックス", "box", state.wrongBox.length + "問")] : []));
+    h += grp("データ", [
+      nav("📤", "#4dabf7", "バックアップを書き出す", "backup", "", "記録をファイルに保存します"),
+      nav("📥", "#748ffc", "バックアップから戻す", "restore", ""),
+      row("🗑️", "#fa5252", '<span class="danger-t">すべてのデータを消す</span>', '<span class="ios-chev">›</span>', { tag: "button", attr: ' type="button" data-act="reset"' }),
+    ]) + '<input type="file" id="restore-file" accept="application/json,.json" hidden>';
+    h += grp("サポート", [
+      nav("✉️", "#15aabf", "お問い合わせ", "contact", "", "メールで質問・ご意見を送れます"),
+      nav("🚩", "#e8590c", "問題の報告", "reports", state.reports.length + "件", "「この問題おかしい？」で保存した報告"),
+    ]);
+    const cs = window.HM_CONSENT && HM_CONSENT.get ? HM_CONSENT.get() : null;
+    h += grp("このアプリについて", [
+      row("🔒", "#495057", "プライバシーポリシー", '<span class="ios-chev">›</span>', { tag: "a", attr: ' href="./privacy.html"', sub: cs && cs.t ? new Date(cs.t).toLocaleDateString("ja-JP") + "に同意" : "" }),
+      row("📄", "#495057", "利用規約", '<span class="ios-chev">›</span>', { tag: "a", attr: ' href="./terms.html"' }),
+      row("⚖️", "#495057", "ライセンス・表記", '<span class="ios-chev">›</span>', { tag: "a", attr: ' href="./legal.html"' }),
+      nav("ℹ️", "#5c7cfa", "バージョン情報", "about", "v" + VERSION),
+    ], "ほしまなび v" + VERSION + " ・ 課金・広告なし");
+    return h;
+  }
+  function openAbout() {
+    openSheet('<h2>ほしまなび <small class="muted">v' + VERSION + '</small></h2><p>小1〜中3の算数・数学、国語（漢字の書き練習）、生活、理科、社会、英語。学習指導要領（平成29年告示）の内容にそって作っています。</p><p>⭐は1ステップ6割以上（切り上げ）で1こ（同じステップは1日1回）。⭐4こで、その日のゲームがひらきます。⭐はへりません。なかまや着せかえは見た目だけのごほうびです。</p><p><b>データの保存</b>：ログインしないときは、この端末の中（ブラウザ）にだけ保存します。ログインすると、記録を Firebase に保存して、ほかの端末と同期します。</p><p class="small muted">算数・数学の問題はプログラムで作り、答えを別の計算で確かめています。まちがいを見つけたら「この問題おかしい？」で教えてください。</p><p class="small legal-links"><a href="./privacy.html">プライバシーポリシー</a> ・ <a href="./terms.html">利用規約</a> ・ <a href="./legal.html">ライセンス・表記</a></p>', { label: "バージョン情報" });
+  }
+  function openProfile() {
+    const st = state.settings;
+    openSheet('<h2>プロフィール</h2><label class="field"><span>なまえ（マイページとチェスの友だち対戦で表示・12文字まで）</span><input class="input" id="nick" maxlength="12" value="' + esc(st.nick) + '"></label><div class="field"><span>学年</span>' + gradePicker() + '</div><p class="small muted">パートナーと称号は「なかま」でかえられます。</p><div class="actions"><button type="button" class="btn primary block" data-act="sheet-done">OK</button></div>', { label: "プロフィール", onClose: render });
+  }
+  function gradePicker() {
+    const g = state.settings.grade || 0;
+    return '<div class="grade-pick">' + [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => '<button type="button" data-pick-grade="' + n + '" class="' + (n === g ? "on" : "") + '">' + (n ? gradeName(n) : "えらばない") + "</button>").join("") + "</div>";
+  }
+  function openReports() {
+    let h = '<h2>問題の報告 <small class="muted">' + state.reports.length + "件</small></h2>";
     if (!state.reports.length) h += '<p class="small muted">「この問題おかしい？」で保存した報告がここに出ます。</p>';
     else h += '<div class="reports">' + state.reports.slice(0, 50).map((r, i) => '<div class="rep"><div class="small muted">' + new Date(r.t).toLocaleString("ja-JP") + " ・ " + esc(subjName(r.subj, r.grade) + gradeName(r.grade)) + " ・ " + esc(r.unit + "／" + r.step) + "</div><div>" + r.q + '</div><div class="small">アプリの正解：' + esc(r.a) + " ・ " + esc(r.kind) + (r.note ? " ・ " + esc(r.note) : "") + '</div><button type="button" class="link-btn" data-rep-del="' + i + '">消す</button></div>').join("") + "</div>";
     h += '<div class="actions two"><button type="button" class="btn" data-act="rep-copy" ' + (state.reports.length ? "" : "disabled") + '>報告をコピー</button><button type="button" class="btn" data-act="rep-dl" ' + (state.reports.length ? "" : "disabled") + ">ファイルに書き出す</button></div>";
-    h += '<div class="sec">データ</div><div class="actions two"><button type="button" class="btn" data-act="backup">バックアップを書き出す</button><button type="button" class="btn" data-act="restore">バックアップから戻す</button></div><input type="file" id="restore-file" accept="application/json,.json" hidden>';
-    h += '<div class="actions"><button type="button" class="btn danger block" data-act="reset">すべてのデータを消す</button></div>';
-    h += '<div class="sec">このアプリについて</div><p class="small">ほしまなび v' + VERSION + "。小1〜中3の算数・数学、国語、生活、理科、社会、英語。学習指導要領（平成29年告示）の内容にそって作っています。<br>⭐は1ステップ6割以上で1こ（同じステップは1日1回）。⭐4こで、その日のゲームがひらきます。<br><b>課金・広告・お金の機能はありません。</b>データはこの端末の中だけに保存され、どこにも送信しません。</p>";
-    h += '<p class="small muted">算数・数学の問題はプログラムで作り、答えを別の計算で確かめています。文章の問題も確認していますが、まちがいを見つけたら「この問題おかしい？」で教えてください。<a href="./legal.html">くわしく</a></p>';
-    h += '<p class="small legal-links"><a href="./privacy.html">プライバシーポリシー</a> ・ <a href="./terms.html">利用規約</a></p>';
-    return h;
+    h += '<div class="actions"><button type="button" class="btn primary block" data-act="rep-mail" ' + (state.reports.length ? "" : "disabled") + ">メールで送る</button></div>";
+    openSheet(h, { label: "問題の報告", onClose: render });
   }
+  const CONTACT = "huishilichuan@gmail.com";
+  function mailto(subject, body) { location.href = "mailto:" + CONTACT + "?subject=" + encodeURIComponent(subject) + "&body=" + encodeURIComponent(body); }
+  function envText() { return "\n\n----\nほしまなび v" + VERSION + "\n" + navigator.userAgent; }
+  function openContact() {
+    openSheet('<h2>お問い合わせ</h2><p class="small">質問・ご意見・不具合のお知らせは、メールで受けつけています。</p><div class="ios-group">' +
+      '<button type="button" class="ios-row" data-mail="q"><span class="ios-ic" style="background:#15aabf">❓</span><span class="ios-l">質問・ご意見</span><span class="ios-r"><span class="ios-chev">›</span></span></button>' +
+      '<button type="button" class="ios-row" data-mail="bug"><span class="ios-ic" style="background:#fa5252">🐞</span><span class="ios-l">不具合のお知らせ</span><span class="ios-r"><span class="ios-chev">›</span></span></button>' +
+      '<button type="button" class="ios-row" data-mail="del"><span class="ios-ic" style="background:#495057">🗑️</span><span class="ios-l">データ削除の依頼</span><span class="ios-r"><span class="ios-chev">›</span></span></button>' +
+      '</div><p class="small muted">送り先：' + CONTACT + "</p>", { label: "お問い合わせ" });
+  }
+
   function download(name, text) {
     const blob = new Blob([text], { type: "application/json" }), a = document.createElement("a");
     a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
@@ -1027,6 +1208,7 @@
       const act = a.dataset.q;
       if (act === "say") { const q = curList()[Q.i]; speak(sayText(q)); a.classList.remove("on"); void a.offsetWidth; a.classList.add("on"); return; }
       if (act === "box-again") { startBox(); return; }
+      if (act === "hint") { showHint(); return; }
       if (act === "boss-again") { const b = [Q.s, Q.g, Q.ui]; startBoss(...b); return; }
       if (act === "submit") { if (!Q.answered && workDone()) answer(workResult()); }
       else if (act === "next") next();
@@ -1041,7 +1223,7 @@
     }
     const m = t.closest("#main"); if (!m) return;
     const sb = t.closest("[data-subj]");
-    if (sb) { tab = "study"; nav = [{ v: "grades", s: sb.dataset.subj }]; render(); window.scrollTo(0, 0); return; }
+    if (sb) { tab = "study"; const my = state.settings.grade; nav = [{ v: "grades", s: sb.dataset.subj }]; if (my && gradesOf(sb.dataset.subj).includes(my)) nav.push({ v: "units", s: sb.dataset.subj, g: my }); render(); window.scrollTo(0, 0); return; }
     const gb = t.closest("[data-grade]"); if (gb) { const top = nav[nav.length - 1]; nav.push({ v: "units", s: top.s, g: +gb.dataset.grade }); render(); window.scrollTo(0, 0); return; }
     const ub = t.closest("[data-unit]"); if (ub) { const top = nav[nav.length - 1]; nav.push({ v: "steps", s: top.s, g: top.g, u: +ub.dataset.unit }); render(); window.scrollTo(0, 0); return; }
     const bb = t.closest("[data-boss]"); if (bb) { const top = nav[nav.length - 1]; startBoss(top.s, top.g, top.u); return; }
@@ -1052,7 +1234,11 @@
     const bg = t.closest("button[data-bg]"); if (bg) { state.look.bg = bg.dataset.bg; save(); render(); return; }
     const mr = t.closest("button[data-maru]"); if (mr) { state.look.maru = mr.dataset.maru; save(); render(); bigMaru(); return; }
     const ti = t.closest("[data-title]"); if (ti) { state.look.title = ti.dataset.title; save(); render(); return; }
-    const rd = t.closest("[data-rep-del]"); if (rd) { state.reports.splice(+rd.dataset.repDel, 1); save(); render(); return; }
+    const rd = t.closest("[data-rep-del]"); if (rd) { state.reports.splice(+rd.dataset.repDel, 1); save(); if (t.closest("#sheet-root")) openReports(); else render(); return; }
+    const sg = t.closest("[data-seg]"); if (sg) { state.settings[sg.dataset.seg] = sg.dataset.v; save(); applyDisplay(); render(); return; }
+    const pg = t.closest("[data-pick-grade]"); if (pg) { state.settings.grade = +pg.dataset.pickGrade; save(); $$("[data-pick-grade]").forEach((b) => b.classList.toggle("on", b === pg)); toast(state.settings.grade ? "🎒 " + gradeName(state.settings.grade) + "にしました" : "学年は「えらばない」にしました"); return; }
+    const ml = t.closest("[data-mail]"); if (ml) { const k = ml.dataset.mail; mailto(k === "bug" ? "ほしまなび 不具合のお知らせ" : k === "del" ? "ほしまなび データ削除の依頼" : "ほしまなび 質問・ご意見", (k === "bug" ? "どの画面で、何をしたら、どうなったか：\n" : k === "del" ? "削除したいアカウントのメールアドレス：\n" : "") + envText()); return; }
+    const gn = t.closest("[data-genre]"); if (gn) { gameGenre = gn.dataset.genre; render(); return; }
     const ac = t.closest("[data-act]");
     if (ac) {
       const a = ac.dataset.act;
@@ -1061,19 +1247,32 @@
       else if (a === "box") startBox();
       else if (a === "rep-copy") copyText(reportText());
       else if (a === "rep-dl") download("hoshimanabi-reports-" + today() + ".json", JSON.stringify({ app: "ほしまなび", version: VERSION, exported: new Date().toISOString(), reports: state.reports }, null, 1));
+      else if (a === "about") openAbout();
+      else if (a === "set-profile") openProfile();
+      else if (a === "set-grade") openSheet("<h2>自分の学年</h2><p class=\"small muted\">教科をえらぶと、この学年の単元がすぐ開きます。</p>" + gradePicker(), { label: "学年", onClose: render });
+      else if (a === "sheet-done") closeSheet();
+      else if (a === "reports") openReports();
+      else if (a === "contact") openContact();
+      else if (a === "rep-mail") mailto("ほしまなび 問題の報告（" + state.reports.length + "件）", reportText() + envText());
+      else if (a === "notif-perm") { try { Notification.requestPermission().then(() => render()); } catch (e) {} }
       else if (a === "backup") download("hoshimanabi-backup-" + today() + ".json", JSON.stringify(state));
       else if (a === "restore") $("#restore-file").click();
       else if (a === "reset") { if (confirm("すべてのデータ（⭐・なかま・記録）を消します。よろしいですか？") && confirm("本当に消しますか？もとに戻せません。")) { state = fresh(); save(); render(); toast("データを消しました"); } }
     }
   });
   document.addEventListener("change", (e) => {
-    const s = e.target.closest("[data-set]"); if (s) { state.settings[s.dataset.set] = s.checked; save(); return; }
+    const s = e.target.closest("[data-set]"); if (s) { state.settings[s.dataset.set] = s.checked; if (s.dataset.set === "remind") state.settings.remindDone = null; save(); applyDisplay(); bgmUpdate(); return; }
     if (e.target.id === "vol") { state.settings.vol = +e.target.value; save(); sound("tap"); return; }
+    if (e.target.id === "bgmvol") { state.settings.bgmVol = +e.target.value; save(); bgmUpdate(); return; }
+    if (e.target.id === "remind-at") { state.settings.remindAt = e.target.value || "17:00"; state.settings.remindDone = null; save(); return; }
     if (e.target.id === "nick") { state.settings.nick = e.target.value.trim().slice(0, 12); save(); return; }
     if (e.target.id === "restore-file") {
       const f = e.target.files[0]; if (!f) return;
       f.text().then((txt) => { const d = JSON.parse(txt); if (!d || typeof d !== "object" || !d.chars) throw new Error("bad"); state = migrate(d); save(); render(); toast("バックアップから戻しました"); }).catch(() => toast("読みこめませんでした"));
     }
+  });
+  document.addEventListener("input", (e) => {
+    if (e.target.id === "vol" || e.target.id === "bgmvol") { const v = $("#" + e.target.id + "-v"); if (v) v.textContent = Math.round(e.target.value * 100); if (e.target.id === "bgmvol") { state.settings.bgmVol = +e.target.value; bgmUpdate(); } }
   });
   document.addEventListener("keydown", (e) => {
     if (!Q || $("#quiz").hidden) return;

@@ -69,8 +69,8 @@
     royale: p("M32 8c13 0 22 8 22 18H10c0-10 9-18 22-18z") + s("M12 26l20 18M52 26L32 44M32 26v18", 2, O) + r(26, 44, 12, 12, 3) + c(32, 40, 5, "#ffd43b"),
     starfighter: p("M32 8l12 30-12-6-12 6z") + p("M20 38l-8 10 14-4zM44 38l8 10-14-4z", O) + p("M28 44h8l-4 12z", "#ffd43b"),
   };
-  function icon(id, color, size = 64) {
-    const g = G[id] || t(32, 42, "?", 28);
+  function icon(id, color, size = 64, emoji) {
+    const g = G[id] || (emoji ? '<text x="32" y="44" text-anchor="middle" font-size="34">' + emoji + "</text>" : t(32, 42, "?", 28));
     const uid = "ic" + id + Math.random().toString(36).slice(2, 6);
     return '<svg class="app-svg" viewBox="0 0 64 64" width="' + size + '" height="' + size + '" aria-hidden="true"><defs><linearGradient id="' + uid + '" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="' + color + '" stop-opacity=".78"/><stop offset=".55" stop-color="' + color + '"/><stop offset="1" stop-color="#000" stop-opacity=".25"/></linearGradient></defs>' +
       '<rect width="64" height="64" rx="15" fill="' + color + '"/><rect width="64" height="64" rx="15" fill="url(#' + uid + ')"/><path d="M0 15A15 15 0 0 1 15 0h34a15 15 0 0 1 15 15v9C44 30 20 30 0 22z" fill="rgba(255,255,255,.16)"/>' +

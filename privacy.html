@@ -14,7 +14,7 @@ ul{padding-left:1.3em;margin:6px 0}li{margin:2px 0}p{margin:6px 0}
 .lead{background:linear-gradient(135deg,#efeaff,#fff6e5);border-radius:18px;padding:14px 18px;margin-bottom:14px;font-size:14.5px}
 a{color:var(--brand);font-weight:700}.foot{text-align:center;color:var(--muted);font-size:13px;margin-top:20px}
 </style></head><body><div class="bar"><a href="./" aria-label="アプリにもどる">‹</a><b>プライバシーポリシー</b></div><main>
-<h1>プライバシーポリシー</h1><p class="date">制定日：2026年11月17日</p>
+<h1>プライバシーポリシー</h1><p class="date">制定日：2026年11月17日 ／ 改定日：2026年11月20日</p>
 <div class="lead">ほしまなび（以下「本アプリ」）は、勉強の記録を守ることを大切にしています。このページでは、本アプリがどんな情報を、どこに、なんのために保存するかを説明します。<br><b>小学生・中学生の人は、おうちの人といっしょに読んでね。</b></div>
 <section class="card"><h2><span class="n">1</span>ゲストで使うとき（ログインしないとき）</h2><p>記録は、すべてお使いの端末のブラウザの中（localStorage）だけに保存されます。本アプリの運営者を含め、外部に送られることはありません。</p></section>
 <section class="card"><h2><span class="n">2</span>ログインしたときに保存する情報</h2><p>アカウントを作ってログインすると、次の情報を Google が提供する Firebase（Firebase Authentication と Cloud Firestore）に保存します。</p>
@@ -25,10 +25,12 @@ a{color:var(--brand);font-weight:700}.foot{text-align:center;color:var(--muted);
 <section class="card"><h2><span class="n">3</span>使う目的</h2><ul><li>ログインできるようにするため</li><li>学習の記録をアカウントに保存し、ほかの端末でも同じ記録で使えるようにするため（同じアカウントでログインしている端末どうしで、記録を自動で同期します）</li><li>パスワードの再設定メールを送るため</li></ul><p>これ以外の目的には使いません。</p></section>
 <section class="card"><h2><span class="n">4</span>しないこと</h2><ul><li>広告は表示しません。広告のために情報を使いません。</li><li>情報を売ったり、ほかの会社にわたしたりしません（下の Google／Firebase をのぞく）。</li><li>お金の支払い・課金の機能はありません。</li><li>位置情報・連絡先・写真・マイクは使いません。英語の読み上げは端末の機能で再生するだけで、声を録音することはありません。</li><li>アクセス解析ツールは使っていません。</li></ul></section>
 <section class="card"><h2><span class="n">5</span>情報をあずける先（Google／Firebase）</h2><p>保存とログインには、Google LLC が提供する Firebase を使います。情報は Google のサーバー（日本以外の国にある場合があります）に保存され、Google は本アプリのために情報を処理します。くわしくは <a href="https://firebase.google.com/support/privacy" target="_blank" rel="noopener">Firebase のプライバシーとセキュリティ</a> と <a href="https://policies.google.com/privacy?hl=ja" target="_blank" rel="noopener">Google プライバシーポリシー</a> をご覧ください。</p><p>本アプリのページは GitHub Pages で公開しています。ページを開くとき、GitHub がアクセスの記録（IPアドレスなど）を処理することがあります。</p></section>
-<section class="card"><h2><span class="n">6</span>端末の中に保存するもの</h2><p>本アプリは、記録や設定を端末の localStorage に保存します。ログインしている間は、アカウントの記録のコピーを端末に置き（オフラインでも使えるようにするため）、ログイン状態を保つために Firebase が端末の IndexedDB などに情報を保存します。<b>ログアウトすると、そのアカウントの記録のコピーとログイン状態を端末から消します。</b>ゲストの記録はアカウントの記録とは別に保存します。オフラインで使えるように、アプリのファイルを端末にキャッシュします。</p></section>
+<section class="card"><h2><span class="n">6</span>端末の中に保存するもの</h2><p>本アプリは、記録や設定を端末の localStorage に保存します。ログインしている間は、アカウントの記録のコピーを端末に置き（オフラインでも使えるようにするため）、ログイン状態を保つために Firebase が端末の IndexedDB などに情報を保存します。<b>ログアウトすると、そのアカウントの記録のコピーとログイン状態を端末から消します。</b>ゲストの記録はアカウントの記録とは別に保存します。オフラインで使えるように、アプリのファイルを端末にキャッシュします。</p><ul><li><b>設定</b>：効果音・BGMの音量、毎日のおしらせのオン／オフと時刻、文字の大きさ、動きをへらす、自分の学年、ヒントボタン、なまえ。これらは学習の記録といっしょに保存されます（ログインしているときは同期されます）。</li><li><b>同意の記録</b>：このポリシーに同意した版と日時を、端末の localStorage（「hoshimanabi:consent」）にだけ保存します。</li></ul></section>
+<section class="card"><h2><span class="n">6-2</span>手書き・音・通知</h2><ul><li><b>漢字の手書き</b>：書いた線は、その端末の中で形を判定するためだけに使い、保存も送信もしません。</li><li><b>音声読み上げ・BGM・効果音</b>：端末のブラウザの機能でその場で作って鳴らします。マイクは使いません。</li><li><b>毎日のおしらせ</b>：決めた時刻をすぎて、その日の⭐が0のときに、アプリの中で知らせます。「端末の通知を使う」を許可した場合は、ブラウザの通知機能で知らせます。通知のために外部のサーバーは使いません。</li></ul></section>
+<section class="card"><h2><span class="n">6-3</span>お問い合わせ・問題の報告</h2><p>マイページの「お問い合わせ」「問題の報告 → メールで送る」は、お使いの端末のメールアプリを開くだけです。送信するかどうかは利用者が決めます。送られたメールでは、メールアドレス、本文、自動で入るアプリのバージョンとブラウザの情報（ユーザーエージェント）を受け取り、返信と改善のためだけに使います。</p></section>
 <section class="card"><h2><span class="n">7</span>記録の安全</h2><p>クラウドの記録は、ログインした本人だけが読み書きできるように設定しています。通信は暗号化（HTTPS）されています。</p></section>
 <section class="card"><h2><span class="n">8</span>記録の確認・削除</h2><ul><li><b>アカウントとクラウドの記録の削除</b>：マイページ →「アカウントを削除する」から、いつでも削除できます。クラウドの記録とアカウントが消え、もとにはもどせません。</li><li><b>端末の中の記録の削除</b>：マイページ →「すべてのデータを消す」から削除できます。</li><li>自分で削除できないときや、記録について知りたいときは、下の問い合わせ先に連絡してください。</li></ul></section>
 <section class="card"><h2><span class="n">9</span>子どもの利用について</h2><p>本アプリは小学生・中学生の学習用です。お子さまがアカウントを作るときは、<b>保護者の方がこのプライバシーポリシーと利用規約を読み、同意したうえで</b>使ってください。保護者の方は、上の方法でいつでもアカウントと記録を削除できます。</p></section>
-<section class="card"><h2><span class="n">10</span>このポリシーの変更</h2><p>内容を変えるときは、このページで知らせます。大切な変更のときは、アプリの中でもお知らせします。</p></section>
+<section class="card"><h2><span class="n">10</span>このポリシーの変更</h2><p>内容を変えるときは、このページで知らせます。大切な変更のときは、アプリを開いたときに、もう一度同意をお願いする画面を出します。</p></section>
 <section class="card"><h2><span class="n">11</span>問い合わせ先</h2><p>メール：<a href="mailto:huishilichuan@gmail.com">huishilichuan@gmail.com</a></p></section>
 <p class="foot"><a href="./terms.html">利用規約</a> ・ <a href="./">アプリにもどる</a></p></main></body></html>

@@ -1,7 +1,7 @@
 # 全50ゲームを少し長めに遊んで（ランダムなタップ・キー）エラーがないか確かめ、一覧画像を作る
 import subprocess, sys, time, os, random, json
 from playwright.sync_api import sync_playwright
-NOAUTH = "Object.defineProperty(window, 'HM_FIREBASE', { configurable: true, get() { return { enabled: false }; }, set() {} });"  # 旧テストではログイン画面を出さない
+NOAUTH = "Object.defineProperty(window, 'HM_FIREBASE', { configurable: true, get() { return { enabled: false }; }, set() {} }); try{localStorage.setItem('hoshimanabi:consent',JSON.stringify({v:'2026-11-20',t:1}))}catch(e){}"  # 旧テストではログイン画面を出さない
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "screenshots", "games"); os.makedirs(OUT, exist_ok=True)
 PORT = 8766

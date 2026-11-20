@@ -1,7 +1,7 @@
 # 新ゲームを「うまい人」っぽいボットで遊び、勝てる（=調整が理不尽でない）か確かめる
 import subprocess, sys, time, os, json
 from playwright.sync_api import sync_playwright
-NOAUTH = "Object.defineProperty(window, 'HM_FIREBASE', { configurable: true, get() { return { enabled: false }; }, set() {} });"  # 旧テストではログイン画面を出さない
+NOAUTH = "Object.defineProperty(window, 'HM_FIREBASE', { configurable: true, get() { return { enabled: false }; }, set() {} }); try{localStorage.setItem('hoshimanabi:consent',JSON.stringify({v:'2026-11-20',t:1}))}catch(e){}"  # 旧テストではログイン画面を出さない
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PORT = 8768
 srv = subprocess.Popen([sys.executable, "-m", "http.server", str(PORT)], cwd=ROOT, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)

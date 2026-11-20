@@ -16,6 +16,7 @@ try:
     br = p.chromium.launch(executable_path="/usr/bin/google-chrome", args=["--no-sandbox"])
     ctx = br.new_context(viewport={"width": 390, "height": 844}, device_scale_factor=2, is_mobile=True, has_touch=True)
     ctx.add_init_script(MOCK)
+    ctx.add_init_script("try{localStorage.setItem('hoshimanabi:consent',JSON.stringify({v:'2026-11-20',t:1}))}catch(e){}")
     # 本物の Firebase へ行く通信がないことを確かめる
     net = []
     ctx.on("request", lambda r: net.append(r.url) if (not r.url.startswith("http://localhost") and ("googleapis" in r.url or "gstatic" in r.url or "firebase" in r.url)) else None)

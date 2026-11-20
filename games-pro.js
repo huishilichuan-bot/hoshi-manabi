@@ -4,13 +4,17 @@
   const H = window.HMGames;
   let AC = null;
   const ac = () => { try { if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)(); if (AC.state === "suspended") AC.resume(); } catch (e) {} return AC; };
+  // 設定の「効果音」「効果音の音量」にしたがう
+  const mvol = () => { try { const st = window.HM_APP.state().settings; return st.sound === false ? 0 : (st.vol == null ? 0.8 : +st.vol); } catch (e) { return 0.8; } };
   function tone(f, dur, type = "sine", vol = 0.15, f2 = null, delay = 0) {
+    const m = mvol(); if (m <= 0.01) return; vol = Math.max(0.002, vol * m * 1.25);
     const a = ac(); if (!a) return; const t = a.currentTime + delay, o = a.createOscillator(), g = a.createGain();
     o.type = type; o.frequency.setValueAtTime(f, t); if (f2) o.frequency.exponentialRampToValueAtTime(Math.max(20, f2), t + dur);
     g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
     o.connect(g).connect(a.destination); o.start(t); o.stop(t + dur + 0.02);
   }
   function noise(dur = 0.2, vol = 0.2, hp = 400, delay = 0) {
+    const m = mvol(); if (m <= 0.01) return; vol = vol * m * 1.25;
     const a = ac(); if (!a) return; const t = a.currentTime + delay, n = Math.floor(a.sampleRate * dur), b = a.createBuffer(1, n, a.sampleRate), d = b.getChannelData(0);
     for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / n);
     const s = a.createBufferSource(), f = a.createBiquadFilter(), g = a.createGain(); s.buffer = b; f.type = "highpass"; f.frequency.value = hp; g.gain.value = vol;

@@ -3,8 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>ほしまなび</title>
-<meta name="description" content="小1〜中3の5教科＋生活。ステップで学んで⭐を集める、無料の勉強アプリ。課金なし。">
+<title>ほしまなび｜小1〜中3の無料学習アプリ（算数・国語・理科・社会・英語）</title>
+<meta name="description" content="ほしまなびは、小学1年〜中学3年の算数・数学、国語（漢字の書き練習つき）、理科、社会、英語、生活を学べる無料の学習アプリです。図の問題や〇×・並べかえなどいろいろな形式で、ステップごとに⭐を集めよう。課金・広告なし。">
+<meta name="keywords" content="ほしまなび,学習アプリ,無料,小学生,中学生,算数,数学,漢字,理科,社会,英語">
+<meta name="robots" content="index,follow,max-image-preview:large">
 <meta name="theme-color" content="#14112b">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -14,7 +16,7 @@
 <meta name="application-name" content="ほしまなび">
 <meta property="og:site_name" content="ほしまなび">
 <meta property="og:title" content="ほしまなび｜小1〜中3の勉強とゲームで⭐を集めよう">
-<meta property="og:description" content="小1〜中3の5教科＋生活。ステップで学んで⭐を集める、無料の勉強アプリ。課金なし。">
+<meta property="og:description" content="小1〜中3の算数・国語・理科・社会・英語・生活を、図の問題や漢字の書き練習で学べる無料の学習アプリ。課金・広告なし。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://huishilichuan-bot.github.io/hoshi-manabi/">
 <meta property="og:image" content="https://huishilichuan-bot.github.io/hoshi-manabi/icons/og.png">
@@ -22,9 +24,16 @@
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="ja_JP">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="ほしまなび">
+<meta name="twitter:title" content="ほしまなび｜小1〜中3の無料学習アプリ">
+<meta name="twitter:description" content="小1〜中3の5教科＋生活を、図の問題や漢字の書き練習で。課金・広告なし。">
 <meta name="twitter:image" content="https://huishilichuan-bot.github.io/hoshi-manabi/icons/og.png">
 <link rel="canonical" href="https://huishilichuan-bot.github.io/hoshi-manabi/">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+{"@type":"WebSite","@id":"https://huishilichuan-bot.github.io/hoshi-manabi/#website","name":"ほしまなび","alternateName":["Hoshi Manabi","ほしまなび 学習アプリ"],"url":"https://huishilichuan-bot.github.io/hoshi-manabi/","inLanguage":"ja"},
+{"@type":"WebApplication","@id":"https://huishilichuan-bot.github.io/hoshi-manabi/#app","name":"ほしまなび","url":"https://huishilichuan-bot.github.io/hoshi-manabi/","applicationCategory":"EducationalApplication","operatingSystem":"iOS, Android, Windows, macOS（Webブラウザ）","inLanguage":"ja","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"},"image":"https://huishilichuan-bot.github.io/hoshi-manabi/icons/og.png","description":"小学1年〜中学3年の算数・数学、国語（漢字の書き練習）、理科、社会、英語、生活を学べる無料の学習アプリ。","educationalLevel":"小学1年〜中学3年","audience":{"@type":"EducationalAudience","educationalRole":"student"},"publisher":{"@type":"Person","name":"ほしまなび運営者"}}
+]}
+</script>
 <link rel="manifest" href="./manifest.webmanifest">
 <link rel="icon" href="./icons/icon-192.png">
 <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
@@ -32,6 +41,7 @@
 <link rel="stylesheet" href="./app.css">
 </head>
 <body>
+<script src="./consent.js"></script>
 <div id="splash" aria-hidden="true"><div class="sp-in"><div class="sp-logo"><svg viewBox="0 0 64 64" width="84" height="84"><defs><linearGradient id="spg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe066"/><stop offset="1" stop-color="#ff922b"/></linearGradient></defs><path d="M32 4l8.2 17.6 19.3 2.3-14.2 13.2 3.8 19.1L32 46.6 14.9 56.2l3.8-19.1L4.5 23.9l19.3-2.3z" fill="url(#spg)" stroke="#fff" stroke-width="3" stroke-linejoin="round"/></svg></div><b>ほしまなび</b><small>まなんで、ほしを集めよう</small><i class="sp-bar"><i></i></i></div></div>
 <div id="app">
   <header class="topbar" id="topbar">
@@ -39,7 +49,7 @@
     <h1 class="top-title" id="top-title">ほしまなび</h1>
     <div class="top-stars" id="top-stars" aria-label="今日の星"></div>
   </header>
-  <main id="main" class="main"></main>
+  <main id="main" class="main"><section class="seo-intro"><h2>ほしまなび</h2><p>小学1年〜中学3年の算数・数学、国語（漢字の書き練習つき）、理科、社会、英語、生活を学べる無料の学習アプリです。図の問題、〇×、並べかえ、なかま分け、数直線などいろいろな形式で学び、ステップに合格すると⭐がもらえます。課金・広告はありません。</p></section></main>
   <nav class="tabbar hm-tabs" id="tabbar" aria-label="メニュー">
     <button type="button" class="tab" data-tab="home"><span class="tab-ico"><svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg></span>ホーム</button>
     <button type="button" class="tab" data-tab="study"><span class="tab-ico"><svg viewBox="0 0 24 24"><path d="M4 5c3-1 6-1 8 1v14c-2-2-5-2-8-1zM20 5c-3-1-6-1-8 1v14c2-2 5-2 8-1z"/></svg></span>学ぶ</button>
