@@ -17,6 +17,8 @@
     GC.active = g;
     body.innerHTML = '<div class="hg">' + html + "</div>";
     g.body = body;
+    const BOARD = ["connect4", "ultimate", "dots", "mancala", "checkers", "hex", "battleship", "nim", "hitblow", "hasami"];
+    setTimeout(() => window.HMSafety && window.HMSafety(g, BOARD.includes(id) ? { sec: 600, draw: true } : { sec: 240 }), 0);
     g.$ = (s) => body.querySelector(s);
     g.$$ = (s) => Array.from(body.querySelectorAll(s));
     g.status = (t) => { const s = g.$(".hg-status"); if (s) s.innerHTML = t; };

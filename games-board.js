@@ -11,11 +11,23 @@
   const D8 = [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]];
 
   // 盤ゲーム共通の画面
+  // ===== どのゲームもかならず終わるための制限時間（決まった秒数をこえたら「時間切れ」で結果画面へ） =====
+  // 対戦ボードゲーム：15分で引き分け／盤のゲーム（新）：10分で引き分け／ほかのゲーム：4分で時間切れ（負け）。のこり30秒から右上に表示。
+  window.HMSafety = function (game, opt) {
+    const sec = window.HM_SAFETY_SEC || opt.sec, t0 = performance.now(), lab = sec % 60 ? sec + "秒" : sec / 60 + "分"; let badge = null;
+    const iv = setInterval(() => {
+      if (game.over || game.stopped) { clearInterval(iv); if (badge) badge.remove(); return; }
+      const left = sec - (performance.now() - t0) / 1000;
+      if (left <= 30 && game.body) { if (!badge) { badge = document.createElement("div"); badge.className = "hm-tl"; game.body.appendChild(badge); } badge.textContent = "⏱ のこり " + Math.max(0, Math.ceil(left)) + "秒"; }
+      if (left <= 0) { clearInterval(iv); if (badge) badge.remove(); game.finish(false, !!opt.draw, opt.draw ? "時間切れ（引き分け）" : "時間切れ…", opt.draw ? lab + "で決着がつかなかったので引き分け" : "制限時間 " + lab + "をこえました"); }
+    }, 1000);
+    if (game.timers) game.timers.push(iv);
+  };
   function shell(id, diff, title, o) {
     const GF = window.GF;
     const game = { id, diff, timers: [], stopped: false, over: false };
     game.later = (fn, ms) => { const t = setTimeout(() => { if (!game.stopped) fn(); }, ms); game.timers.push(t); return t; };
-    game.stop = () => { game.stopped = true; game.timers.forEach(clearTimeout); };
+    game.stop = () => { game.stopped = true; game.timers.forEach((t) => { clearTimeout(t); clearInterval(t); }); };
     const body = GF.openLayer(title + "（" + GF.diffName(diff) + "）", () => { if (R.active === game) R.stop(); else game.stop(); });
     R.active = game;
     body.innerHTML = '<div class="bg-wrap ' + (o.cls || "") + '">' +
@@ -23,6 +35,8 @@
       (o.topExtra || "") + '<div class="bg-board" id="bg-board" role="grid" aria-label="' + title + 'の盤"></div>' + (o.bottomExtra || "") +
       '<div class="bg-player"><span class="bg-dot ' + (o.meDot || "") + '">' + (o.meMark || "") + '</span><b>あなた</b><span class="bg-score num" id="bg-score-me"></span></div>' +
       '<div class="bg-status" id="bg-status" aria-live="polite"></div><div class="bg-actions" id="bg-actions"></div><div id="bg-extra"></div></div>';
+    game.body = game.body || body;
+    setTimeout(() => window.HMSafety(game, { sec: 900, draw: true }), 0);
     game.$ = (s) => body.querySelector(s);
     game.status = (t) => { const el = game.$("#bg-status"); if (el) el.textContent = t; };
     game.finish = (win, draw, title2, text, metric) => {

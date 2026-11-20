@@ -24,6 +24,7 @@
     R.active = game;
     body.innerHTML = html;
     game.body = body;
+    setTimeout(() => window.HMSafety && window.HMSafety(game, { sec: 240 }), 0);
     game.$ = (s) => body.querySelector(s);
     game.finish = (win, draw, t, text, metric) => {
       if (game.over) return;

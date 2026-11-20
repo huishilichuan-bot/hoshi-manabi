@@ -951,3 +951,6 @@ html.rmotion *, html.rmotion *::before, html.rmotion *::after { animation-durati
 .ms-top:active { transform: translateY(2px); }
 .ms-home { font-size: 22px; line-height: 1; }
 html.rmotion .mode-sel, html.rmotion .ms-slot { animation: none; }
+.hm-tl { position: absolute; top: 8px; right: 10px; z-index: 50; padding: 4px 10px; border-radius: 999px; background: rgba(224,49,49,.92); color: #fff; font-weight: 900; font-size: 14px; box-shadow: 0 2px 8px rgba(0,0,0,.3); animation: hmTl 1s ease-in-out infinite; pointer-events: none; }
+@keyframes hmTl { 50% { transform: scale(1.08); } }
+#gl-body { position: relative; }
