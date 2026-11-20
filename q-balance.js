@@ -17,7 +17,12 @@
   const strip = (s) => String(s || "").replace(/<[^>]+>/g, "");
   const OPT_DEP = /次の|つぎの|どれ|どっち|どちら|いちばん|一番|最も|もっとも|正しいもの|まちが|あてはまらない|ではない|でない|ないもの|ないのは|ちがうもの|仲間はずれ|なかまはずれ|ふさわしくない|誤って|あやまって|ア〜|ア～|①|②|下の|上の|右の|左の|図|グラフ|表/;
   const LABEL_ANS = /^(あ|い|う|え|ア|イ|ウ|エ|A|B|C|D|わからない|同じ|おなじ|どちらも|どれも|ない|ある|はい|いいえ|〇|×|正しい|まちがい)$/;
-  function stepSize(st) { if (typeof st.src === "function") { if (st._sz == null) { const n = st.cnt || 10, seen = new Set(); try { for (let k = 0; k < n * 3 && seen.size < n; k++) { const q = st.src(0.5, k % n); if (q) seen.add(q.q + "|" + q.a); } } catch (e) {} st._sz = seen.size; } return st._sz; } if (Array.isArray(st.src)) return Math.min(st.cnt || 6, st.src.length); return 0; }
+  // 事前計算（q-precalc.js）があれば、ためし生成をせずにその結果を使う（起動を速くする）
+  const PC = (HM.PRECALC = HM.PRECALC || { r: {} }); HM.PRECALC_USED = HM.PRECALC_USED || {};
+  function cached(key, fn) { HM.PRECALC_USED[key] = true; if (PC.r && key in PC.r) return PC.r[key]; const v = fn(); (HM.PRECALC_NEW = HM.PRECALC_NEW || {})[key] = v; return v; }
+  HM.precalcKey = cached;
+  function stepSize(st, key) { if (typeof st.src === "function" && st._sz == null && key) st._sz = cached("sz|" + key, () => stepSize0(st)); return stepSize0(st); }
+  function stepSize0(st) { if (typeof st.src === "function") { if (st._sz == null) { const n = st.cnt || 10, seen = new Set(); HM.setRng(HM.mulberry(4242)); try { for (let k = 0; k < n * 3 && seen.size < n; k++) { const q = st.src(0.5, k % n); if (q) seen.add(q.q + "|" + q.a); } } catch (e) {} HM.setRng(Math.random); st._sz = seen.size; } return st._sz; } if (Array.isArray(st.src)) return Math.min(st.cnt || 6, st.src.length); return 0; }
   function sampler(st) {
     if (Array.isArray(st.src)) { const all = st.src.map((x) => (typeof x === "string" ? HM.parseBankLine(x) : x)); return () => Object.assign({}, pick(all)); }
     if (typeof st.src === "function") return (d, i) => { try { return st.src(d, i); } catch (e) { return null; } };
@@ -92,7 +97,7 @@
     for (const [s, gs] of Object.entries(HM.SUBJECTS)) {
       const grades = Object.keys(gs).map(Number).sort((a, b) => a - b); let prev = 0;
       for (const g of grades) {
-        const units = gs[g]; let cur = 0; units.forEach((u) => u.steps.forEach((st) => (cur += stepSize(st))));
+        const units = gs[g]; let cur = 0; units.forEach((u) => u.steps.forEach((st, k) => (cur += stepSize(st, s + "|" + g + "|" + u.n + "|" + k + "|" + st.n))));
         const base = (BASE[s] || {})[g] || 0, target = Math.max(Math.ceil(base * 3), prev + 25, cur);
         prev = target; let need = target - cur; const before = cur;
         const cnt = g <= 2 ? 10 : g <= 6 ? 12 : 15;
@@ -104,7 +109,8 @@
             if (need <= 0) break; if (!p.ok) continue;
             if (p.n >= 18) { p.ok = false; continue; }
             const gen = mixGen(p.srcs, s === "math");
-            if (!probe(gen, cnt)) { p.ok = false; continue; }
+            if (p.pr == null) p.pr = cached("mix|" + s + "|" + g + "|" + p.u.n + "|" + cnt, () => probe(gen, cnt));
+            if (!p.pr) { p.ok = false; continue; }
             p.n++; const st = { n: NAMES[(p.n - 1) % NAMES.length] + (p.n > NAMES.length ? " " + Math.ceil(p.n / NAMES.length) : ""), src: gen, cnt, auto: "mix", balanced: true };
             const ri = p.u.steps.findIndex((x) => x.review); if (ri >= 0) p.u.steps.splice(ri, 0, st); else p.u.steps.push(st);
             need -= cnt; cur += cnt;

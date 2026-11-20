@@ -118,13 +118,13 @@
 
   HM.expandFormats = function () {
     const added = { tf: 0, tiles: 0, sort: 0, multi: 0, match: 0, ch: 0 };
-    for (const [s, gs] of Object.entries(HM.SUBJECTS)) for (const us of Object.values(gs)) for (const u of us) {
+    for (const [s, gs] of Object.entries(HM.SUBJECTS)) for (const [g0, us] of Object.entries(gs)) for (const u of us) {
       if (u.kanji || u.expanded) continue; u.expanded = true;
       const base = u.steps.filter((st) => !st.review && !st.pass && !st.gen15);
       if (!base.length) continue;
       const srcs = base.map(sampler).filter(Boolean);
       const add = [];
-      const tryAdd = (name, gen, cnt, need, kind) => { if (probe(gen, need, kind === "tf" ? 2 : Math.min(need, 6))) { add.push({ n: name, src: gen, cnt, auto: kind }); added[kind]++; } };
+      const tryAdd = (name, gen, cnt, need, kind) => { const key = "x|" + s + "|" + g0 + "|" + u.n + "|" + name + "|" + base.length; if (HM.precalcKey ? HM.precalcKey(key, () => probe(gen, need, kind === "tf" ? 2 : Math.min(need, 6))) : probe(gen, need, kind === "tf" ? 2 : Math.min(need, 6))) { add.push({ n: name, src: gen, cnt, auto: kind }); added[kind]++; } };
       tryAdd("〇×でたしかめ", wrapGen(srcs, toTF), 10, 10, "tf");
       if (s !== "math") tryAdd("ことばカード", wrapGen(srcs, toTiles), 8, 8, "tiles");
       else tryAdd("答えをえらぼう", wrapGen(srcs, numToCh), 8, 10, "ch");
@@ -138,10 +138,12 @@
     return added;
   };
   HM.finalize = function () {
-    if (HM._finalized) return HM._finalized; 
+    if (HM._finalized) return HM._finalized;
+    const t0 = typeof performance !== "undefined" ? performance.now() : Date.now();
     (HM.finalizers || []).forEach((f) => f());
     HM._finalized = HM.expandFormats();
     if (HM.balance) HM._finalized.balance = HM.balance();
+    HM._finalized.ms = Math.round((typeof performance !== "undefined" ? performance.now() : Date.now()) - t0);
     return HM._finalized;
   };
   if (typeof window !== "undefined") HM.finalize();

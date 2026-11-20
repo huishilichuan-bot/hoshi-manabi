@@ -19,7 +19,7 @@ jobs:
         with:
           node-version: 20
       - name: 問題の自動検証
-        run: node tools/verify.js 40
+        run: node tools/build_precalc.js --check && node tools/verify.js 40 && node tools/verify_content.js 5
   deploy:
     needs: verify
     runs-on: ubuntu-latest
