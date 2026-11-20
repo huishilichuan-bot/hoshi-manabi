@@ -57,7 +57,7 @@
   });
 
   // ===== ゴルフ：グリーンマスター =====
-  add("golf", "⛳", "グリーンマスター", "#40c057", "うしろに引っぱってはなすとショット。3ホールの合計打数でCPUより少なければ勝ち。", (diff) => {
+  add("golf", "⛳", "グリーンマスター", "#40c057", "うしろに引っぱってはなすとショット。3ホールの合計打数でCPUより少なければ勝ち。1ホールは最大パー＋3打・22秒まで。", (diff) => {
     const g = X.pro("golf", diff, "グリーンマスター"), W = g.W, Hh = g.H, c = g.c, d = g.d;
     const HOLES = [
       { par: 2, start: [0.5, 0.88], hole: [0.5, 0.16], walls: [[0.2, 0.45, 0.25, 0.04], [0.55, 0.45, 0.25, 0.04]], sand: [[0.5, 0.3, 0.12]], water: [], mill: null },
@@ -66,11 +66,12 @@
     ];
     const top = 64, fh = Hh - top - 10, fx = 10, fw = W - 20, P = (v) => [fx + v[0] * fw, top + v[1] * fh];
     const cpuStrokes = HOLES.map((h) => Math.max(1, h.par + [2, 1, 0, 0][d] + (Math.random() < 0.35 ? 1 : 0) - (d >= 2 && Math.random() < [0, 0, 0.2, 0.4][d] ? 1 : 0)));
-    let hi = 0, strokes = [0, 0, 0], ball, last, aim = null, msg = null, sink = 0, trail = [];
-    function setup() { const h = HOLES[hi]; const s = P(h.start); ball = { x: s[0], y: s[1], vx: 0, vy: 0, r: 7, z: 1 }; last = { x: ball.x, y: ball.y }; msg = { s: "ホール " + (hi + 1) + "（パー" + h.par + "）", t: 1.6 }; }
+    let hi = 0, strokes = [0, 0, 0], ball, last, aim = null, msg = null, sink = 0, trail = [], holeT = 0, over = 0, fin = false;
+    const MAXT = 22, maxS = (h) => h.par + 3, tape = X.goalTape(g);
+    function setup() { holeT = 0; const h = HOLES[hi]; const s = P(h.start); ball = { x: s[0], y: s[1], vx: 0, vy: 0, r: 7, z: 1 }; last = { x: ball.x, y: ball.y }; msg = { s: "ホール " + (hi + 1) + "（パー" + h.par + "）", t: 1.6 }; }
     setup();
     const moving = () => Math.hypot(ball.vx, ball.vy) > 4;
-    g.onDown = (o) => { if (moving() || sink || g.over) return; aim = o; };
+    g.onDown = (o) => { if (moving() || sink || over || fin || g.over) return; aim = o; };
     g.dbg = () => ({ ball, hole: P(HH().hole), hi, strokes, moving: moving() });
     g.onUp = (o) => { if (!aim || o !== aim) return; const dx = aim.sx - o.x, dy = aim.sy - o.y, m = Math.hypot(dx, dy); aim = null; if (m < 12) return; const pw = Math.min(m, 170) / 170; ball.vx = (dx / m) * pw * 900; ball.vy = (dy / m) * pw * 900; strokes[hi]++; last = { x: ball.x, y: ball.y }; X.SFX.kick(); g.vib(15); };
     const HH = () => HOLES[Math.min(hi, 2)];
@@ -80,7 +81,12 @@
     g.run((dt) => {
       if (msg) { msg.t -= dt; if (msg.t <= 0) msg = null; }
       const h = HH(), hp = P(h.hole);
-      if (sink) { sink -= dt; ball.z = Math.max(0, sink / 0.6); if (sink <= 0) { sink = 0; hi++; if (hi >= 3) { const me = strokes.reduce((a, b) => a + b, 0), cp = cpuStrokes.reduce((a, b) => a + b, 0); g.end(me < cp, me < cp ? "勝ち！" : me === cp ? "引き分け" : "CPUの勝ち", ["あなた " + me + "打", "CPU " + cp + "打"], me === cp); return; } setup(); } return; }
+      if (fin) { if (tape.done(2.6) && !g.over) { const me = strokes.reduce((a, b) => a + b, 0), cp = cpuStrokes.reduce((a, b) => a + b, 0); g.end(me < cp, me < cp ? "勝ち！ CPUより少ない打数！" : me === cp ? "引き分け…あと1打だった" : "CPUの勝ち…", ["あなた " + me + "打", "CPU " + cp + "打", "ホールごと " + strokes.join("・") + "打"], me === cp, { v: me, unit: "打", lower: true }); } return; }
+      const nextHole = () => { hi++; if (hi >= 3) { fin = true; const me = strokes.reduce((a, b) => a + b, 0), cp = cpuStrokes.reduce((a, b) => a + b, 0); tape.cross(W / 2, top + fh * 0.5, me < cp, "あなた " + me + "打 ／ CPU " + cp + "打", me < cp ? "ホールアウト！" : me === cp ? "引き分け" : "CPUの勝ち"); return; } setup(); };
+      if (sink) { sink -= dt; ball.z = Math.max(0, sink / 0.6); if (sink <= 0) { sink = 0; nextHole(); } return; }
+      if (over) { over -= dt; if (over <= 0) { over = 0; nextHole(); } return; }
+      holeT += dt;
+      if (!moving() && !aim && (strokes[hi] >= maxS(HH()) || holeT >= MAXT)) { strokes[hi] = maxS(HH()); over = 1.4; msg = { s: holeT >= MAXT ? "時間切れ（" + maxS(HH()) + "打）" : "打数オーバー（" + maxS(HH()) + "打）", t: 1.4 }; X.SFX.bad(); return; }
       const steps = 4; for (let k = 0; k < steps; k++) {
         const sdt = dt / steps; ball.x += ball.vx * sdt; ball.y += ball.vy * sdt;
         let fr = 0.42; for (const s of circ(h.sand)) if (Math.hypot(ball.x - s[0], ball.y - s[1]) < s[2]) fr = 0.12;
@@ -108,7 +114,9 @@
       trail.forEach((p, i) => { c.globalAlpha = i / trail.length * 0.5; c.fillStyle = "#fff"; c.beginPath(); c.arc(p[0], p[1], 4 * i / trail.length + 1, 0, 7); c.fill(); }); c.globalAlpha = 1;
       if (aim) { const dx = aim.sx - aim.x, dy = aim.sy - aim.y, m = Math.hypot(dx, dy); if (m > 12) { const pw = Math.min(m, 170) / 170, ux = dx / m, uy = dy / m; c.setLineDash([6, 8]); c.strokeStyle = "rgba(255,255,255,.85)"; c.lineWidth = 3; c.beginPath(); c.moveTo(ball.x, ball.y); c.lineTo(ball.x + ux * (40 + pw * 160), ball.y + uy * (40 + pw * 160)); c.stroke(); c.setLineDash([]); c.fillStyle = "rgba(0,0,0,.4)"; rr(c, W / 2 - 80, Hh - 34, 160, 14, 7); c.fill(); c.fillStyle = pw > 0.85 ? "#ff6b6b" : pw > 0.5 ? "#ffd43b" : "#69db7c"; rr(c, W / 2 - 80, Hh - 34, 160 * pw, 14, 7); c.fill(); } }
       if (ball.z > 0) { c.fillStyle = "rgba(0,0,0,.3)"; c.beginPath(); c.ellipse(ball.x + 2, ball.y + 3, ball.r * ball.z, ball.r * 0.6 * ball.z, 0, 0, 7); c.fill(); const bg = c.createRadialGradient(ball.x - 2, ball.y - 2, 1, ball.x, ball.y, ball.r); bg.addColorStop(0, "#fff"); bg.addColorStop(1, "#ced4da"); c.fillStyle = bg; c.beginPath(); c.arc(ball.x, ball.y, ball.r * ball.z, 0, 7); c.fill(); }
+      if (hi >= 2) tape.drawTop(c, P(h.hole)[1] + 34, P(h.hole)[0] - 40, P(h.hole)[0] + 40);
       c.fillStyle = "rgba(0,0,0,.45)"; rr(c, 10, 8, W - 20, 48, 14); c.fill();
+      if (!fin) { const left = Math.max(0, Math.ceil(MAXT - holeT)); txt(c, "のこり " + left + "秒 ・ 最大" + maxS(h) + "打", W / 2, 66, 11, left <= 10 ? "#ff8787" : "rgba(255,255,255,.8)"); }
       txt(c, "ホール " + Math.min(3, hi + 1) + "/3 ・ パー" + h.par, 22, 24, 13, "#fff", "left"); txt(c, "あなた " + strokes.reduce((a, b) => a + b, 0) + "打", 22, 44, 15, "#74c0fc", "left");
       txt(c, "CPU " + cpuStrokes.slice(0, hi).reduce((a, b) => a + b, 0) + "打（" + Math.min(hi, 3) + "H）", W - 22, 44, 15, "#ff8787", "right"); txt(c, "この打数 " + strokes[Math.min(hi, 2)], W - 22, 24, 13, "#fff", "right");
       if (msg) txt(c, msg.s, W / 2, Hh * 0.5, 30, "#ffe066");
