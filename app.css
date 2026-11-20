@@ -848,7 +848,7 @@ body.auth-open { overflow: hidden; }
 .frac > span { display: block; }
 
 /* はじめての同意画面 */
-.consent { position: fixed; inset: 0; z-index: 100000; display: grid; place-items: center; padding: calc(env(safe-area-inset-top) + 16px) 14px calc(env(safe-area-inset-bottom) + 16px); background: radial-gradient(120% 80% at 50% 0%, #3a2d8f 0%, #14112b 70%); overflow-y: auto; transition: opacity .3s; }
+.consent { position: fixed; inset: 0; z-index: 100000; display: grid; place-items: safe center; justify-items: center; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: calc(env(safe-area-inset-top) + 52px) 14px calc(env(safe-area-inset-bottom) + 16px); background: radial-gradient(120% 80% at 50% 0%, #3a2d8f 0%, #14112b 70%); overflow-y: auto; transition: opacity .3s; }
 .consent.out { opacity: 0; pointer-events: none; }
 html.consent-open, html.consent-open body { overflow: hidden; }
 .cs-card { width: min(100%, 460px); background: #fff; border-radius: 26px; padding: 22px 20px 20px; box-shadow: 0 20px 60px rgba(0,0,0,.4); color: #1b1d3a; animation: csIn .5s cubic-bezier(.2,1.4,.4,1); }

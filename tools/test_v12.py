@@ -88,6 +88,14 @@ try:
             val = q["a"] if correct else ("9999" if q["a"] != "9999" else "1")
             for c in val: pg.locator({'-': '[data-key="-"]', '/': '[data-key="/"]', '.': '[data-key="."]'}.get(c, f'[data-key="{c}"]')).tap()
             pg.locator('[data-key="ok"]').tap()
+        elif q["t"] == "tf":
+            pg.locator(f'[data-tf="{q["a"] if correct else ("×" if q["a"] == "〇" else "〇")}"]').tap()
+        elif q["t"] not in ("ord", "match", "pair", "tap"):
+            # 新しい形式（並べかえ・ことばカード・漢字など）は、判定だけ固定してアプリの流れを確かめる
+            E(f"(() => {{ const c = HMQ.cur(); const f = HMQ.fmt[c.q.t]; f._r = f.result; f.result = () => ({{ ok: {str(correct).lower()}, text: 'test' }}); const b = document.getElementById('work-ok'); if (b) b.disabled = false; }})()")
+            if pg.locator('#work-ok').count(): pg.locator('#work-ok').tap()
+            else: E(f"HMQ.cur().api.answer({{ ok: {str(correct).lower()}, text: 'test' }})")
+            E("(() => { for (const f of Object.values(HMQ.fmt)) if (f._r) { f.result = f._r; delete f._r; } })()")
         else:
             solve(correct); unblock()
             if q["t"] != "tap" and not E("HM_APP.quiz().answered"): pg.locator('#work-ok').tap()

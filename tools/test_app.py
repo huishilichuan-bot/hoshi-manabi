@@ -48,6 +48,13 @@ try:
             opts = q.get("opts") or [q["a"]] + q["o"]
             target = q["a"] if correct else [o for o in opts if o != q["a"]][0]
             idx = opts.index(target); pg.click(f'[data-opt="{idx}"]')
+        elif q["t"] == "tf":
+            pg.click(f'[data-tf="{q["a"] if correct else ("×" if q["a"] == "〇" else "〇")}"]')
+        elif q["t"] != "num":
+            E(f"(() => {{ const c = HMQ.cur(); const f = HMQ.fmt[c.q.t]; f._r = f.result; f.result = () => ({{ ok: {str(correct).lower()}, text: 'test' }}); const b = document.getElementById('work-ok'); if (b) b.disabled = false; }})()")
+            if pg.locator('#work-ok').count(): pg.click('#work-ok')
+            else: E(f"HMQ.cur().api.answer({{ ok: {str(correct).lower()}, text: 'test' }})")
+            E("(() => { for (const f of Object.values(HMQ.fmt)) if (f._r) { f.result = f._r; delete f._r; } })()")
         else:
             val = q["a"] if correct else ("9999" if q["a"] != "9999" else "1")
             for ch in val:
