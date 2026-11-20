@@ -145,8 +145,10 @@ try:
     pg.on("dialog", lambda d: d.accept())
     E("document.querySelector('.qz-x') && document.querySelector('.qz-x').click()"); pg.wait_for_timeout(200)
     pg.click('.tab[data-tab="settings"]'); pg.wait_for_timeout(200)
+    pg.click('[data-act="reports"]'); pg.wait_for_timeout(300)
     ok("設定に報告一覧", pg.locator(".rep").count() == 1)
-    # 全50ゲーム × 4難易度 を開いてエラーがないか
+    E("document.querySelector('[data-act=\"sheet-done\"]') && document.querySelector('[data-act=\"sheet-done\"]').click()"); pg.wait_for_timeout(300)
+    # 全106ゲーム × 4難易度 を開いてエラーがないか
     ids = E("HM_APP.GAMES.map(g=>g.id)")
     ok("ゲームは106種・重複なし", len(ids) == 106 and len(set(ids)) == 106, len(ids))
     errors_before = len(errors)
@@ -166,7 +168,7 @@ try:
                 pg.screenshot(path=f"{SHOT}/game-{gid}.png")
             E("document.getElementById('gl-close').click()"); pg.wait_for_timeout(60)
             if not vis or len(errors) > eb: bad.append((gid, diff, errors[eb:]))
-    ok("全50ゲーム×4難易度が開けてエラーなし", not bad, bad[:5])
+    ok("全106ゲーム×4難易度が開けてエラーなし", not bad, bad[:5])
     ok("ページ全体でJSエラーなし", not errors, errors[:5])
     br.close()
 finally:

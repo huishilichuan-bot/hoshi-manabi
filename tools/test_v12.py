@@ -198,7 +198,7 @@ try:
     E("document.querySelector('[data-q=quit]').click()"); pg.wait_for_timeout(200)
     # マイページ・設定
     pg.locator('.tab[data-tab="settings"]').tap(); pg.wait_for_timeout(400)
-    ok("マイページ（プロフィール・記録）", pg.locator(".me-card").count() == 1 and pg.locator(".me-stats > div").count() == 4)
+    ok("マイページ（プロフィール・記録）", pg.locator(".ios-profile").count() == 1 and pg.locator(".me-stats > div").count() == 4)
     pg.locator("#vol").fill("0.3"); pg.wait_for_timeout(100)
     ok("音量を保存", abs(E("HM_APP.state().settings.vol") - 0.3) < 1e-9)
     ok("横にはみ出さない", E("document.documentElement.scrollWidth <= innerWidth"))
