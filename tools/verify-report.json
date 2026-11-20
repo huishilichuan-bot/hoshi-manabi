@@ -1,24 +1,24 @@
 {
- "seeds": 15,
- "generatedChecked": 386548,
- "uniqueQuestions": 234804,
+ "seeds": 10,
+ "generatedChecked": 259868,
+ "uniqueQuestions": 175012,
  "stats": {
-  "chk": 161096,
-  "qx": 24506,
-  "ord": 3034,
-  "tf": 75893,
-  "odd": 31020,
-  "pairchk": 587,
-  "nl": 1531,
-  "multi": 5042,
-  "ordx": 186,
-  "sort": 2245,
-  "expr": 7656,
-  "tap": 2638,
-  "sys": 2506,
-  "eqn": 1355,
-  "tiles": 11160,
-  "kanji": 17744
+  "chk": 107217,
+  "qx": 16328,
+  "ord": 2027,
+  "tf": 51516,
+  "odd": 21320,
+  "pairchk": 405,
+  "nl": 1102,
+  "multi": 3396,
+  "ordx": 125,
+  "sort": 1527,
+  "expr": 5039,
+  "tap": 1765,
+  "sys": 1652,
+  "eqn": 885,
+  "tiles": 7440,
+  "kanji": 13184
  },
  "problems": 0,
  "cover": {
@@ -353,7 +353,7 @@
  },
  "warns": {
   "bank_ex_not_contain_answer": {
-   "n": 1545,
+   "n": 1346,
    "sample": [
     "math 3 / 三角形と角 / 角 :: 角の大きさは何で決まる？ => 辺の開きぐあい",
     "math 3 / 三角形と角 / 角 :: 角の大きさは何で決まる？ => 辺の開きぐあい",
@@ -366,7 +366,7 @@
    ]
   },
   "short_set": {
-   "n": 480,
+   "n": 320,
    "sample": [
     "math 3 / 三角形と角 / 三角形のせいしつ（ぜんぶえらぶ） 2/6",
     "math 3 / 三角形と角 / 三角形のせいしつ（ぜんぶえらぶ） 2/6",
