@@ -141,6 +141,7 @@
     if (HM._finalized) return HM._finalized; 
     (HM.finalizers || []).forEach((f) => f());
     HM._finalized = HM.expandFormats();
+    if (HM.balance) HM._finalized.balance = HM.balance();
     return HM._finalized;
   };
   if (typeof window !== "undefined") HM.finalize();

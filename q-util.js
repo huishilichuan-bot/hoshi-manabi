@@ -104,6 +104,19 @@
       }
       if (!moved) break;
     }
+    // まだ となり同士が同じなら、多い答えから順に交互にならべなおす
+    if (out.some((_, i) => out[i].t !== "tf" && bad(i))) {
+      const pool = out.slice(), res = [];
+      while (pool.length) {
+        const last = res.length ? A(res[res.length - 1]) : null, cnt = {};
+        pool.forEach((q) => (cnt[A(q)] = (cnt[A(q)] || 0) + 1));
+        let bi = -1;
+        pool.forEach((q, k) => { if (A(q) !== last && (bi < 0 || cnt[A(q)] > cnt[A(pool[bi])])) bi = k; });
+        if (bi < 0) bi = 0;
+        res.push(pool.splice(bi, 1)[0]);
+      }
+      if (res.filter((_, i) => i > 0 && A(res[i]) === A(res[i - 1])).length < out.filter((_, i) => i > 0 && A(out[i]) === A(out[i - 1])).length) out.splice(0, out.length, ...res);
+    }
     return out;
   };
   // 1ステップ分の問題をつくる（易→難の順）
@@ -129,6 +142,9 @@
       const n = Math.min(step.cnt || 6, all.length);
       // 順番（易→難）を保ったまま n 問えらぶ
       let idx = HM.U.shuf(all.map((_, i) => i)).slice(0, n);
+      // 同じ答えが半分をこえないように入れかえる（となり同士を離せるように）
+      if (step.shuffle) { const lim = Math.floor(n / 3) + 1, cnt = {}; idx.forEach((i) => (cnt[all[i].a] = (cnt[all[i].a] || 0) + 1)); const rest = HM.U.shuf(all.map((_, i) => i).filter((i) => !idx.includes(i)));
+        for (let k = 0; k < idx.length; k++) { const a = all[idx[k]].a; if (cnt[a] <= lim) continue; const r = rest.findIndex((j) => (cnt[all[j].a] || 0) < lim); if (r < 0) break; cnt[a]--; const j = rest.splice(r, 1)[0]; cnt[all[j].a] = (cnt[all[j].a] || 0) + 1; idx[k] = j; } }
       if (!step.shuffle) idx.sort((a, b) => a - b);
       out = idx.map((i) => Object.assign({}, all[i]));
     }

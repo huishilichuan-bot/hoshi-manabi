@@ -78,6 +78,12 @@ function check(q, where) {
   if (!q.ex || String(q.ex).length < 4) fail("解説なし");
   if (q.a == null || /undefined|NaN|null|Infinity/.test(String(q.a) + q.q + q.ex + (q.o || []).join("|"))) return fail("値が不正");
   const A = /^(tf|tiles|sort|multi|kanji|match|pair|ord|tap)$/.test(q.t) ? null : parseAns(q.a);
+  // まちがいさがし：1つだけ答えがちがい、それが正解になっているか
+  if (q.oddOf) { const bad = q.oddOf.filter((x) => x.shown !== x.a); if (bad.length !== 1) return fail("まちがいさがしで、ちがう答えが" + bad.length + "こ"); if (!String(q.a).includes(" ➜ " + bad[0].shown)) return fail("まちがいさがしの正解がずれている");
+    for (const x of q.oddOf) if (x.chk != null) { let v; try { v = evalBoth(String(x.chk)); } catch (e) { continue; } const B = parseAns(x.a); if (B && !valEq({ v: v.ex, fl: v.fl, pi: !!x.pi }, B)) return fail("まちがいさがしの元の答えが検算とちがう"); } stats.odd = (stats.odd || 0) + 1; }
+  // 答えの大きさでならべかえ：順番と検算
+  if (q.ordOf) { for (let k = 1; k < q.ordOf.length; k++) { const p = q.ordOf[k - 1].a, c = q.ordOf[k].a; if (!(/小さい/.test(q.q) ? p < c : p > c)) return fail("ならべかえの順番がちがう"); }
+    for (const x of q.ordOf) if (x.chk != null) { let v; try { v = evalBoth(String(x.chk)); } catch (e) { continue; } const B = parseAns(String(x.a)); if (B && !valEq({ v: v.ex, fl: v.fl, pi: false }, B)) return fail("ならべかえの答えが検算とちがう " + x.e); } stats.ordnum = (stats.ordnum || 0) + 1; }
   // 1) 問題文の式を読みなおして計算（生成プログラムとは別の計算）
   if (q.qx) { let v; try { v = evalBoth(norm(q.q)); } catch (e) { return fail("式が読めない " + norm(q.q)); } const qv = { v: v.ex, fl: v.fl, pi: false }; if (!valEq(qv, A)) return fail("問題文の式の値と答えがちがう(" + (v.ex ? qstr(v.ex) : v.fl) + ")"); stats.qx = (stats.qx || 0) + 1; }
   // 2) 検算式（chk）を独立に計算して照合
