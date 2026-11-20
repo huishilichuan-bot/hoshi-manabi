@@ -403,6 +403,11 @@
     el.innerHTML = h;
     el.scrollTop = 0;
     Q.shownAt = performance.now();
+    // 計算メモ：問題が変わるたびに自動でクリア（算数・数学と、数字の出る理科で表示）
+    if (window.HMMemo) {
+      HMMemo.onQuestion(src.s, q);
+      if (!showQ.mo) { showQ.mo = new MutationObserver(() => { if (el.hidden || !el.querySelector(".qz-body")) HMMemo.off(); }); showQ.mo.observe(el, { childList: true, attributes: true, attributeFilter: ["hidden"] }); }
+    }
     const pd = $(".passage", el); if (pd) pd.addEventListener("toggle", () => (Q.passOpen = pd.open));
     if (Q.work && Q.work.plugin) HMQ.mount(q, el, { ready: (on) => { const b = $("#work-ok"); if (b) b.disabled = !on || Q.answered; }, answer: (g) => answer(g), sound, toast: (m) => toast(esc(m)), haptic });
     else if (Q.work) renderWork();
@@ -1310,7 +1315,7 @@
   window.HM_APP = { state: () => state, save, render, today, dkey, setClockOffset: (ms) => { clockOffset = ms; render(); }, GAMES, gachaPull, rates: () => ({ normal: GACHA_RATES.slice(), sr: GACHA_RATES_SR.slice() }), drawRarity, startStep, findStep, judgeNum, passNeed: HM.passNeed, STARS_TO_UNLOCK, READ_MS, starsToday, gamesOpen, pullsLeft, startGame, openGameMenu, gameRank, version: VERSION, quiz: () => Q, showQ: () => showQ(), tab: () => tab, exportState: () => JSON.parse(JSON.stringify(state)), importState: (d) => { state = migrate(JSON.parse(JSON.stringify(d))); try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} render(); },
     // プロフィール（保存場所）を切りかえる。data があればそれを使い、なければその場所の記録を読む
     useProfile: (key, data, opt) => { KEY = key || GUEST_KEY; let d = data; if (d === undefined) { try { d = JSON.parse(localStorage.getItem(KEY) || "null"); } catch (e) { d = null; } } state = migrate(d ? JSON.parse(JSON.stringify(d)) : null); try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} if (Q && !$("#quiz").hidden) { try { quitQuiz(); } catch (e) {} } if (opt && opt.home) { tab = "home"; nav = []; navDir = "tab"; } render(); },
-    profileKey: () => KEY, GUEST_KEY, charHtml, sound, toast, haptic, openSheet, closeSheet, startBox, startBoss, speak, canSpeak };
+    profileKey: () => KEY, GUEST_KEY, charHtml, sound, toast, haptic, openSheet, closeSheet, startBox, startBoss, startStep, speak, canSpeak };
 
   // テスト用：?clock=+86400000 のように時計をずらせる
   try { const c = new URLSearchParams(location.search).get("clock"); if (c) clockOffset = +c || 0; } catch (e) {}
