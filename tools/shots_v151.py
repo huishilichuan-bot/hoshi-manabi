@@ -11,7 +11,7 @@ try:
   with sync_playwright() as p:
     br = p.webkit.launch(); dev = p.devices["iPhone 14"]
     ctx = br.new_context(**dev)
-    pg = ctx.new_page(); pg.add_init_script(NOAUTH + "window.HM_SAFETY_SEC=40;")
+    pg = ctx.new_page(); pg.add_init_script(NOAUTH)
     pg.on("pageerror", lambda e: errs.append(str(e)))
     pg.goto(f"http://localhost:{PORT}/index.html"); pg.wait_for_timeout(1200)
     pg.evaluate("(() => { const s = HM_APP.state(); s.days[HM_APP.today()] = { stars: 4, steps: {} }; s.games.golf = { easy: { plays: 5, wins: 4, m: { best: 9, unit: '打', lower: true } }, normal: { plays: 2, wins: 1 }, hard: { plays: 1, wins: 0 } }; HM_APP.save(); HM_APP.render(); })()")
@@ -37,7 +37,7 @@ try:
     pg.screenshot(path=f"{OUT}/26-racing-timeup.png"); pg.wait_for_timeout(2300); pg.screenshot(path=f"{OUT}/27-racing-result.png")
     print("racing", round(time.time() - t0), pg.evaluate("document.querySelector('.rs-card') && document.querySelector('.rs-card').innerText.replace(/\\n+/g,' | ')"), flush=True)
     # 制限時間の表示（テスト用に40秒へ短縮）
-    pg.evaluate("HM_APP.startGame('coin','easy')"); pg.wait_for_timeout(15000); pg.screenshot(path=f"{OUT}/28-timelimit-badge.png")
+    pg.evaluate("window.HM_SAFETY_SEC=40; HM_APP.startGame('coin','easy')"); pg.wait_for_timeout(15000); pg.screenshot(path=f"{OUT}/28-timelimit-badge.png")
     pg.wait_for_function("!document.getElementById('gl-result').hidden", timeout=60000); pg.wait_for_timeout(2300); pg.screenshot(path=f"{OUT}/29-timelimit-result.png")
     print("coin", pg.evaluate("document.querySelector('.rs-card').innerText.replace(/\\n+/g,' | ')"), flush=True)
     br.close()
