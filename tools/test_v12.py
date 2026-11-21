@@ -190,8 +190,8 @@ try:
     E("HM_APP.startStep('en', 3, 0, 0, {noCard:true})"); pg.wait_for_timeout(300)
     au = E("(() => { const Q = HM_APP.quiz(); const k = Q.qs.findIndex(q => q.skill === 'L' && q.t === 'tl'); const t = Q.qs[k]; Q.qs[k] = Q.qs[0]; Q.qs[0] = t; HM_APP.showQ(); return t.au; })()"); pg.wait_for_timeout(300)
     ok("聞きとり問題（大きい「聞く」ボタン・英語は文字で出さない）", pg.locator(".e4-au.big .e4-play").count() == 1 and au not in pg.inner_text("#quiz"))
-    pg.locator(".e4-play").tap(); pg.wait_for_timeout(200)
-    ok("タップで en-US 読み上げ", E("window.__said[0]") == au + "|en-US", E("window.__said"))
+    pg.locator(".e4-play").tap(); pg.wait_for_timeout(1600)  # 声の一覧を待ってから話す（最大1.2秒）
+    ok("タップで en-US 読み上げ", (E("window.__said.filter(s => s.trim().charAt(0) !== '|')") or [""])[-1] == au + "|en-US", E("window.__said"))
     pg.screenshot(path=f"{SHOT}/feat-6-listening.png")
     E("document.querySelector('[data-q=quit]').click()"); pg.wait_for_timeout(200)
     # マイページ・設定

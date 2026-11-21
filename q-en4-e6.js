@@ -90,7 +90,7 @@ Polar bears|seals|ホッキョクグマ|アザラシ
 Rabbits|grass|うさぎ|草`);
   const CANDO = T(`save water|水を節約する
 plant trees|木を植える
-use my own bag|自分のバッグを使う
+use our own bags|自分のバッグを使う
 turn off the lights|電気を消す
 pick up trash|ごみを拾う
 recycle cans|かんをリサイクルする`);
@@ -161,13 +161,18 @@ the chorus|合唱`);
       const [w, wj] = pick(WENT), [en, enj] = pick(ENJOY), [a, aj] = pick(ATE), [x, xj] = pick(WAS), [sw, swj] = pick(SAW);
       return lvPick(lv, () => pick([S("I went to " + w + ".", "わたしは" + wj + "に行きました。"), S("I enjoyed " + en + ".", "わたしは" + enj + "を楽しみました。")]),
         () => pick([S("I ate " + a + ".", "わたしは" + aj + "を食べました。"), S("I saw " + sw + ".", "わたしは" + swj + "を見ました。"), S("It was " + x + ".", xj + "。")]),
-        () => S("I went to " + w + ". I enjoyed " + en + ". It was " + x + ".", "わたしは" + wj + "に行きました。" + enj + "を楽しみました。" + xj + "。"));
+        () => {
+          // 行った場所と楽しんだことを合わせる
+          const TRIP = { "the sea": [["swimming", "泳ぐこと"], ["fishing", "つり"]], "the mountains": [["camping", "キャンプ"], ["hiking", "ハイキング"]], "my grandparents' house": [["fishing", "つり"], ["watching fireworks", "花火を見ること"]], "the summer festival": [["watching fireworks", "花火を見ること"], ["dancing", "おどること"]], "the aquarium": [["watching the dolphins", "イルカを見ること"], ["watching the penguins", "ペンギンを見ること"]], "Okinawa": [["swimming", "泳ぐこと"], ["shopping", "買い物"]], "the beach": [["swimming", "泳ぐこと"], ["playing volleyball", "バレーボールをすること"]] };
+          const [e2, ej2] = pick(TRIP[w]), [x2, xj2] = pick(WAS.filter((z) => z[0] !== "delicious"));
+          return S("I went to " + w + ". I enjoyed " + e2 + ". It was " + x2 + ".", "わたしは" + wj + "に行きました。" + ej2 + "を楽しみました。" + xj2 + "。");
+        });
     }, read: (lv, k) => E4.READ.diary(lv, k) },
     { n: "きのうしたこと（過去の文）", note: "過去の文は動詞を過去形にする（play → played、go → went、eat → ate）。", gen: (lv) => {
       const [v, vj] = pick(PASTV), [w, wj] = pick(WHEN);
       return lvPick(lv, () => S("I " + v + ".", "わたしは" + vj + "。"),
-        () => S("I " + v + " " + w + ".", "わたしは" + wj + vj + "。"),
-        () => { const v2 = pick(PASTV.filter((x) => x[0] !== v)); return S("I " + v + " " + w + ". Then I " + v2[0] + ".", "わたしは" + wj + vj + "。それから、" + v2[1] + "。"); });
+        () => { const ok = PASTV.filter((x) => w !== "last night" || !/soccer|park|aunt/.test(x[0])), [v1, vj1] = pick(ok); return S("I " + v1 + " " + w + ".", "わたしは" + wj + vj1 + "。"); },
+        () => { const ok = PASTV.filter((x) => w !== "last night" || !/soccer|park|aunt/.test(x[0])), [v1, vj1] = pick(ok), v2 = pick(ok.filter((x) => x[0] !== v1)); return S("I " + v1 + " " + w + ". Then I " + v2[0] + ".", "わたしは" + wj + vj1 + "。それから、" + v2[1] + "。"); });
     }, read: (lv, k) => E4.READ.diary(lv, k) },
     { n: "スポーツ観戦（I like watching 〜.）", note: "〈like watching 〜〉＝「〜を見るのが好き」。〈My favorite sport is 〜.〉＝「好きなスポーツは〜」。", gen: (lv) => {
       const [s, sj] = pick(D.SPORT), [d, dj] = pick(D.DAY.slice(5));
@@ -215,7 +220,7 @@ Kenya|giraffes|キリン|see|ケニア`));
         () => S("Let's go to " + x[0] + ". You can " + x[3] + " " + x[1] + ".", x[4] + "に行こう。" + x[2] + "を" + (x[3] === "eat" ? "食べる" : "見る") + "ことができます。"));
     }, read: (lv, k) => E4.READ.town(lv, k) },
     { n: "あの人を紹介（He / She can 〜.）", note: "3人目の人のことは He / She で言う。〈He is good at 〜.〉＝「彼は〜が得意」。", gen: (lv) => {
-      const [n, nj] = pick(D.NAMES), [g, gj] = pick(D.GOODAT), [k2, kj] = pick(D.SKILL), he = pick([["He", "彼"], ["She", "彼女"]]), [t, tj] = pick(D.TRAIT);
+      const [n, nj] = pick(D.NAMES), [g, gj] = pick(D.GOODAT), [k2, kj] = pick(D.SKILL), he = E4.SEXOF[n] === "f" ? ["She", "彼女"] : ["He", "彼"], [t, tj] = pick(D.TRAIT);
       return lvPick(lv, () => pick([S(he[0] + " is good at " + g + ".", he[1] + "は" + gj + "が得意です。"), S(n + " can " + k2 + ".", nj + "は" + kj + "ことができます。")]),
         () => S("Who is your hero? My hero is " + n + ".", "あなたのヒーローはだれ？ わたしのヒーローは" + nj + "です。"),
         () => S("This is " + n + ". " + he[0] + " is " + t + ". " + he[0] + " can " + k2 + ".", "こちらは" + nj + "です。" + he[1] + "は" + tj + "です。" + he[1] + "は" + kj + "ことができます。"));

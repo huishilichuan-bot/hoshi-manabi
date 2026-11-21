@@ -16,6 +16,19 @@ FAKE_SR = """
   stop(){} abort(){} }
   window.webkitSpeechRecognition = FakeSR; window.SpeechRecognition = FakeSR; })();
 """
+
+# 読み上げのにせもの：iPhone のような声の一覧（おもしろ声・日本語の声もまぜる）。話した内容と声を記録
+FAKE_TTS = """
+(() => { const V = (name, lang) => ({ name, lang, voiceURI: name, localService: true, default: false });
+  const list = [V('Albert','en-US'), V('Bad News','en-US'), V('Aaron','en-US'), V('Fred','en-US'), V('Kyoko','ja-JP'), V('Junior','en-US'), V('Samantha','en-US'), V('Tom','en-US'), V('Zarvox','en-US'), V('Daniel','en-GB'), V('Whisper','en-US')];
+  window.__said = []; let late = !!window.__voicesLate;
+  const ss = { speaking: false, pending: false, paused: false, _l: {}, getVoices(){ return late ? [] : list; }, speak(u){ window.__said.push({ text: u.text, voice: u.voice ? u.voice.name : null, lang: u.lang, rate: u.rate, pitch: u.pitch, vol: u.volume }); setTimeout(() => { u.onend && u.onend({}); }, 30); }, cancel(){}, pause(){}, resume(){},
+    addEventListener(t, f){ (this._l[t] = this._l[t] || []).push(f); }, removeEventListener(){} };
+  window.__voicesNow = () => { late = false; (ss._l.voiceschanged || []).forEach((f) => f({})); };
+  Object.defineProperty(window, 'speechSynthesis', { configurable: true, get(){ return ss; } });
+  window.SpeechSynthesisUtterance = function (t) { this.text = t; this.lang = ''; this.rate = 1; this.pitch = 1; this.volume = 1; this.voice = null; };
+})();
+"""
 NOSR = "try{ delete window.webkitSpeechRecognition; delete window.SpeechRecognition; window.webkitSpeechRecognition=undefined; window.SpeechRecognition=undefined; }catch(e){}"
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__))); OUT = os.path.join(ROOT, "screenshots", "v16"); os.makedirs(OUT, exist_ok=True)
 PORT = 8816
@@ -69,7 +82,7 @@ try:
         ctx = br.new_context(**p.devices[devname]); pg = ctx.new_page(); pg.add_init_script(NOAUTH); pg.add_init_script(FAKE_SR)
         pg.on("pageerror", lambda e: errs.append(str(e)))
         pg.goto(URL + "?v=" + str(time.time()), wait_until="networkidle"); pg.wait_for_timeout(1200)
-        ok(tag + " バージョン 1.6.0", pg.evaluate("HM_APP.version") == "1.6.0")
+        ok(tag + " バージョン 1.6.1", pg.evaluate("HM_APP.version") == "1.6.1")
         info = pg.evaluate("Object.fromEntries(Object.entries(HM.SUBJECTS.en).map(([g, us]) => [g, [us.length, us.reduce((a, u) => a + u.steps.length, 0), us.reduce((a, u) => a + u.steps.reduce((b, s) => b + s.cnt, 0), 0)]]))")
         ok(tag + " 英語の学年・単元・ステップ数", info.get("3") == [10, 30, 360] and info.get("9") == [16, 48, 576], info)
         seen = set()
@@ -149,6 +162,42 @@ try:
         pg.evaluate("window.__srDeny = true"); pg.click("#e4mic"); pg.wait_for_timeout(800)
         ok(tag + " マイクが使えないときは案内と「あとで話す」", pg.evaluate("/マイクをオン/.test(document.querySelector('#e4heard').innerText) && !!document.querySelector('#e4later.glow') && !document.querySelector('.fb')"))
         pg.evaluate("window.__srDeny = false"); pg.click("#e4later"); pg.wait_for_selector(".fb.skip"); nextq(pg)
+        ctx.close()
+        # 会話のリスニング：手書きの会話・答えるまで文字をかくす・ヒントにも出さない・声えらび
+        ctx = br.new_context(**p.devices[devname]); pg = ctx.new_page(); pg.add_init_script(NOAUTH); pg.add_init_script(FAKE_SR); pg.add_init_script(FAKE_TTS)
+        pg.on("pageerror", lambda e: errs.append(str(e)))
+        pg.goto(URL + "?v=" + str(time.time()), wait_until="networkidle"); pg.wait_for_timeout(1200)
+        q = find(8, lambda q: bool(q.get("dlg")))
+        ok(tag + " 会話は手書きの一覧から（did あり・2人が交互に話す）", bool(q) and bool(q.get("did")) and all(q["dlg"][i][0] != q["dlg"][i - 1][0] for i in range(1, len(q["dlg"]))), q and q.get("did"))
+        hidden = pg.evaluate("(() => { const d = document.querySelector('#e4dlg'); return !!d && d.hidden && !document.querySelector('#quiz').innerText.includes(%s); })()" % json.dumps(q["dlg"][0][1]))
+        ok(tag + " 答える前は会話の英文が見えない", hidden)
+        for k in range(3):
+            hb = pg.locator('.hint-btn:not([disabled])')
+            if hb.count(): hb.first.click(); pg.wait_for_timeout(150)
+        ok(tag + " ヒントに会話の英文が出ない", all(l[1] not in pg.inner_text("#quiz") for l in q["dlg"]))
+        pg.evaluate("window.__said = []"); pg.click(".e4-dlg .e4-play"); pg.wait_for_timeout(400 + 520 * len(q["dlg"]))
+        said = pg.evaluate("window.__said")
+        sexes = {l[0]: l[2] for l in q["dlg"]}
+        okv = len(said) == len(q["dlg"]) and all(x["voice"] in ("Samantha", "Tom") for x in said) and all((x["voice"] == "Tom") == (q["dlg"][i][2] == "m") for i, x in enumerate(said))
+        ok(tag + " 声：女の子は Samantha・男の子は Tom（おもしろ声・日本語の声は使わない）", okv, [(x["voice"], x["text"][:20]) for x in said])
+        ok(tag + " 読むのは英文だけ（名前・日本語なし）、速さ0.9・高さ1", all(x["text"] == q["dlg"][i][1] and x["rate"] == 0.9 and x["pitch"] == 1 and x["lang"] == "en-US" for i, x in enumerate(said)))
+        pg.evaluate("window.__said = []"); pg.click(".e4-dlg .e4-slow"); pg.wait_for_timeout(400 + 520 * len(q["dlg"]))
+        ok(tag + " 🐢 ゆっくりは速さ0.6", all(x["rate"] == 0.6 for x in pg.evaluate("window.__said")) and len(pg.evaluate("window.__said")) == len(q["dlg"]))
+        pg.wait_for_timeout(1050); pg.click(f'[data-mo="{q["opts"].index(q["a"])}"]'); pg.wait_for_selector(".fb")
+        ok(tag + " 答えたあとは会話が出る", pg.evaluate("!document.querySelector('#e4dlg').hidden") and fb_ok(pg))
+        pg.evaluate("document.querySelector('#e4dlg').scrollIntoView({block:'center'})"); pg.wait_for_timeout(2600)
+        OUT161 = os.path.join(ROOT, "screenshots", "v161"); os.makedirs(OUT161, exist_ok=True)
+        pg.screenshot(path=os.path.join(OUT161, f"{'live-' if LIVE else ''}{tag}-dialog-answered.png"))
+        ctx.close()
+        # 声の一覧があとから届く端末：届いてから自然な声で読む
+        ctx = br.new_context(**p.devices[devname]); pg = ctx.new_page(); pg.add_init_script(NOAUTH); pg.add_init_script("window.__voicesLate = true;"); pg.add_init_script(FAKE_TTS)
+        pg.on("pageerror", lambda e: errs.append(str(e)))
+        pg.goto(URL + "?v=" + str(time.time()), wait_until="networkidle"); pg.wait_for_timeout(1000)
+        start(pg, 3, 0, 0)
+        pg.evaluate("(() => { const Q = HM_APP.quiz(); const k = Q.qs.findIndex(q => q.skill === 'L' && q.au); const t = Q.qs[k]; Q.qs[k] = Q.qs[0]; Q.qs[0] = t; HM_APP.showQ(); })()"); pg.wait_for_timeout(300)
+        pg.evaluate("window.__said = []"); pg.click(".e4-play"); pg.wait_for_timeout(200); pg.evaluate("window.__voicesNow()"); pg.wait_for_timeout(600)
+        said = [x for x in pg.evaluate("window.__said") if x["text"].strip()]
+        ok(tag + " 声の一覧を待ってから Samantha で読む", len(said) == 1 and said[0]["voice"] == "Samantha", said)
         ctx.close()
         # 音声認識がないブラウザ：カードでならべる
         ctx = br.new_context(**p.devices[devname]); pg = ctx.new_page(); pg.add_init_script(NOAUTH); pg.add_init_script(NOSR)

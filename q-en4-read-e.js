@@ -30,13 +30,13 @@ third|3つ目`)), lr = pick([["right", "右"], ["left", "左"]]), side = pick([[
       const text = n + ": Excuse me. Where is the " + p[0] + "? " + n2 + ": Go straight and turn " + lr[0] + " at the " + nth[0] + " corner. You can see it on your " + side[0] + ". " + n + ": Thank you!";
       return { id: "t5", title: "Where is the " + p[0] + "?", text, au: 1, qs: [Q(nj + "はどこへ行きたいですか？", p[1], d.PLACE.map((x) => x[1]), "Where is the " + p[0] + "? ＝「" + p[1] + "はどこですか」。"), Q("何番目の角を曲がりますか？", nth[1], ["1つ目", "2つ目", "3つ目", "4つ目"], "turn at the " + nth[0] + " corner ＝「" + nth[1] + "の角で曲がる」。"), Q("角でどちらに曲がりますか？", lr[1], ["右", "左", "曲がらない"], "turn " + lr[0] + " ＝「" + lr[1] + "に曲がる」。"), Q(p[1] + "はどちら側に見えますか？", side[1] + "側", ["右側", "左側", "正面"], "on your " + side[0] + " ＝「" + side[1] + "側に」。")] };
     }
-    const f = pick(d.MENU), f2 = pick(d.MENU.filter((x) => x !== f)), price = R(4, 9) * 100 + pick([0, 50]);
+    const f = pick(d.MENU.filter((x) => !/juice|ice cream/.test(x[0]))), f2 = pick(d.MENU.filter((x) => /juice|ice cream/.test(x[0]))), price = R(4, 9) * 100 + pick([0, 50]);
     const text = "Clerk: Hello. What would you like? " + n + ": I'd like " + f[0] + " and " + f2[0] + ". How much is it? Clerk: It's " + price + " yen. " + n + ": Here you are. Clerk: Thank you.";
     return { id: "o5", title: "At a restaurant", text, au: 1, qs: [Q(nj + "が最初にたのんだものは何ですか？", f[1], d.MENU.map((x) => x[1]).filter((x) => x !== f2[1]), "I'd like " + f[0] + " ... ＝「" + f[1] + "をお願いします」。"), Q("もう1つたのんだものは何ですか？", f2[1], d.MENU.map((x) => x[1]).filter((x) => x !== f[1]), "and " + f2[0] + " ＝「それと" + f2[1] + "」。"), Q("全部でいくらですか？", price + "円", [price - 100, price + 100, price + 50, price - 50].filter((x) => x > 0).map((x) => x + "円"), "It's " + price + " yen. ＝「" + price + "円です」。")] };
   };
   // 小5・小6：ある1日
   RD.day = (lv) => {
-    const d = D(), [n, nj] = pick(d.NAMES), up = R(5, 7), sch = up + 1, bed = R(8, 10), ch = pick(d.CHORE), fr = pick(T(`always|いつも
+    const d = D(), [n, nj] = pick(d.NAMES), up = R(6, 7), sch = up + 1, bed = R(9, 10), ch = pick(d.CHORE), fr = pick(T(`always|いつも
 usually|たいてい
 sometimes|ときどき`)), s = pick(d.SUBJ), dd = pick(d.DAY.slice(0, 5));
     const text = "My name is " + n + ". I get up at " + E4.numWords(up) + ". I " + fr[0] + " " + ch[0] + " in the morning. I go to school at " + E4.numWords(sch) + ". I have " + s[0] + " on " + dd[0] + ". It's my favorite subject. I go to bed at " + E4.numWords(bed) + ".";
@@ -91,7 +91,7 @@ the mountains|山
 my grandparents' house|祖父母の家
 Okinawa|沖縄`)), who = pick(T(`my family|家族
 my friends|友だち
-my cousins|いとこたち`)), en = pick(T(`swimming|泳ぐこと
+my cousins|いとこたち`)), en0 = pick(T(`swimming|泳ぐこと
 camping|キャンプ
 fishing|つり
 hiking|ハイキング`)), a = pick(T(`watermelon|すいか
@@ -99,11 +99,17 @@ shaved ice|かき氷
 grilled fish|焼き魚
 corn|とうもろこし`)), sw = pick(T(`fireworks|花火
 beautiful stars|きれいな星
-a rainbow|にじ`)), x = pick(T(`fun|楽しかった
+fireflies|ほたる`)), x = pick(T(`fun|楽しかった
 exciting|わくわくした
 great|すばらしかった`));
+    // 行った場所と楽しんだことを合わせる
+    const EN = { "the sea": ["swimming", "fishing"], "the mountains": ["camping", "hiking"], "my grandparents' house": ["fishing", "hiking"], "Okinawa": ["swimming", "fishing"] };
+    const en = pick(T(`swimming|泳ぐこと
+camping|キャンプ
+fishing|つり
+hiking|ハイキング`).filter((z) => EN[w[0]].includes(z[0])));
     const text = "I went to " + w[0] + " with " + who[0] + ". I enjoyed " + en[0] + ". I ate " + a[0] + ". It was delicious. At night, I saw " + sw[0] + ". It was " + x[0] + ". I want to go there again next summer.";
-    return { id: "s6", title: "My Summer Vacation", text, au: 1, qs: [Q("筆者はどこに行きましたか？", w[1], ["海", "山", "祖父母の家", "沖縄", "京都"], "I went to " + w[0] + ". ＝「" + w[1] + "に行った」。"), Q("だれといっしょに行きましたか？", who[1], ["家族", "友だち", "いとこたち", "先生"], "with " + who[0] + " ＝「" + who[1] + "と」。"), Q("筆者が楽しんだことは何ですか？", en[1], ["泳ぐこと", "キャンプ", "つり", "ハイキング", "買い物"], "I enjoyed " + en[0] + ". ＝「" + en[1] + "を楽しんだ」。"), Q("筆者が食べたものは何ですか？", a[1], ["すいか", "かき氷", "焼き魚", "とうもろこし", "カレー"], "I ate " + a[0] + ". ＝「" + a[1] + "を食べた」。"), Q("夜に見たものは何ですか？", sw[1], ["花火", "きれいな星", "にじ", "クジラ"], "I saw " + sw[0] + ". ＝「" + sw[1] + "を見た」。")] };
+    return { id: "s6", title: "My Summer Vacation", text, au: 1, qs: [Q("筆者はどこに行きましたか？", w[1], ["海", "山", "祖父母の家", "沖縄", "京都"], "I went to " + w[0] + ". ＝「" + w[1] + "に行った」。"), Q("だれといっしょに行きましたか？", who[1], ["家族", "友だち", "いとこたち", "先生"], "with " + who[0] + " ＝「" + who[1] + "と」。"), Q("筆者が楽しんだことは何ですか？", en[1], ["泳ぐこと", "キャンプ", "つり", "ハイキング", "買い物"], "I enjoyed " + en[0] + ". ＝「" + en[1] + "を楽しんだ」。"), Q("筆者が食べたものは何ですか？", a[1], ["すいか", "かき氷", "焼き魚", "とうもろこし", "カレー"], "I ate " + a[0] + ". ＝「" + a[1] + "を食べた」。"), Q("夜に見たものは何ですか？", sw[1], ["花火", "きれいな星", "ほたる", "にじ"], "I saw " + sw[0] + ". ＝「" + sw[1] + "を見た」。")] };
   };
   // 小6：将来の夢
   RD.dream = (lv) => {

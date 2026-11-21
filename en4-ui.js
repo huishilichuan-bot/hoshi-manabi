@@ -9,20 +9,11 @@
   // ---- 英語の音声（en-US）。iOS はタップの中で読む ----
   const TTS = typeof window.speechSynthesis !== "undefined" && typeof window.SpeechSynthesisUtterance !== "undefined";
   const vol = () => { try { const v = root.HM_APP && root.HM_APP.state().settings.vol; return Math.max(0.2, v == null ? 0.8 : +v); } catch (e) { return 0.8; } };
-  const voices = () => { const vs = (TTS && speechSynthesis.getVoices()) || []; const us = vs.filter((x) => /^en[-_]US/i.test(x.lang)); return us.length ? us : vs.filter((x) => /^en/i.test(x.lang)); };
+  // 声えらびと読み上げは voice.js（HMVoice）：自然な en-US の声・会話は女の子と男の子で別の声
   function say(lines, slow, onEnd) {
-    if (!TTS) return false;
-    try {
-      speechSynthesis.cancel();
-      const vs = voices(), list = typeof lines === "string" ? [[0, lines]] : lines;
-      list.forEach(([who, text], k) => {
-        const u = new SpeechSynthesisUtterance(text); u.lang = "en-US"; u.rate = slow ? 0.55 : 0.9; u.volume = vol();
-        if (vs.length) u.voice = vs[who % 2 && vs.length > 1 ? 1 : 0]; if (who % 2) u.pitch = 1.25;
-        if (k === list.length - 1 && onEnd) u.onend = onEnd;
-        speechSynthesis.speak(u);
-      });
-      return true;
-    } catch (e) { return false; }
+    if (!TTS || !root.HMVoice) return false;
+    const list = typeof lines === "string" ? lines : lines.map((l) => [l[0], l[1], l[2]]);
+    return root.HMVoice.speak(list, { slow, vol: vol(), onEnd });
   }
   E4.say = say;
   const audioBar = (big, txt) => !TTS ? (typeof txt === "string" && txt ? '<div class="e4-au-txt say-text" lang="en">' + esc(txt) + "</div>" : "") : TTS ? '<div class="e4-au' + (big ? " big" : "") + '"><button type="button" class="e4-play" data-e4="play"><span class="e4-wave"><i></i><i></i><i></i></span><b>聞く</b></button><button type="button" class="e4-slow" data-e4="slow" aria-label="ゆっくり聞く">🐢 ゆっくり</button></div>' : "";
@@ -31,7 +22,7 @@
       const slow = b.dataset.e4 === "slow"; b.classList.add("on"); say(getLines(), slow, () => b.classList.remove("on")); setTimeout(() => b.classList.remove("on"), 8000);
     }));
   }
-  const stopTTS = () => { try { TTS && speechSynthesis.cancel(); } catch (e) {} };
+  const stopTTS = () => { try { if (root.HMVoice) root.HMVoice.stop(); else if (TTS) speechSynthesis.cancel(); } catch (e) {} };
   const SK = { L: "🎧 リスニング", S: "🗣 スピーキング", W: "✏️ ライティング", R: "📖 リーディング" };
   root.HMQ.skillBadge = (q) => (q && q.skill && SK[q.skill] ? '<span class="e4-skill sk-' + q.skill + '">' + SK[q.skill] + "</span>" : "");
   const same = (a, b) => E4.ck(a) === E4.ck(b);
@@ -200,7 +191,7 @@
     },
     mount(q, w, el, api) {
       if (q.passage && q.passage.au) wireAudio(el, () => q.passage.text.replace(/\n\n/g, " "));
-      else if (q.dlg) wireAudio(el, () => q.dlg.map((l, i) => [i, l[1]]));
+      else if (q.dlg) wireAudio(el, () => q.dlg.map((l) => [l[0], l[1], l[2] || "f"]));
       else if (q.au) wireAudio(el, () => q.au);
       el.querySelectorAll("[data-mo]").forEach((b) => b.addEventListener("click", () => { if (w.done) return; const o = q.opts[+b.dataset.mo]; w.given = o; api.answer({ ok: o === q.a, text: o }); }));
       w.cleanup = stopTTS;

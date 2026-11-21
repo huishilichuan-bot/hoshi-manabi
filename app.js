@@ -1,7 +1,7 @@
 /* ほしまなび — 勉強して⭐を集める学習アプリ（小1〜中3）。課金・お金の機能はありません。 */
 (() => {
   "use strict";
-  const VERSION = "1.6.0";
+  const VERSION = "1.6.1";
   // 記録はプロフィールごとに分けて保存：ゲスト＝"hoshimanabi"、アカウント＝"hoshimanabi:u:<uid>"（ログアウトで消す）
   const GUEST_KEY = "hoshimanabi";
   let KEY = GUEST_KEY;
@@ -132,13 +132,9 @@
   const canSpeak = () => typeof window.speechSynthesis !== "undefined" && typeof window.SpeechSynthesisUtterance !== "undefined";
   function speak(text) {
     if (!canSpeak() || !text) return false;
-    try {
-      speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(text); u.lang = "en-US"; u.rate = 0.85;
-      u.volume = Math.max(0.2, state.settings.vol == null ? 0.8 : +state.settings.vol);
-      const vs = speechSynthesis.getVoices() || []; const v = vs.find((x) => /^en[-_]US/i.test(x.lang)) || vs.find((x) => /^en/i.test(x.lang)); if (v) u.voice = v;
-      speechSynthesis.speak(u); return true;
-    } catch (e) { return false; }
+    const vol = Math.max(0.2, state.settings.vol == null ? 0.8 : +state.settings.vol);
+    if (window.HMVoice) return window.HMVoice.speak(String(text), { vol });
+    try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = "en-US"; u.rate = 0.9; u.volume = vol; speechSynthesis.speak(u); return true; } catch (e) { return false; }
   }
   // ---------- BGM（WebAudioでその場で作る、オリジナルのやさしい曲） ----------
   const BGM = { on: false, timer: null, step: 0, next: 0, gain: null, unlocked: false, song: 0 };
@@ -437,6 +433,8 @@
     else if (/<svg/.test(q.q || "")) out.push("図の数字や印（直角マーク・同じ長さの印・目もり）に注目しよう。");
     else if (q.t === "num" || q.t === "input" || (!q.t && !q.o)) out.push("わかっている数と、聞かれていることを書き出してから計算しよう。");
     else out.push("問題文のキーワードに注目して、ちがう選択肢から消していこう。");
+    // リスニングは、聞く英文・会話をヒントに出さない（答えるまでかくす）
+    if (q.skill === "L") { out.length = 0; out.push(q.dlg ? "だれが話しているかに注意して、質問に出てくる人の話をよく聞こう。" : "主語（だれが）と動詞（何をする）に注意して聞こう。", "🐢 ゆっくりで、もう一度聞いてみよう。"); q.__hints = out; return out; }
     const sent = String(q.ex || "").replace(/([。．！？\n])/g, "$1\u0001").split("\u0001").map((x) => x.trim()).filter((x) => x.length > 4 && !leaks(x));
     if (sent.length) out.push(sent[0]);
     if (q.t === "ch" && (q.opts || q.o || []).length >= 3) out.push("__elim");

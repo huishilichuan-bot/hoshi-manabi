@@ -81,34 +81,41 @@ paint|painted|painted`);
     return { dict: v, masu: st + "ます", mashita: st + "ました", masen: st + "ません", masendeshita: st + "ませんでした", te, ta, nai: na + "ない", teimasu: te + "います", teimashita: te + "いました", tai: st + "たい", mashou: st + "ましょう", kudasai: te + "ください", stem: st }[f];
   }
   E4.J = J;
-  // ---- 動詞句 ----  英語の原形|目的語など|日本語の目的語|日本語の動詞|活用
-  const VP = T(`play|tennis|テニスを|する|s
-play|the piano|ピアノを|ひく|5
-play|video games|テレビゲームを|する|s
-read|a book|本を|読む|5
-watch|TV|テレビを|見る|1
-study|English|英語を|勉強する|s
-study|math|数学を|勉強する|s
-cook|dinner|夕食を|作る|5
-eat|breakfast|朝食を|食べる|1
-write|a letter|手紙を|書く|5
-make|a cake|ケーキを|作る|5
-clean|the room|部屋を|そうじする|s
-listen|to music|音楽を|聞く|5
-take|pictures|写真を|とる|5
-wash|the dishes|皿を|洗う|5
-use|a computer|コンピューターを|使う|5
-drink|milk|牛乳を|飲む|5
-draw|a picture|絵を|かく|5
-speak|English|英語を|話す|5
-walk|the dog|犬を散歩に連れて|行く|5
-visit|the museum|博物館を|訪れる|1
-buy|a new bag|新しいかばんを|買う|5
-sing|a song|歌を|歌う|5
-practice|soccer|サッカーを|練習する|s
-practice|the guitar|ギターを|練習する|s
-go|to the library|図書館へ|行く|5
-help|the teacher|先生を|手伝う|5`);
+  // ---- 動詞句 ----  英語の原形|目的語など|日本語の目的語|日本語の動詞|活用|使い方の印
+  // 印：d＝夜はしない（外・昼の活動） m＝朝・昼だけ（朝食） e＝朝はしない（夕食） t＝時を表す語といっしょにしない
+  //     c＝家の手伝い（「楽しむ・得意・〜したい」には使わない） k＝得意と言える f＝楽しむ・好きと言える
+  const VP = T(`play|tennis|テニスを|する|s|dkf
+play|the piano|ピアノを|ひく|5|kf
+play|video games|テレビゲームを|する|s|kf
+read|a book|本を|読む|5|f
+watch|TV|テレビを|見る|1|f
+study|English|英語を|勉強する|s|
+study|math|数学を|勉強する|s|
+cook|dinner|夕食を|作る|5|ek
+eat|breakfast|朝食を|食べる|1|m
+write|a letter|手紙を|書く|5|
+make|a cake|ケーキを|作る|5|kf
+clean|the room|部屋を|そうじする|s|c
+listen|to music|音楽を|聞く|5|f
+take|pictures|写真を|とる|5|dkf
+wash|the dishes|皿を|洗う|5|c
+use|a computer|コンピューターを|使う|5|
+drink|milk|牛乳を|飲む|5|
+draw|pictures|絵を|かく|5|kf
+speak|English|英語を|話す|5|tk
+walk|the dog|犬を散歩に連れて|行く|5|dc
+go|to the park|公園へ|行く|5|df
+go|shopping|買い物に|行く|5|df
+sing|songs|歌を|歌う|5|kf
+practice|soccer|サッカーを|練習する|s|d
+practice|the guitar|ギターを|練習する|s|k
+go|to the library|図書館へ|行く|5|d
+help|at home|家で|手伝う|5|c`);
+  // 時を表す語と動詞句が合うか（夜にテニス、夕食のあとに朝食…などを出さない）
+  const NIGHT = /after dinner|last night|at nine last night|every night/, SCHOOL = /after school/, MORNING = /every morning/;
+  const fitT = (x, tm) => { const f = x[5] || ""; if (!tm) return true; if (f.includes("t")) return false; if (f.includes("d") && NIGHT.test(tm)) return false; if (f.includes("m") && (NIGHT.test(tm) || SCHOOL.test(tm))) return false; if (f.includes("e") && MORNING.test(tm)) return false; return true; };
+  const vpFor = (tm, extra) => { const a = VP.filter((x) => fitT(x, tm) && (!extra || extra(x))); return a.length ? pick(a) : pick(VP.filter((x) => fitT(x, tm))); };
+  E4.fitT = fitT;
   VP.forEach((x) => addF([x[0], V.s(x[0]), V.p(x[0]), V.ing(x[0])].filter((w, i, a) => a.indexOf(w) === i)));
   addF(["do", "does", "did", "doing", "done"]); addF(["am", "is", "are", "was", "were", "be", "been"]); addF(["don't", "doesn't", "didn't"]);
   const vp = (x, form) => (form === "b" ? x[0] : V[form](x[0])) + " " + x[1];
@@ -172,7 +179,7 @@ cat|cats|ねこ|ひき
 ticket|tickets|チケット|まい
 apple|apples|りんご|個`);
   const NUMJ = ["", "1", "2", "3", "4", "5", "6"];
-  E4.JT = { VP, vp, vj, SUBJ, THIRD, pron, TIME, PAST, ROLE, ADJ, THING, PLC, COUNT, addF };
+  E4.JT = { VP, vp, vj, fitT, vpFor, SUBJ, THIRD, pron, TIME, PAST, ROLE, ADJ, THING, PLC, COUNT, addF };
   const wa = (j) => j + "は";
   const G7 = [
     { n: "be動詞① I am / You are", note: "「わたしは〜です」は I am 〜.（I'm 〜.）、「あなたは〜です」は You are 〜.。疑問文は Are you 〜? で、答えは Yes, I am. / No, I'm not.", gen: (lv) => {
@@ -182,28 +189,30 @@ apple|apples|りんご|個`);
         () => pick([S("Are you " + a + "? No, I'm not.", "あなたは" + aj.replace(/。?$/, "") + "か？ いいえ、ちがいます。"), S("I'm " + r + ". I'm from Osaka.", "わたしは" + rj + "です。大阪出身です。")]));
     }, read: (lv, k) => E4.PASS.pick(7, 0, k) },
     { n: "be動詞② He / She / This is 〜", note: "I・you 以外の1人・1つは is。This is 〜.＝「これは〜です」。否定は is not（isn't）、疑問文は Is 〜? と is を前に出す。", gen: (lv) => {
-      const t = pick(THIRD), [r, rj] = pick(ROLE), [th, thj] = pick(THING), [p, pj] = pick(PLC);
+      // おとな（父・母・先生）には「生徒・転校生・部員」を使わない。子どもには「英語の先生」を使わない
+      const t = pick(THIRD), adult = /father|mother|teacher/i.test(t[0]), [r, rj] = pick(ROLE.filter((z) => adult ? /fan|teacher|cook/.test(z[0]) : !/teacher/.test(z[0]))), [th, thj] = pick(THING), [p, pj] = pick(PLC);
       return lvPick(lv, () => pick([S("This is " + th + ".", "これは" + thj + "です。"), S(t[0] + " is " + r + ".", wa(t[1]) + rj + "です。")]),
-        () => pick([S("Is this " + th + "? Yes, it is.", "これは" + thj + "ですか？ はい、そうです。"), S(t[0] + " isn't " + r + ".", wa(t[1]) + rj + "ではありません。", { alt: [t[0] + " is not " + r + "."] })]),
+        () => pick([S("Is this " + th.replace(/^my /, "your ") + "? Yes, it is.", "これは" + thj.replace(/^わたしの/, "あなたの") + "ですか？ はい、そうです。"), S(t[0] + " isn't " + r + ".", wa(t[1]) + rj + "ではありません。", { alt: [t[0] + " is not " + r + "."] })]),
         () => pick([S(t[0] + " is " + p + " now.", wa(t[1]) + "今、" + pj + "います。"), S("That is " + th + ". It is very nice.", "あれは" + thj + "です。それはとてもすてきです。")]));
     }, read: (lv, k) => E4.PASS.pick(7, 1, k) },
     { n: "一般動詞（I play 〜. / Do you 〜?）", note: "動作を表す語（play, like など）を一般動詞という。疑問文は Do you 〜?、否定文は I don't 〜.。", gen: (lv) => {
-      const x = pick(VP), [tm, tmj] = pick(TIME), s0 = pick(SUBJ);
+      const [tm, tmj] = pick(TIME), x = vpFor(tm), s0 = pick(SUBJ);
       return lvPick(lv, () => S(s0[0] + " " + vp(x, "b") + ".", wa(s0[1]) + vj(x, "masu") + "。"),
         () => pick([S("I " + vp(x, "b") + " " + tm + ".", "わたしは" + tmj + vj(x, "masu") + "。"), S("I don't " + vp(x, "b") + ".", "わたしは" + vj(x, "masen") + "。", { alt: ["I do not " + vp(x, "b") + "."] })]),
         () => pick([S("Do you " + vp(x, "b") + "? Yes, I do.", "あなたは" + vj(x, "masu") + "か？ はい、" + J(x[3], x[4], "masu") + "。"), S("Do you " + vp(x, "b") + " " + tm + "? No, I don't.", "あなたは" + tmj + vj(x, "masu") + "か？ いいえ、" + J(x[3], x[4], "masen") + "。")]));
     }, read: (lv, k) => E4.PASS.pick(7, 2, k) },
     { n: "複数形と How many 〜?", note: "2つ以上のものは名詞に s をつける（books）。「いくつ〜？」は How many＋複数形 〜?。", gen: (lv) => {
-      const c = pick(COUNT), n = R(2, 6), w = E4.numWords(n);
-      return lvPick(lv, () => S("I have " + w + " " + c[1] + ".", "わたしは" + c[2] + "を" + NUMJ[n] + c[3] + "持っています。"),
-        () => S("How many " + c[1] + " do you have?", "あなたは" + c[2] + "を何" + c[3] + "持っていますか？"),
-        () => S("How many " + c[1] + " do you have? I have " + w + ".", c[2] + "を何" + c[3] + "持っていますか？ " + NUMJ[n] + c[3] + "です。", { alt: ["How many " + c[1] + " do you have? I have " + w + " " + c[1] + "."] }));
+      const c = pick(COUNT), live = /^(dog|cat|brother)$/.test(c[0]), n = live ? R(2, 3) : R(2, 6), w = E4.numWords(n);
+      const hv = c[0] === "brother" ? ["わたしには兄弟が" + NUMJ[n] + "人います。", "あなたには兄弟が何人いますか？", "兄弟は何人いますか？ "] : /^(dog|cat)$/.test(c[0]) ? ["わたしは" + c[2] + "を" + NUMJ[n] + c[3] + "飼っています。", "あなたは" + c[2] + "を何" + c[3] + "飼っていますか？", c[2] + "を何" + c[3] + "飼っていますか？ "] : ["わたしは" + c[2] + "を" + NUMJ[n] + c[3] + "持っています。", "あなたは" + c[2] + "を何" + c[3] + "持っていますか？", c[2] + "を何" + c[3] + "持っていますか？ "];
+      return lvPick(lv, () => S("I have " + w + " " + c[1] + ".", hv[0]),
+        () => S("How many " + c[1] + " do you have?", hv[1]),
+        () => S("How many " + c[1] + " do you have? I have " + w + ".", hv[2] + NUMJ[n] + c[3] + "です。", { alt: ["How many " + c[1] + " do you have? I have " + w + " " + c[1] + "."] }));
     }, read: (lv, k) => E4.PASS.pick(7, 3, k) },
     { n: "3人称単数（He plays 〜.）", note: "主語が he / she / Ken など（3人称・単数）で現在の文のとき、動詞に s をつける（plays, studies, goes, has）。", gen: (lv) => {
-      const t = pick(THIRD), x = pick(VP), [tm, tmj] = pick(TIME);
+      const t = pick(THIRD), [tm, tmj] = pick(TIME), x = vpFor(tm);
       return lvPick(lv, () => S(t[0] + " " + vp(x, "s") + ".", wa(t[1]) + vj(x, "masu") + "。"),
         () => S(t[0] + " " + vp(x, "s") + " " + tm + ".", wa(t[1]) + tmj + vj(x, "masu") + "。"),
-        () => { const y = pick(VP.filter((z) => z !== x)); return S(t[0] + " " + vp(x, "s") + " and " + vp(y, "s") + " " + tm + ".", wa(t[1]) + tmj + x[2] + J(x[3], x[4], "te") + "、" + vj(y, "masu") + "。"); });
+        () => { const y = vpFor(tm, (z) => z !== x && z[0] !== x[0] && !/milk|breakfast/.test(z[1]) && !/milk|breakfast/.test(x[1]) && !(/d/.test(x[5] || "") && /d/.test(z[5] || ""))); if (y === x || y[0] === x[0]) return S(t[0] + " " + vp(x, "s") + " " + tm + ".", wa(t[1]) + tmj + vj(x, "masu") + "。"); return S(t[0] + " " + vp(x, "s") + " and " + vp(y, "s") + " " + tm + ".", wa(t[1]) + tmj + x[2] + J(x[3], x[4], "te") + "、" + vj(y, "masu") + "。"); });
     }, read: (lv, k) => E4.PASS.pick(7, 4, k) },
     { n: "3単現の疑問文・否定文（Does 〜?）", note: "3人称単数の疑問文は Does＋主語＋動詞の原形 〜?、否定文は doesn't＋動詞の原形。動詞は s のつかない形にもどす。", gen: (lv) => {
       const t = pick(THIRD), x = pick(VP), [p, pj] = pron(t);
@@ -214,7 +223,7 @@ apple|apples|りんご|個`);
     { n: "疑問詞（What / Where / When / Who）", note: "疑問詞は文の最初におく。What＝何、Where＝どこ、When＝いつ、Who＝だれ、Whose＝だれの、Which＝どちら、How＝どう・どのように。", gen: (lv) => {
       const x = pick(VP), [tm, tmj] = pick(TIME), n = pick(E4.DATA.NAMES);
       const A = [S("What do you do " + tm + "?", "あなたは" + tmj + "何をしますか？"), S("Where do you live?", "あなたはどこに住んでいますか？"), S("When is your birthday?", "あなたの誕生日はいつですか？"), S("Who is that boy?", "あの男の子はだれですか？"), S("Whose bag is this?", "これはだれのかばんですか？"), S("Which do you like, dogs or cats?", "犬とねこ、どちらが好きですか？"), S("How do you come to school?", "あなたはどうやって学校に来ますか？")];
-      const B = [S("What do you do " + tm + "? I " + vp(x, "b") + ".", tmj + "何をしますか？ " + vj(x, "masu") + "。"), S("Whose bag is this? It's " + n[0] + "'s.", "これはだれのかばんですか？ " + n[1] + "のです。"), S("Where do you " + vp(x, "b") + "? At home.", "あなたはどこで" + vj(x, "masu") + "か？ 家でです。"), S("How do you come to school? By bike.", "どうやって学校に来ますか？ 自転車でです。"), S("Who is that girl? She is " + n[0] + ".", "あの女の子はだれですか？ " + n[1] + "です。")];
+      const B = [(() => { const y = vpFor(tm); return S("What do you do " + tm + "? I " + vp(y, "b") + ".", tmj + "何をしますか？ " + vj(y, "masu") + "。"); })(), S("Whose bag is this? It's " + n[0] + "'s.", "これはだれのかばんですか？ " + n[1] + "のです。"), (() => { const h = pick(VP.filter((z) => /book|TV|English|math|video|guitar|music|dinner|cake|letter/.test(z[1]) && z[0] !== "speak")); return S("Where do you " + vp(h, "b") + "? At home.", "あなたはどこで" + vj(h, "masu") + "か？ 家でです。"); })(), S("How do you come to school? By bike.", "どうやって学校に来ますか？ 自転車でです。"), (() => { const f = pick(E4.DATA.NAMES.filter((z) => E4.SEXOF[z[0]] === "f")); return S("Who is that girl? She is " + f[0] + ".", "あの女の子はだれですか？ " + f[1] + "です。"); })()];
       return lvPick(lv, () => pick(A), () => pick(A.concat(B)), () => pick(B));
     }, read: (lv, k) => E4.PASS.pick(7, 6, k) },
     { n: "命令文（〜しなさい／〜しよう）", note: "命令文は動詞の原形で始める。Please をつけるとていねい。Don't 〜.＝「〜してはいけない」、Let's 〜.＝「〜しよう」。", gen: (lv) => {
@@ -228,8 +237,8 @@ Wash your hands.|手を洗って。`), D2 = T(`Don't run in the classroom.|教�
 Don't eat in the library.|図書館で食べてはいけません。
 Don't be late.|おくれてはいけません。
 Don't use your phone here.|ここで携帯電話を使ってはいけません。`);
-      const c = pick(C), d = pick(D2);
-      return lvPick(lv, () => S(c[0], c[1]), () => pick([S(d[0], d[1]), S("Let's " + vp(x, "b") + ".", vj(x, "mashou").replace(/ましょう$/, "ましょう") + "。")]), () => pick([S("Please " + vp(x, "b") + ".", vj(x, "kudasai") + "。"), S("Let's " + vp(x, "b") + " together.", "いっしょに" + vj(x, "mashou") + "。"), S(d[0], d[1])]));
+      const c = pick(C), d = pick(D2), lx = pick(VP.filter((z) => /f/.test(z[5] || "") || /English|math/.test(z[1]))), px = pick(VP.filter((z) => /room|dishes|dog|at home/.test(z[1])));
+      return lvPick(lv, () => S(c[0], c[1]), () => pick([S(d[0], d[1]), S("Let's " + vp(lx, "b") + ".", vj(lx, "mashou") + "。")]), () => pick([S("Please " + vp(px, "b") + ".", vj(px, "kudasai") + "。"), S("Let's " + vp(lx, "b") + " together.", "いっしょに" + vj(lx, "mashou") + "。"), S(d[0], d[1])]));
     }, read: (lv, k) => E4.PASS.pick(7, 7, k) },
     { n: "助動詞 can（〜できる）", note: "〈can＋動詞の原形〉＝「〜できる」。主語が he / she でも can のあとは原形。否定は can't、疑問文は Can 〜?。Can I 〜?＝「〜してもいいですか」。", gen: (lv) => {
       const x = pick(VP.filter((z) => /piano|English|dinner|cake|picture|song|tennis|computer|guitar/.test(z[1]))), t = pick(THIRD), K = T(`swim fast|速く泳ぐ|5
@@ -250,27 +259,28 @@ play the drums|ドラムを演奏する|s`), k2 = pick(K);
         () => pick([S("Is " + (/^(He|She)$/.test(t[0]) ? t[0].toLowerCase() : t[0].replace(/^My/, "your").replace(/^Our/, "your")) + " " + vp(x, "ing") + " now?", (t[0].startsWith("My") ? "あなたの" + t[1] : t[0].startsWith("Our") ? "あなたたちの先生" : t[1]) + "は今、" + vj(x, "teimasu") + "か？"), S("I'm not " + vp(x, "ing") + ". I'm sleeping.", "わたしは" + x[2] + J(x[3], x[4], "te") + "いません。ねています。")]));
     }, read: (lv, k) => E4.PASS.pick(7, 9, k) },
     { n: "過去形①（played / Did you 〜?）", note: "過去のことは動詞を過去形にする。多くは ed をつける（played, studied, visited）。疑問文は Did＋主語＋原形 〜?、否定は didn't＋原形。", gen: (lv) => {
-      const reg = VP.filter((x) => !IRR[x[0]]), x = pick(reg), [p, pj] = pick(PAST), t = pick(THIRD);
+      const [p, pj] = pick(PAST), reg = VP.filter((z) => !IRR[z[0]] && fitT(z, p)), x = pick(reg), t = pick(THIRD);
       return lvPick(lv, () => S("I " + vp(x, "p") + " " + p + ".", "わたしは" + pj + vj(x, "mashita") + "。"),
         () => pick([S(t[0] + " " + vp(x, "p") + " " + p + ".", wa(t[1]) + pj + vj(x, "mashita") + "。"), S("I didn't " + vp(x, "b") + " " + p + ".", "わたしは" + pj + vj(x, "masendeshita") + "。", { alt: ["I did not " + vp(x, "b") + " " + p + "."] })]),
         () => S("Did you " + vp(x, "b") + " " + p + "? Yes, I did.", "あなたは" + pj + vj(x, "mashita") + "か？ はい、" + J(x[3], x[4], "mashita") + "。"));
     }, read: (lv, k) => E4.PASS.pick(7, 10, k) },
     { n: "過去形②（went / ate / saw）", note: "不規則に変わる動詞は形を覚えよう：go → went、eat → ate、see → saw、make → made、buy → bought、write → wrote。", gen: (lv) => {
-      const irr = VP.filter((x) => IRR[x[0]]), x = pick(irr), [p, pj] = pick(PAST), t = pick(THIRD), PL = T(`Kyoto|京都
+      const [p, pj] = pick(PAST), irr = VP.filter((z) => IRR[z[0]] && fitT(z, p)), x = pick(irr), t = pick(THIRD), PL = T(`Kyoto|京都
 the zoo|動物園
 the beach|海辺
-my uncle's house|おじの家`), pl = pick(PL);
+my uncle's house|おじの家`), pl = pick(PL.filter((z) => p !== "last night" || /uncle/.test(z[0])));
       return lvPick(lv, () => pick([S("I " + vp(x, "p") + " " + p + ".", "わたしは" + pj + vj(x, "mashita") + "。"), S("I went to " + pl[0] + " " + p + ".", "わたしは" + pj + pl[1] + "へ行きました。")]),
         () => pick([S(t[0] + " " + vp(x, "p") + " " + p + ".", wa(t[1]) + pj + vj(x, "mashita") + "。"), S("Where did you go " + p + "? I went to " + pl[0] + ".", pj + "どこへ行きましたか？ " + pl[1] + "へ行きました。")]),
-        () => pick([S(t[0] + " didn't " + vp(x, "b") + " " + p + ".", wa(t[1]) + pj + vj(x, "masendeshita") + "。", { alt: [t[0] + " did not " + vp(x, "b") + " " + p + "."] }), S("What did you do " + p + "? I " + vp(x, "p") + ".", pj + "何をしましたか？ " + vj(x, "mashita") + "。")]));
+        () => pick([S(t[0] + " didn't " + vp(x, "b") + " " + p + ".", wa(t[1]) + pj + vj(x, "masendeshita") + "。", { alt: [t[0] + " did not " + vp(x, "b") + " " + p + "."] }), (() => { const y = pick(irr.filter((z) => !/milk|breakfast/.test(z[1]))) || x; return S("What did you do " + p + "? I " + vp(y, "p") + ".", pj + "何をしましたか？ " + vj(y, "mashita") + "。"); })()]));
     }, read: (lv, k) => E4.PASS.pick(7, 11, k) },
     { n: "was / were と過去進行形", note: "be動詞の過去形は was（I, he, she など）と were（you, we, they）。〈was / were＋ing〉＝「〜していた」。", gen: (lv) => {
-      const x = pick(VP), a = pick(ADJ), [p, pj] = pick(PAST), pl = pick(PLC), t = pick(THIRD), TM = T(`at nine last night|昨夜9時に
+      // 「I was 〜」には「あなたが電話をくれたとき」、「What were you doing」には「わたしが電話したとき」
+      const a = pick(ADJ), [p, pj] = pick(PAST), pl = pick(PLC.filter((z) => (z[0] !== "at home" || /yesterday|last night|last Sunday/.test(p)) && (p !== "last night" || z[0] === "at home"))), t = pick(THIRD), TM = T(`at nine last night|昨夜9時に
 at that time|そのとき
-when you called me|あなたが電話をくれたとき`), tm = pick(TM);
+when you called me|あなたが電話をくれたとき`), tm = pick(TM), x = vpFor(tm[0]), TQ = [["at nine last night", "昨夜9時に"], ["at that time", "そのとき"], ["when I called you", "わたしが電話したとき"]], tq = pick(TQ), xq = vpFor(tq[0]);
       return lvPick(lv, () => pick([S("I was " + a[0] + " " + p + ".", "わたしは" + pj + a[2] + "。"), S("We were " + pl[0] + " " + p + ".", "わたしたちは" + pj + pl[1] + "いました。")]),
         () => pick([S("I was " + vp(x, "ing") + " " + tm[0] + ".", "わたしは" + tm[1] + vj(x, "teimashita") + "。"), S(t[0] + " was " + pl[0] + " " + p + ".", wa(t[1]) + pj + pl[1] + "いました。")]),
-        () => pick([S("What were you doing " + tm[0] + "? I was " + vp(x, "ing") + ".", tm[1] + "何をしていましたか？ " + vj(x, "teimashita") + "。"), S("They were " + vp(x, "ing") + " " + tm[0] + ".", "かれらは" + tm[1] + vj(x, "teimashita") + "。")]));
+        () => pick([S("What were you doing " + tq[0] + "? I was " + vp(xq, "ing") + ".", tq[1] + "何をしていましたか？ " + vj(xq, "teimashita") + "。"), S("They were " + vp(xq, "ing") + " " + tq[0].replace("when I called you", "at that time") + ".", "かれらは" + tq[1].replace("わたしが電話したとき", "そのとき") + vj(xq, "teimashita") + "。")]));
     }, read: (lv, k) => E4.PASS.pick(7, 12, k) },
   ];
   G7.push({ n: "中1のまとめ", note: "be動詞・一般動詞・can・現在進行形・過去形を使い分けよう。主語と時（今・ふだん・過去）を見て形を決める。", gen: (lv) => pick(G7.slice(2, 13)).gen(lv), read: (lv, k) => E4.PASS.pick(7, 13, k) });

@@ -175,15 +175,13 @@
     if (o.length < 2) return null;
     return { t: "mc", skill: "L", q: "🔊 を聞いて、合う意味をえらぼう", au: S.en, a: S.ja, opts: shuf([S.ja].concat(o)), ex: note(S, u) };
   };
-  // 🎧 会話を聞いて「この人は何と言っていましたか」
+  // 🎧 会話を聞いて答える：会話はすべて手書き（dlg/g5〜g9.txt → q-en4-dlg.js）。文をつなぎ合わせて会話を作ることはしない
   B.lg = (S, u, c) => {
-    const A = u.gen(c.lv); if (!A || A.en === S.en) return null;
-    const names = shuf(E4.NAMES2).slice(0, 2), first = R(0, 1) === 0;
-    const lines = first ? [[names[0][0], S.en], [names[1][0], A.en]] : [[names[0][0], A.en], [names[1][0], S.en]];
-    const who = first ? names[0] : names[1];
-    const o = []; for (let t = 0; t < 30 && o.length < 3; t++) { const x = u.gen(c.lv); if (x && x.ja !== S.ja && x.ja !== A.ja && x.en !== S.en && !o.includes(x.ja) && (!S.kind || x.kind === S.kind)) o.push(x.ja); }
-    if (o.length < 2) return null;
-    return { t: "mc", skill: "L", q: "🔊 会話を聞こう。" + who[1] + "は何と言っていましたか？", dlg: lines, a: S.ja, opts: shuf([S.ja].concat(o)), ex: "会話：" + lines.map((l) => l[0] + "「" + l[1] + "」").join(" ") + " ／ " + who[1] + "は「" + S.en + "」＝「" + S.ja + "」と言っていました。" };
+    const all = (E4.DLG && E4.DLG[c.g]) || [], list = all.filter((d) => d.u === c.ui);
+    if (!list.length) return null;
+    const d = pick(list), x = pick(d.qs);
+    const lines = d.lines.map((l) => [l[0], l[1], (E4.VOICE_SEX && E4.VOICE_SEX[l[0]]) || "f"]);
+    return { t: "mc", skill: "L", q: "🔊 会話を聞こう。" + x[0], dlg: lines, a: x[1], opts: shuf([x[1]].concat(x[2])), did: c.g + "-" + all.indexOf(d), ex: "会話：" + d.lines.map((l) => l[0] + "「" + l[1] + "」").join(" ") + " ／ 答え：" + x[1] };
   };
   // 🗣 声に出して言う
   B.sp = (S, u, c) => { const n = E4.tokens(S.en).length; if (n < 1 || n > 14) return null; return { t: "sp", skill: "S", q: "🎤 英語で言ってみよう", a: S.en, ja: S.ja, key: S.key || E4.keysOf(S.en).slice(0, 4), ex: note(S, u) + " 🔊 でお手本を聞いてから、マイクで話そう。" }; };
@@ -259,7 +257,7 @@
           const skill = PLAN[(i + k * 4) % PLAN.length];
           const slot = PLAN.slice(0, (i + k * 4) % PLAN.length).filter((x) => x === skill).length % 3;
           const lv = Math.min(1, k * 0.34 + d * 0.5);
-          const f = fmt(g, skill, slot, k), c = { g, lv, k, slot };
+          const f = fmt(g, skill, slot, k), c = { g, lv, k, slot, ui };
           if (f === "rx") {
             if (!ctx.rd) { const set0 = u.read ? u.read(lv, k) : null; ctx.rd = { set: set0, order: set0 ? shuf(set0.qs) : [], used: [] }; }
             const set = ctx.rd.set; if (!set) return null;
@@ -273,7 +271,7 @@
         return { n: SN[k] + " " + SNAME[k], src, cnt: 12, en4: true, example: () => u.gen(0.2) };
       });
       HM.POINTS = HM.POINTS || {}; if (u.note) HM.POINTS[u.n] = u.note;
-      return { n: u.n, steps, expanded: true, en4: true };
+      return { n: u.n, steps, expanded: true, en4: true, gen: u.gen };
     });
     HM.SUBJECTS.en = HM.SUBJECTS.en || {};
     HM.SUBJECTS.en[g] = out;

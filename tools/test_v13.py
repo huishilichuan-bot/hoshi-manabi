@@ -234,7 +234,7 @@ try:
     t = open(os.path.join(ROOT, "privacy.html"), encoding="utf-8").read()
     ok("privacy：Firebase・Google・localStorage・広告なし・販売なし・支払いなし・削除方法", all(k in t for k in ["Firebase", "Google でログイン", "localStorage", "広告は表示しません", "売ったり", "支払い", "アカウントを削除する"]))
     sw = open(os.path.join(ROOT, "sw.js"), encoding="utf-8").read()
-    ok("SW：v1.5.0・Firebase 通信はキャッシュしない", 'hoshi-manabi-v1.6.0' in sw and "googleapis" in sw and "firebase" in sw)
+    ok("SW：v1.5.0・Firebase 通信はキャッシュしない", 'hoshi-manabi-v1.6.1' in sw and "googleapis" in sw and "firebase" in sw)
     ok("本物の Firebase への通信なし（にせものを使用）", not net, net[:3])
     br.close()
 finally:

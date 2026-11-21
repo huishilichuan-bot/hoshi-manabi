@@ -1,0 +1,195 @@
+# 5-0
+Ken: Hello. I'm Ken. I'm from Canada.
+Sara: Hi, Ken. I'm Sara. I'm from Australia.
+Ken: Nice to meet you, Sara.
+? ケンはどこの出身ですか？ | カナダ | オーストラリア / アメリカ / イギリス
+? サラはどこの出身ですか？ | オーストラリア | カナダ / アメリカ / 中国
+? サラは何と言っていましたか？ | わたしはオーストラリアの出身です。 | わたしはカナダの出身です。 / わたしはアメリカの出身です。 / わたしは日本に住んでいます。
+
+# 5-0
+Emma: Hi. My name is Emma. I'm from the U.K.
+Leo: Hi, Emma. I'm Leo. I like soccer. Do you like soccer?
+Emma: Yes, I do. I like tennis, too.
+? エマはどこの出身ですか？ | イギリス | カナダ / フランス / オーストラリア
+? レオが好きなものは何ですか？ | サッカー | テニス / 野球 / 水泳
+? エマは何と言っていましたか？ | わたしはテニスも好きです。 | わたしはサッカーが好きではありません。 / わたしは野球が好きです。 / わたしはカナダの出身です。
+
+# 5-1
+Tom: When is your birthday, Yumi?
+Yumi: My birthday is May 5th. When is your birthday?
+Tom: My birthday is October 12th.
+? ユミの誕生日はいつですか？ | 5月5日 | 10月12日 / 3月5日 / 5月15日
+? トムの誕生日はいつですか？ | 10月12日 | 5月5日 / 12月10日 / 10月2日
+? ユミは何と言っていましたか？ | わたしの誕生日は5月5日です。 | わたしの誕生日は10月12日です。 / わたしの誕生日は3月3日です。 / 誕生日おめでとう。
+
+# 5-1
+Mika: Happy birthday, Ben! This is for you.
+Ben: Thank you, Mika! What is it?
+Mika: It's a new cap. You like baseball, right?
+? だれの誕生日ですか？ | ベン | ミカ / ベンのお兄さん / ミカのお母さん
+? ミカがあげたものは何ですか？ | ぼうし | ボール / 本 / ケーキ
+? ミカは何と言っていましたか？ | これはあなたへのプレゼントです。 | ありがとう。 / わたしは野球が好きです。 / 今日はわたしの誕生日です。
+
+# 5-2
+Aya: What do you have on Monday?
+Lucas: I have math, English, and music. I like music.
+Aya: Me, too. Music is fun.
+? ルーカスが月曜日にある教科に入っていないのはどれですか？ | 理科 | 算数 / 英語 / 音楽
+? ルーカスの好きな教科は何ですか？ | 音楽 | 算数 / 英語 / 体育
+? アヤは何と言っていましたか？ | 音楽は楽しいです。 | 算数はむずかしいです。 / わたしは音楽が好きではありません。 / 月曜日には体育があります。
+
+# 5-2
+Ken: What subject do you like, Emma?
+Emma: I like science. It's interesting. How about you?
+Ken: I like P.E. I'm good at running.
+? エマの好きな教科は何ですか？ | 理科 | 体育 / 算数 / 国語
+? ケンの好きな教科は何ですか？ | 体育 | 理科 / 音楽 / 社会
+? ケンは何と言っていましたか？ | ぼくは走るのが得意です。 | ぼくは泳ぐのが得意です。 / 理科はおもしろいです。 / ぼくは理科が好きです。
+
+# 5-3
+Sara: Can you swim, Tom?
+Tom: Yes, I can. I can swim fast. Can you swim?
+Sara: No, I can't. But I can skate well.
+? トムができることは何ですか？ | 速く泳ぐこと | 上手にスケートをすること / ピアノをひくこと / 一輪車に乗ること
+? サラができないことは何ですか？ | 泳ぐこと | スケートをすること / 料理をすること / 走ること
+? サラは何と言っていましたか？ | わたしは上手にスケートができます。 | わたしは速く泳げます。 / わたしはスケートができません。 / わたしは上手に歌えます。
+
+# 5-3
+Leo: Can you play the piano, Mika?
+Mika: Yes, I can. I play it every day.
+Leo: Wow! I can't play the piano. I can play the guitar.
+? ミカができることは何ですか？ | ピアノをひくこと | ギターをひくこと / ドラムを演奏すること / バイオリンをひくこと
+? ミカはどのくらいピアノをひきますか？ | 毎日 | 毎週日曜日 / ときどき / 月に1回
+? レオは何と言っていましたか？ | ぼくはギターがひけます。 | ぼくはピアノがひけます。 / ぼくはギターがひけません。 / ぼくは毎日練習します。
+
+# 5-4
+Yumi: Where do you want to go, Ben?
+Ben: I want to go to Italy. I want to eat pizza.
+Yumi: Sounds nice! I want to go to Egypt. I want to see the pyramids.
+? ベンが行きたい国はどこですか？ | イタリア | エジプト / フランス / ブラジル
+? ユミがエジプトでしたいことは何ですか？ | ピラミッドを見ること | ピザを食べること / 海で泳ぐこと / サッカーを見ること
+? ベンは何と言っていましたか？ | ぼくはピザが食べたいです。 | ぼくはピラミッドが見たいです。 / ぼくはエジプトに行きたいです。 / ぼくはパスタを作りたいです。
+
+# 5-4
+Lucas: I want to go to Australia.
+Aya: Why?
+Lucas: I want to see koalas. They are cute.
+Aya: Nice. I want to go to France. I want to see the Eiffel Tower.
+? ルーカスが行きたい国はどこですか？ | オーストラリア | フランス / カナダ / 中国
+? ルーカスがオーストラリアで見たいものは何ですか？ | コアラ | カンガルー / パンダ / エッフェル塔
+? アヤは何と言っていましたか？ | わたしはエッフェル塔が見たいです。 | わたしはコアラが見たいです。 / わたしはオーストラリアに行きたいです。 / コアラはかわいいです。
+
+# 5-5
+Tom: Excuse me. Where is the station?
+Emma: Go straight and turn left at the second corner. You can see it on your right.
+Tom: Thank you very much.
+? トムがさがしている場所はどこですか？ | 駅 | 図書館 / 病院 / 公園
+? 何番目の角を曲がりますか？ | 2番目の角を左 | 1番目の角を右 / 2番目の角を右 / 3番目の角を左
+? エマは何と言っていましたか？ | 右側に見えますよ。 | 左側に見えますよ。 / まっすぐ行くと公園があります。 / わたしも駅に行きます。
+
+# 5-5
+Mika: Excuse me. Where is the library?
+Ken: Go straight for two blocks. Turn right at the post office.
+Mika: Turn right at the post office?
+Ken: Yes. The library is next to the park.
+? ミカがさがしている場所はどこですか？ | 図書館 | 郵便局 / 公園 / 駅
+? どこで右に曲がりますか？ | 郵便局のところ | 公園のところ / 駅のところ / 1つ目の角
+? ケンは何と言っていましたか？ | 図書館は公園のとなりです。 | 図書館は郵便局のとなりです。 / 図書館は駅の前です。 / 左に曲がってください。
+
+# 5-6
+Sara: What would you like?
+Leo: I'd like a hamburger and orange juice, please.
+Sara: OK. That's 600 yen.
+? レオが注文した食べ物は何ですか？ | ハンバーガー | ピザ / サンドイッチ / ホットドッグ
+? レオが注文した飲み物は何ですか？ | オレンジジュース | 牛乳 / りんごジュース / 紅茶
+? 店員のサラは何と言っていましたか？ | 600円です。 | 500円です。 / 800円です。 / オレンジジュースはありません。
+
+# 5-6
+Ben: What would you like, Yumi?
+Yumi: I'd like spaghetti and a salad. How about you?
+Ben: I'd like curry and rice. It looks delicious.
+? ユミが注文したものは何ですか？ | スパゲッティとサラダ | カレーライス / スパゲッティとスープ / ピザとサラダ
+? ベンが注文したものは何ですか？ | カレーライス | スパゲッティ / ハンバーガー / サラダ
+? ベンは何と言っていましたか？ | おいしそうです。 | ぼくはサラダがほしいです。 / ぼくはおなかがいっぱいです。 / ぼくはスパゲッティが好きです。
+
+# 5-7
+Emma: Who is this?
+Tom: This is my brother, Kenta. He is a soccer player. He is cool.
+Emma: Is he good at soccer?
+Tom: Yes. He can run very fast.
+? トムが紹介しているのはだれですか？ | お兄さん | お父さん / 友だち / 先生
+? その人は何をしている人ですか？ | サッカー選手 | 野球選手 / 先生 / 歌手
+? トムは何と言っていましたか？ | 彼はとても速く走れます。 | 彼はとても上手に歌えます。 / 彼はやさしいです。 / 彼はテニスが得意です。
+
+# 5-7
+Aya: Who is your hero, Lucas?
+Lucas: My hero is my grandmother. She is a good cook. She is kind.
+Aya: That's nice.
+? ルーカスのあこがれの人はだれですか？ | おばあさん | お母さん / お姉さん / 先生
+? その人が得意なことは何ですか？ | 料理 | 歌うこと / 泳ぐこと / 絵をかくこと
+? ルーカスは何と言っていましたか？ | 彼女はやさしいです。 | 彼女は背が高いです。 / 彼女は医者です。 / 彼女はピアノが上手です。
+
+# 5-8
+Ken: What time do you usually get up, Sara?
+Sara: I usually get up at six. I always walk my dog.
+Ken: Wow. I get up at seven thirty.
+? サラはふだん何時に起きますか？ | 6時 | 7時30分 / 7時 / 6時30分
+? サラがいつもすることは何ですか？ | 犬の散歩 | 朝ごはんを作ること / 宿題 / ピアノの練習
+? ケンは何と言っていましたか？ | ぼくは7時30分に起きます。 | ぼくは6時に起きます。 / ぼくはいつも犬の散歩をします。 / ぼくはときどき朝ごはんを作ります。
+
+# 5-8
+Mika: Do you help at home, Ben?
+Ben: Yes. I always wash the dishes. I sometimes cook dinner.
+Mika: Great! I sometimes clean my room.
+? ベンがいつもすることは何ですか？ | 皿をあらうこと | 夕ごはんを作ること / 部屋のそうじ / ごみ出し
+? ベンがときどきすることは何ですか？ | 夕ごはんを作ること | 皿をあらうこと / 犬の散歩 / せんたく
+? ミカは何と言っていましたか？ | わたしはときどき部屋をそうじします。 | わたしはいつも皿をあらいます。 / わたしはときどき夕ごはんを作ります。 / わたしは手伝いをしません。
+
+# 5-9
+Leo: Where is my pencil case?
+Yumi: It's on the desk.
+Leo: No, it isn't.
+Yumi: Oh, it's under your chair.
+? レオがさがしているものは何ですか？ | 筆箱 | ぼうし / かばん / 教科書
+? 筆箱はどこにありましたか？ | いすの下 | 机の上 / かばんの中 / ベッドの下
+? ユミが最初に言った場所はどこですか？ | 机の上 | いすの下 / 箱の中 / 窓のそば
+# 5-9
+Emma: Where is the cat?
+Tom: It's in the box.
+Emma: Where is the ball?
+Tom: It's by the door.
+? ねこはどこにいますか？ | 箱の中 | ドアのそば / 机の上 / いすの下
+? ボールはどこにありますか？ | ドアのそば | 箱の中 / ベッドの上 / 窓のそば
+? トムは何と言っていましたか？ | それはドアのそばにあります。 | それは机の上にあります。 / それはいすの下にあります。 / それはわたしのボールです。
+
+# 5-10
+Aya: What season do you like, Ken?
+Ken: I like summer. I can swim in the sea.
+Aya: I like fall. I like the colorful leaves.
+? ケンの好きな季節は何ですか？ | 夏 | 秋 / 冬 / 春
+? アヤが秋を好きな理由は何ですか？ | 色とりどりの葉が好きだから | 海で泳げるから / スキーができるから / 花見ができるから
+? ケンは何と言っていましたか？ | 海で泳げます。 | スキーができます。 / ぼくは秋が好きです。 / ぼくは雪が好きです。
+
+# 5-10
+Lucas: What do you do in winter?
+Sara: In winter, we have New Year's Day. I eat rice cakes with my family.
+Lucas: That's nice. In Brazil, it is summer in January.
+? サラが冬にすることは何ですか？ | 家族ともちを食べること | 海で泳ぐこと / スキーをすること / 花火を見ること
+? ルーカスはどこの話をしていましたか？ | ブラジル | カナダ / オーストラリア / アメリカ
+? ルーカスは何と言っていましたか？ | ブラジルでは1月は夏です。 | ブラジルでは1月は冬です。 / ぼくはもちが好きです。 / ぼくは冬が好きです。
+
+# 5-11
+Ben: What animal do you like, Mika?
+Mika: I like pandas. What animal do you like?
+Ben: I like dogs. I have a dog at home.
+? ミカの好きな動物は何ですか？ | パンダ | 犬 / ねこ / コアラ
+? ベンが家でかっている動物は何ですか？ | 犬 | ねこ / パンダ / うさぎ
+? ベンは何と言っていましたか？ | ぼくは家で犬をかっています。 | ぼくはパンダが好きです。 / ぼくはねこをかっています。 / ぼくは犬が好きではありません。
+
+# 5-11
+Yumi: What do you want for your birthday, Leo?
+Leo: I want a new bike. A blue one.
+Yumi: Cool! I want a watch.
+? レオがほしいものは何ですか？ | 青い自転車 | 赤い自転車 / 時計 / ゲーム
+? ユミがほしいものは何ですか？ | 時計 | 自転車 / かばん / 本
+? レオは何と言っていましたか？ | 青いのがいいです。 | 赤いのがいいです。 / ぼくは時計がほしいです。 / ぼくは自転車を持っています。

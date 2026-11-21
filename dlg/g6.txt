@@ -1,0 +1,231 @@
+# 6-0
+Emma: What are you good at, Ken?
+Ken: I'm good at drawing pictures. How about you?
+Emma: I'm good at playing the recorder.
+Ken: Cool. Please play it for me sometime.
+? ケンが得意なことは何ですか？ | 絵をかくこと | リコーダーをふくこと / 料理をすること / 泳ぐこと
+? エマが得意なことは何ですか？ | リコーダーをふくこと | 絵をかくこと / ピアノをひくこと / 歌うこと
+? ケンは何と言っていましたか？ | いつかぼくのためにふいてね。 | ぼくもリコーダーが得意です。 / ぼくは絵が苦手です。 / ぼくに絵を教えてね。
+
+# 6-0
+Leo: I'm Leo. I like cooking. I'm good at making pancakes.
+Aya: Really? I like pancakes!
+Leo: Come to my house on Sunday. Let's make them together.
+Aya: Sounds fun.
+? レオが得意なことは何ですか？ | パンケーキを作ること | カレーを作ること / ケーキを買うこと / 皿をあらうこと
+? レオがアヤをさそったのは何曜日ですか？ | 日曜日 | 土曜日 / 金曜日 / 月曜日
+? アヤは何と言っていましたか？ | わたしはパンケーキが好きです。 | わたしは料理が得意です。 / 日曜日はいそがしいです。 / わたしはパンケーキが作れます。
+
+# 6-1
+Tom: What is this, Yumi?
+Yumi: It's a kendama. It's a Japanese toy.
+Tom: How do you play it?
+Yumi: You catch the ball on the stick. Let's try!
+? ユミが紹介しているものは何ですか？ | けん玉 | こま / 折り紙 / たこ
+? それは何ですか？ | 日本のおもちゃ | 日本の食べ物 / 日本の楽器 / 日本の服
+? ユミは何と言っていましたか？ | やってみよう。 | むずかしいからやめよう。 / これはわたしのものです。 / ボールを投げてください。
+
+# 6-1
+Sara: What do you eat on New Year's Day in Japan?
+Ken: We eat osechi. It's a special meal.
+Sara: Is it delicious?
+Ken: Yes. I like the sweet black beans.
+? 日本でお正月に食べるものは何ですか？ | おせち | すし / カレー / ラーメン
+? ケンが好きなものは何ですか？ | あまい黒豆 | えび / もち / 卵焼き
+? サラは何と言っていましたか？ | それはおいしいですか？ | わたしはおせちが好きです。 / わたしは黒豆を食べたことがあります。 / それは特別な料理です。
+
+# 6-2
+Ben: We have a big park in our town.
+Mika: Yes. We can play soccer there.
+Ben: But we don't have a swimming pool.
+Mika: I want a swimming pool in our town.
+? 町にあるものは何ですか？ | 大きな公園 | プール / 動物園 / 遊園地
+? 町にないものは何ですか？ | プール | 公園 / 図書館 / 駅
+? ミカは何と言っていましたか？ | 町にプールがほしいです。 | 町に図書館がほしいです。 / 公園で野球ができます。 / 町に動物園があります。
+
+# 6-2
+Lucas: What is your town famous for, Aya?
+Aya: My town is famous for apples. They are sweet.
+Lucas: I want to eat them!
+Aya: Come in October. You can pick apples then.
+? アヤの町は何で有名ですか？ | りんご | みかん / もも / ぶどう
+? りんごがりができるのは何月ですか？ | 10月 | 8月 / 12月 / 4月
+? ルーカスは何と言っていましたか？ | それを食べたいです。 | ぼくはりんごが好きではありません。 / ぼくの町はみかんで有名です。 / 10月に行きます。
+
+# 6-3
+Emma: How was your summer vacation, Leo?
+Leo: It was great. I went to Hokkaido with my family.
+Emma: What did you do there?
+Leo: I ate ice cream and saw many cows.
+? レオは夏休みにどこへ行きましたか？ | 北海道 | 沖縄 / 京都 / 東京
+? レオがそこで見たものは何ですか？ | たくさんの牛 | たくさんの馬 / 花火 / 海
+? レオは何と言っていましたか？ | アイスクリームを食べました。 | 魚を食べました。 / 友だちと行きました。 / 海で泳ぎました。
+
+# 6-3
+Ken: I went to the sea with my cousins.
+Sara: Nice! Did you swim?
+Ken: Yes. I enjoyed swimming. The water was cold.
+Sara: I stayed home. I read many books.
+? ケンはだれと海へ行きましたか？ | いとこたち | 家族 / 友だち / おじいさん
+? ケンが楽しんだことは何ですか？ | 泳ぐこと | つり / キャンプ / 本を読むこと
+? サラは何と言っていましたか？ | わたしは本をたくさん読みました。 | わたしも海に行きました。 / 水は冷たかったです。 / わたしは山へ行きました。
+
+# 6-4
+Yumi: What did you do yesterday, Tom?
+Tom: I played baseball in the park.
+Yumi: Did you win?
+Tom: No. But it was fun.
+? トムはきのう何をしましたか？ | 野球 | サッカー / テニス / バスケットボール
+? トムはどこでしましたか？ | 公園 | 学校 / 体育館 / 家
+? トムは何と言っていましたか？ | でも、楽しかったです。 | ぼくたちが勝ちました。 / 雨がふりました。 / ぼくはつかれました。
+
+# 6-4
+Mika: I watched a movie last night.
+Ben: What movie did you watch?
+Mika: An animal movie. It was very exciting.
+Ben: I want to watch it, too.
+? ミカはいつ映画を見ましたか？ | きのうの夜 | きのうの朝 / 先週の日曜日 / 今朝
+? ミカが見た映画はどんな映画ですか？ | 動物の映画 | 宇宙の映画 / こわい映画 / スポーツの映画
+? ベンは何と言っていましたか？ | ぼくもそれが見たいです。 | ぼくもそれを見ました。 / それはつまらなかったです。 / ぼくは本を読みました。
+
+# 6-5
+Aya: What sport do you like watching, Lucas?
+Lucas: I like watching soccer. I sometimes go to the stadium.
+Aya: I like watching tennis on TV.
+Lucas: Let's watch a game together.
+? ルーカスが見るのが好きなスポーツは何ですか？ | サッカー | テニス / 野球 / ラグビー
+? アヤはどうやってテニスを見ますか？ | テレビで | スタジアムで / 学校で / 公園で
+? ルーカスは何と言っていましたか？ | いっしょに試合を見よう。 | ぼくはテニスが好きです。 / ぼくはスタジアムに行ったことがありません。 / テレビを見よう。
+
+# 6-5
+Leo: Do you like watching sports, Emma?
+Emma: Yes. I like watching basketball. My sister is on a team.
+Leo: Is she good?
+Emma: Yes. She is a great shooter.
+? エマが見るのが好きなスポーツは何ですか？ | バスケットボール | バレーボール / サッカー / 卓球
+? チームに入っているのはだれですか？ | エマのお姉さん | エマ / レオ / エマのお兄さん
+? エマは何と言っていましたか？ | 彼女はすばらしいシューターです。 | 彼女は上手ではありません。 / わたしはチームに入っています。 / わたしはサッカーが好きです。
+
+# 6-6
+Ken: Where do sea turtles live?
+Sara: They live in the sea.
+Ken: What do they eat?
+Sara: They eat jellyfish. But sometimes they eat plastic bags. That's a big problem.
+? ウミガメはどこに住んでいますか？ | 海 | 森 / 川 / 砂ばく
+? ウミガメは何を食べますか？ | クラゲ | 魚の卵 / 木の実 / 虫
+? サラは何と言っていましたか？ | それは大きな問題です。 | ウミガメは森に住んでいます。 / ウミガメは草を食べます。 / ウミガメはかわいいです。
+
+# 6-6
+Yumi: Polar bears live in the Arctic.
+Tom: What do they eat?
+Yumi: They eat seals. But the ice is melting. It's sad.
+Tom: We can save energy for them.
+? ホッキョクグマはどこに住んでいますか？ | 北極 | 南極 / ジャングル / 山
+? ホッキョクグマは何を食べますか？ | アザラシ | 魚だけ / 竹 / 木の実
+? トムは何と言っていましたか？ | ぼくたちはエネルギーを節約できます。 | 氷がとけています。 / ぼくはホッキョクグマを見たことがあります。 / それは悲しいです。
+
+# 6-7
+Ben: What do you want to be, Mika?
+Mika: I want to be a vet. I like animals.
+Ben: Good. I want to be a pilot. I want to fly around the world.
+? ミカは何になりたいですか？ | 獣医 | パイロット / 先生 / 看護師
+? ミカがそれになりたい理由は何ですか？ | 動物が好きだから | 空を飛びたいから / 料理が好きだから / 子どもが好きだから
+? ベンは何と言っていましたか？ | 世界中を飛びたいです。 | 動物が好きです。 / ぼくは獣医になりたいです。 / 料理人になりたいです。
+
+# 6-7
+Lucas: I want to be a baker.
+Aya: Why?
+Lucas: I like bread. I want to make delicious bread for everyone.
+Aya: I want to buy your bread!
+? ルーカスは何になりたいですか？ | パン屋 | ケーキ屋 / 料理人 / 農家
+? ルーカスは何を作りたいですか？ | みんなのためのおいしいパン | ケーキ / ピザ / クッキー
+? アヤは何と言っていましたか？ | あなたのパンを買いたいです。 | わたしもパン屋になりたいです。 / わたしはパンが好きではありません。 / パンを作りたいです。
+
+# 6-8
+Emma: What do you want to do in junior high school?
+Leo: I want to join the tennis team.
+Emma: I want to join the brass band. I want to play the trumpet.
+Leo: Good luck!
+? レオが入りたい部活は何ですか？ | テニス部 | 吹奏楽部 / サッカー部 / 美術部
+? エマが演奏したい楽器は何ですか？ | トランペット | フルート / ドラム / ピアノ
+? レオは何と言っていましたか？ | がんばってね。 | ぼくもトランペットがふきたいです。 / ぼくは吹奏楽部に入りたいです。 / ありがとう。
+
+# 6-8
+Ken: I want to study English hard in junior high school.
+Sara: Why?
+Ken: I want to talk with people from other countries.
+Sara: Great. I want to make many friends.
+? ケンが一生けんめい勉強したい教科は何ですか？ | 英語 | 数学 / 理科 / 社会
+? ケンがそうしたい理由は何ですか？ | 外国の人と話したいから | 先生になりたいから / テストがあるから / 外国に住みたいから
+? サラは何と言っていましたか？ | わたしは友だちをたくさん作りたいです。 | わたしは英語を勉強したいです。 / わたしは部活に入りたいです。 / わたしは外国に行きたいです。
+
+# 6-9
+Yumi: What is your best memory, Tom?
+Tom: My best memory is the school trip. We went to Kyoto.
+Yumi: What did you see?
+Tom: I saw many old temples. They were beautiful.
+? トムのいちばんの思い出は何ですか？ | 修学旅行 | 運動会 / 音楽会 / 遠足
+? 修学旅行でどこへ行きましたか？ | 京都 | 奈良 / 広島 / 東京
+? トムは何と言っていましたか？ | 古いお寺をたくさん見ました。 | お城を見ました。 / おみやげを買いました。 / 雨がふりました。
+
+# 6-9
+Mika: My best memory is the sports day.
+Ben: What did you do?
+Mika: I ran in the relay. Our team won.
+Ben: Congratulations!
+? ミカのいちばんの思い出は何ですか？ | 運動会 | 修学旅行 / 合唱コンクール / 林間学校
+? ミカがしたことは何ですか？ | リレーで走った | つなひきをした / ダンスをした / おうえんをした
+? ミカは何と言っていましたか？ | わたしたちのチームが勝ちました。 | わたしたちのチームは負けました。 / わたしはころびました。 / わたしは走りませんでした。
+
+# 6-10
+Aya: I want to introduce India.
+Lucas: What is India famous for?
+Aya: India is famous for curry. You can see the Taj Mahal, too.
+Lucas: I want to go there.
+? アヤが紹介している国はどこですか？ | インド | タイ / 中国 / エジプト
+? その国は何で有名ですか？ | カレー | すし / ピザ / パスタ
+? ルーカスは何と言っていましたか？ | ぼくはそこへ行きたいです。 | ぼくはカレーが好きではありません。 / ぼくはそこへ行ったことがあります。 / インドは大きいです。
+
+# 6-10
+Leo: Let's talk about Brazil.
+Emma: OK. What can you do in Brazil?
+Leo: You can watch soccer games. You can see the Amazon River, too.
+Emma: Wow. That's exciting.
+? レオが話している国はどこですか？ | ブラジル | アメリカ / ペルー / スペイン
+? その国で見られる川は何ですか？ | アマゾン川 | ナイル川 / ミシシッピ川 / 信濃川
+? エマは何と言っていましたか？ | わくわくしますね。 | わたしはブラジル出身です。 / わたしはサッカーが好きではありません。 / こわいですね。
+
+# 6-11
+Ken: This is my friend, Ryo. He can play the drums.
+Sara: Wow! Can he sing, too?
+Ken: Yes. He can sing very well.
+Sara: I want to listen to him.
+? ケンが紹介しているのはだれですか？ | 友だちのリョウ | 弟のリョウ / ケンのお父さん / 先生
+? リョウができることは何ですか？ | ドラムを演奏することと歌うこと | ピアノをひくこと / ダンスをすること / ギターをひくこと
+? サラは何と言っていましたか？ | 彼の歌を聞きたいです。 | わたしも歌えます。 / わたしはドラムができます。 / 彼は上手ではありません。
+
+# 6-11
+Yumi: This is Ms. Green. She is our new English teacher.
+Tom: Where is she from?
+Yumi: She is from New Zealand. She can speak Japanese a little.
+Tom: Great!
+? グリーン先生は何の先生ですか？ | 英語 | 音楽 / 体育 / 算数
+? グリーン先生はどこの出身ですか？ | ニュージーランド | オーストラリア / カナダ / イギリス
+? ユミは何と言っていましたか？ | 先生は日本語が少し話せます。 | 先生は日本語が話せません。 / 先生はカナダの出身です。 / 先生は音楽の先生です。
+
+# 6-12
+Ben: Do you help your family, Mika?
+Mika: Yes. I always set the table. I usually take out the garbage.
+Ben: I sometimes walk the dog.
+? ミカがいつもすることは何ですか？ | 食卓の準備 | ごみ出し / 犬の散歩 / 料理
+? ミカがたいていすることは何ですか？ | ごみ出し | 食卓の準備 / 皿あらい / 買い物
+? ベンは何と言っていましたか？ | ぼくはときどき犬の散歩をします。 | ぼくはいつも犬の散歩をします。 / ぼくはごみを出します。 / ぼくは手伝いをしません。
+
+# 6-12
+Lucas: I usually cook breakfast on Sundays.
+Aya: Really? What do you make?
+Lucas: I make eggs and toast.
+Aya: Wow. I never cook. I want to try.
+? ルーカスはいつ朝ごはんを作りますか？ | 日曜日 | 土曜日 / 毎日 / 平日
+? ルーカスが作るものは何ですか？ | 卵とトースト | パンケーキ / おにぎり / サラダ
+? アヤは何と言っていましたか？ | わたしは料理をまったくしません。 | わたしはいつも料理をします。 / わたしは卵が好きです。 / わたしは日曜日に料理をします。

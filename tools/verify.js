@@ -266,7 +266,19 @@ function en4Check(q, where, g) {
     if (q.passage) { const n = q.passage.words, need = PASS_MIN[g] || 20; if (n < need) fail("文章が短い " + n + "語（" + need + "語以上）"); stats["en4_passage_g" + g] = Math.max(stats["en4_passage_g" + g] || 0, n); for (const para of q.passage.text.split("\n\n")) for (const sen of para.split(/(?<=[.?!])\s+(?=[A-Z"])/)) if (sen.length > 1 && !/^(Dear|Love|Your friend|Me at)/.test(sen)) { if (LINT_3S.test(sen) || LINT_AUX.test(sen)) fail("文章の英文に文法のうたがい: " + sen); } }
     if (q.text) lintEn(q.text, where, fail);
     if (q.au) lintEn(q.au, where, fail);
-    if (q.dlg) q.dlg.forEach((l) => lintEn(l[1], where, fail));
+    if (q.dlg) {
+      q.dlg.forEach((l) => lintEn(l[1], where, fail));
+      // 会話は手書きの一覧（q-en4-dlg.js）にあるものだけ。文をつなぎ合わせた会話は不可
+      const m = /^(\d)-(\d+)$/.exec(q.did || ""), d = m && HM.EN4.DLG[m[1]] && HM.EN4.DLG[m[1]][+m[2]];
+      if (!d) fail("会話が手書きの一覧にない");
+      else {
+        if (JSON.stringify(d.lines) !== JSON.stringify(q.dlg.map((l) => [l[0], l[1]]))) fail("会話が手書きの一覧とちがう");
+        const x = d.qs.find((z) => "🔊 会話を聞こう。" + z[0] === q.q);
+        if (!x || x[1] !== q.a || q.opts.length !== 4 || !x[2].every((o) => q.opts.includes(o))) fail("会話の設問・答えが一覧とちがう");
+        if (m[1] !== String(g)) fail("会話の学年ちがい");
+      }
+      if (q.dlg.some((l) => /[^\x20-\x7E]/.test(l[1]))) fail("読み上げる英文に英語以外の文字");
+    }
     if (/^[A-Z]/.test(q.a)) lintEn(q.a, where, fail);
   } else fail("英語4技能の形式が不明 " + q.t);
 }

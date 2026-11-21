@@ -1,0 +1,327 @@
+# 9-0
+Emma: How long have you lived in this town, Ken?
+Ken: I have lived here for ten years.
+Emma: Wow. So you know the town well.
+Ken: Yes. How about you?
+Emma: I came here last April. I have lived here for only seven months.
+Ken: Then I'll show you around this weekend.
+? ケンはこの町に何年住んでいますか？ | 10年 | 7年 / 3年 / 1年
+? エマはいつこの町に来ましたか？ | 去年の4月 | 今年の4月 / 7か月前の夏 / 10年前
+? ケンは何と言っていましたか？ | 今週末、町を案内するよ。 | ぼくは去年ここに来ました。 / この町のことはよく知りません。 / 来年引っこします。
+
+# 9-0
+Tom: You look tired, Yumi.
+Yumi: I've been busy since Monday.
+Tom: Why?
+Yumi: We've had a lot of tests this week. I haven't slept well for three days.
+Tom: You should go to bed early tonight.
+Yumi: I will. Thanks.
+? ユミはいつからいそがしいですか？ | 月曜日から | 日曜日から / 先週から / きのうから
+? ユミは何日間よく眠れていませんか？ | 3日間 | 2日間 / 1週間 / 5日間
+? トムは何と言っていましたか？ | 今夜は早く寝たほうがいいよ。 | テストはかんたんだったよ。 / ぼくもいそがしいです。 / 今夜いっしょに勉強しよう。
+
+# 9-1
+Leo: Have you ever been to Okinawa, Sara?
+Sara: Yes, I have. I've been there twice.
+Leo: What did you do there?
+Sara: I swam with sea turtles. Have you ever seen them?
+Leo: No, I've never seen them. I want to go someday.
+? サラは沖縄に何回行ったことがありますか？ | 2回 | 1回 / 3回 / 一度もない
+? サラは沖縄で何をしましたか？ | ウミガメといっしょに泳いだ | イルカを見た / 魚をつった / お城を見た
+? レオは何と言っていましたか？ | ウミガメを見たことは一度もありません。 | 沖縄に行ったことがあります。 / ウミガメと泳いだことがあります。 / ぼくは泳げません。
+
+# 9-1
+Mika: Have you ever read this book?
+Ben: Yes, I have. I've read it three times.
+Mika: Really? Is it interesting?
+Ben: Very. The ending is a big surprise.
+Mika: I've never read it. Can I borrow it?
+Ben: Sure. I'll bring it tomorrow.
+? ベンはその本を何回読んだことがありますか？ | 3回 | 2回 / 1回 / 一度もない
+? ベンはその本の何がおどろきだと言っていますか？ | 結末 | 始まり / 主人公 / 表紙
+? ベンは何と言っていましたか？ | あした持ってくるよ。 | その本は貸せません。 / その本は読んだことがありません。 / その本はつまらないです。
+
+# 9-2
+Aya: Have you finished your report yet, Lucas?
+Lucas: Not yet. I've just started.
+Aya: It's due tomorrow!
+Lucas: I know. Have you finished yours?
+Aya: Yes, I've already finished it.
+Lucas: Great. Can you give me some advice?
+? ルーカスはレポートを終えましたか？ | まだ終えていない、始めたばかり | もう終えた / まだ始めていない / 先週終えた
+? レポートのしめきりはいつですか？ | あした | 今日 / 来週 / あさって
+? アヤは何と言っていましたか？ | わたしはもう終わりました。 | わたしもまだです。 / しめきりは来週です。 / わたしは始めたばかりです。
+
+# 9-2
+Ken: Has the movie started yet?
+Emma: No, it hasn't. It starts in five minutes.
+Ken: Good. I've just bought some popcorn.
+Emma: Thanks. Have you turned off your phone?
+Ken: Oh, not yet. I'll do it now.
+? 映画はもう始まりましたか？ | まだ、あと5分で始まる | もう始まった / あと15分で始まる / もう終わった
+? ケンがちょうど買ったものは何ですか？ | ポップコーン | ジュース / パンフレット / チケット
+? エマは何と言っていましたか？ | 電話の電源は切りましたか？ | ポップコーンを買いました。 / 映画はもう始まっています。 / 電話をかけてください。
+
+# 9-3
+Sara: It has been raining since this morning.
+Tom: Yes. I've been waiting for the bus for twenty minutes.
+Sara: Oh, that's long.
+Tom: How long have you been studying here?
+Sara: For two hours. I've been studying for the test.
+? 雨はいつからふり続けていますか？ | けさから | きのうの夜から / 昼から / 先週から
+? トムはバスを何分待っていますか？ | 20分 | 10分 / 30分 / 2分
+? サラは何と言っていましたか？ | 2時間勉強し続けています。 | 20分勉強しています。 / テストは終わりました。 / バスを待っています。
+
+# 9-3
+Yumi: How long have you been playing the violin, Leo?
+Leo: I've been playing it since I was five.
+Yumi: That's nine years! You must be good.
+Leo: Not really. But I've been practicing hard for the concert.
+Yumi: I'm looking forward to it.
+? レオはいつからバイオリンをひいていますか？ | 5さいのとき | 9さいのとき / 3年前 / 去年
+? レオは何のために一生けんめい練習していますか？ | コンサート | 試験 / 発表会のオーディション / 授業
+? ユミは何と言っていましたか？ | それを楽しみにしています。 | あなたは上手ではありません。 / わたしもバイオリンをひきます。 / 9年は短いですね。
+
+# 9-4
+Ben: What is this cup made of?
+Mika: It's made of paper. It can be recycled.
+Ben: Wow, it looks like glass.
+Mika: This shop is known for eco-friendly goods.
+Ben: Is this shop known to many people?
+Mika: Yes. It's popular among young people.
+? このカップは何でできていますか？ | 紙 | ガラス / プラスチック / 木
+? この店は何で知られていますか？ | 環境にやさしい商品 | 安い食べ物 / 古い家具 / 外国の本
+? ミカは何と言っていましたか？ | 若い人たちに人気があります。 | お年寄りに人気があります。 / これはガラスでできています。 / この店は知られていません。
+
+# 9-4
+Lucas: I was surprised at the news.
+Aya: What news?
+Lucas: The old library will be closed next year.
+Aya: Really? I'm interested in its history.
+Lucas: It was built in 1920. It's filled with old books.
+Aya: I hope the books will be kept somewhere.
+? ルーカスは何におどろきましたか？ | 古い図書館が来年閉館するというニュース | 新しい図書館ができるというニュース / 本がぬすまれたというニュース / 図書館が改装されるというニュース
+? 図書館が建てられたのは何年ですか？ | 1920年 | 1902年 / 1912年 / 1990年
+? アヤは何と言っていましたか？ | 本がどこかに保管されるといいな。 | 図書館の歴史には興味がありません。 / その本を全部買いたいです。 / 図書館は来年建てられます。
+
+# 9-5
+Ken: Who is the boy playing the guitar on the stage?
+Sara: That's my cousin, Daniel.
+Ken: He's great. And who is the girl singing with him?
+Sara: That's his sister, Lily.
+Ken: They're a good team.
+? ステージでギターをひいている男の子はだれですか？ | サラのいとこのダニエル | サラの兄 / ケンの友だち / リリーの友だち
+? ダニエルといっしょに歌っている女の子はだれですか？ | ダニエルの妹のリリー | サラの妹 / ケンの姉 / サラ
+? ケンは何と言っていましたか？ | 彼らはいいチームですね。 | ぼくもギターがひけます。 / 彼女はぼくの妹です。 / ステージに上がりたいです。
+
+# 9-5
+Emma: Look at the dog sleeping under the tree.
+Tom: It's so cute. Is it yours?
+Emma: No. It belongs to the man reading a newspaper on the bench.
+Tom: I see. The children running around are his, too?
+Emma: Maybe. They look like him.
+? 木の下で寝ている犬はだれの犬ですか？ | ベンチで新聞を読んでいる男の人 | エマ / トム / 走り回っている子ども
+? 男の人はベンチで何をしていますか？ | 新聞を読んでいる | 寝ている / 本を読んでいる / 犬と遊んでいる
+? エマは何と言っていましたか？ | 子どもたちは彼に似ています。 | その犬はわたしの犬です。 / 子どもたちは寝ています。 / その男の人は知り合いです。
+
+# 9-6
+Yumi: This is a picture taken in Kyoto.
+Leo: It's beautiful. Who took it?
+Yumi: My father. He likes old temples built hundreds of years ago.
+Leo: The red bridge in the picture is famous, right?
+Yumi: Yes. It is a bridge loved by many people.
+? この写真はどこでとられましたか？ | 京都 | 奈良 / 鎌倉 / 日光
+? 写真をとったのはだれですか？ | ユミのお父さん | ユミ / レオ / ユミのお母さん
+? ユミは何と言っていましたか？ | 多くの人に愛されている橋です。 | その橋は新しいです。 / わたしがその写真をとりました。 / 父は新しい建物が好きです。
+
+# 9-6
+Ben: I got a letter written in English.
+Mika: Who sent it?
+Ben: A boy living in Canada. I met him at the summer camp.
+Mika: What did he write?
+Ben: He wrote about a book written by a famous Japanese writer.
+Mika: He likes Japan, doesn't he?
+? ベンが受け取ったのはどんな手紙ですか？ | 英語で書かれた手紙 | 日本語で書かれた手紙 / フランス語で書かれた手紙 / 絵だけの手紙
+? 手紙を送ったのはだれですか？ | カナダに住んでいる男の子 | アメリカに住んでいる女の子 / ベンの先生 / ミカのいとこ
+? ベンは何と言っていましたか？ | 有名な日本の作家が書いた本について書いていました。 | サマーキャンプについて書いていました。 / 彼には会ったことがありません。 / 彼は日本が好きではありません。
+
+# 9-7
+Aya: Is this the bag you bought yesterday?
+Lucas: Yes. It's the bag I wanted for a long time.
+Aya: It looks nice. Where did you buy it?
+Lucas: At the shop my brother told me about.
+Aya: Can you take me there next time?
+? これはいつ買ったかばんですか？ | きのう | 先週 / 去年 / 今朝
+? ルーカスはどこでそのかばんを買いましたか？ | お兄さんが教えてくれた店 | 駅前のデパート / インターネット / アヤが教えてくれた店
+? アヤは何と言っていましたか？ | 今度そこへ連れていってくれますか？ | そのかばんはよくないです。 / わたしもその店を知っています。 / わたしもきのう買いました。
+
+# 9-7
+Ken: The movie we saw last night was great.
+Emma: Yes. The song the singer sang at the end was beautiful.
+Ken: I want to buy the CD.
+Emma: The CD I have has that song. I can lend it to you.
+Ken: Really? Thanks!
+? 二人はいつ映画を見ましたか？ | きのうの夜 | 先週末 / 今朝 / 1か月前
+? 最後に歌手が歌った歌はどうでしたか？ | 美しかった | 悲しかった / 短かった / こわかった
+? エマは何と言っていましたか？ | それを貸してあげます。 | CDを買いたいです。 / その歌は好きではありません。 / CDを持っていません。
+
+# 9-8
+Tom: Do you know the man who is standing by the gate?
+Yumi: Yes. He's Mr. Tanaka, a teacher who came to our school this year.
+Tom: What does he teach?
+Yumi: Science. He's a teacher who makes classes interesting.
+Tom: I want to take his class.
+? 門のそばに立っているのはだれですか？ | 田中先生 | 校長先生 / ユミのお父さん / トムの兄
+? その先生は何を教えていますか？ | 理科 | 数学 / 英語 / 社会
+? ユミは何と言っていましたか？ | 授業をおもしろくする先生です。 | 去年からいる先生です。 / 体育の先生です。 / 先生のことは知りません。
+
+# 9-8
+Sara: I have a friend who lives in Paris.
+Leo: Wow. How did you meet?
+Sara: She's a girl who stayed with my family last summer.
+Leo: Do you still talk?
+Sara: Yes. We video chat every Sunday.
+? サラの友だちはどこに住んでいますか？ | パリ | ロンドン / ローマ / ニューヨーク
+? その友だちとはどうやって知り合いましたか？ | 去年の夏サラの家に泊まった | 学校で知り合った / 旅行先で会った / インターネットで知り合った
+? サラは何と言っていましたか？ | 毎週日曜日にビデオ通話をします。 | 毎日手紙を書きます。 / 今はもう話していません。 / 毎週土曜日に会います。
+
+# 9-9
+Mika: I want a robot which can clean my room.
+Ben: There are robots that can do that already.
+Mika: Really? I want one that can do my homework, too.
+Ben: Ha-ha. That's not a good idea.
+Mika: Just kidding.
+? ミカが最初にほしいと言ったのはどんなロボットですか？ | 部屋をそうじできるロボット | 料理ができるロボット / 話ができるロボット / 宿題ができるロボット
+? ベンは何と言いましたか？ | それができるロボットはもうある | そんなロボットはない / ロボットは高い / ロボットがほしい
+? ミカは最後に何と言っていましたか？ | じょうだんです。 | 本当です。 / ロボットを買います。 / 宿題を手伝って。
+
+# 9-9
+Lucas: This is a train that goes to the airport.
+Aya: Great. Is there a train which stops at Central Station?
+Lucas: Yes. The train that leaves at 10:15 stops there.
+Aya: OK. Let's take that one.
+Lucas: We have ten minutes. Let's buy something to drink.
+? 中央駅にとまるのは何時に出る電車ですか？ | 10時15分 | 10時50分 / 10時5分 / 11時15分
+? 出発まで何分ありますか？ | 10分 | 15分 / 5分 / 20分
+? ルーカスは最後に何と言っていましたか？ | 何か飲み物を買おう。 | 急がなければ。 / 電車に乗りおくれた。 / 切符を買おう。
+
+# 9-10
+Ken: Is this the book that you were talking about?
+Emma: Yes. It's the book which I read in the summer.
+Ken: Is it difficult?
+Emma: No. The words which the writer uses are easy.
+Ken: Then I'll read it.
+? これはエマがいつ読んだ本ですか？ | 夏 | 冬 / 春 / 先週
+? その本について正しいのはどれですか？ | 作者が使う言葉がかんたん | 言葉がむずかしい / とても長い / 絵がない
+? ケンは何と言っていましたか？ | それなら読んでみます。 | それは読みません。 / その本はむずかしいです。 / その本はもう読みました。
+
+# 9-10
+Yumi: The cake that your mother made was delicious.
+Tom: Thanks. It's the cake that she makes every Christmas.
+Yumi: Can you ask her for the recipe?
+Tom: Sure. It's a recipe which my grandmother taught her.
+Yumi: Wow, it's a family recipe.
+? お母さんはいつそのケーキを作りますか？ | 毎年クリスマス | 毎年誕生日 / 毎週日曜日 / お正月
+? そのレシピをお母さんに教えたのはだれですか？ | トムのおばあさん | トムのおじいさん / トムのお父さん / ユミのお母さん
+? ユミは何と言っていましたか？ | それは家族のレシピですね。 | わたしもそのケーキを作りました。 / ケーキはおいしくなかったです。 / レシピはいりません。
+
+# 9-11
+Sara: Do you know where Ms. White is?
+Leo: I think she is in the teachers' room.
+Sara: Do you know when she will come back to class?
+Leo: I'm not sure. Why?
+Sara: I want to ask her what the homework is.
+? サラがさがしているのはだれですか？ | ホワイト先生 | ブラウン先生 / スミス先生 / グリーン先生
+? レオはホワイト先生がどこにいると思っていますか？ | 職員室 | 図書室 / 体育館 / 教室
+? サラは何と言っていましたか？ | 宿題が何かを先生に聞きたいです。 | 先生がどこにいるか知っています。 / 宿題は終わりました。 / 先生はもうすぐもどります。
+
+# 9-11
+Ben: I don't know what to buy for my mother's birthday.
+Mika: Do you know what she likes?
+Ben: She likes flowers.
+Mika: Then I know where you can buy nice ones. There is a flower shop near the station.
+Ben: Can you tell me what time it opens?
+Mika: At ten.
+? ベンが買おうとしているのはだれへのプレゼントですか？ | お母さん | お父さん / おばあさん / 妹
+? お母さんが好きなものは何ですか？ | 花 | ケーキ / 本 / アクセサリー
+? 花屋は何時に開きますか？ | 10時 | 9時 / 11時 / 8時
+
+# 9-12
+Aya: If I were a bird, I would fly to my grandmother's house.
+Lucas: Where does she live?
+Aya: She lives in Hokkaido. It's far from here.
+Lucas: If I had a lot of money, I would buy you a plane ticket.
+Aya: Ha-ha. Thank you.
+? アヤは鳥だったらどこへ飛んでいきますか？ | おばあさんの家 | 海外 / 学校 / 山の上
+? おばあさんはどこに住んでいますか？ | 北海道 | 沖縄 / 九州 / 東京
+? ルーカスは何と言っていましたか？ | お金がたくさんあれば、飛行機の切符を買ってあげるのに。 | ぼくも北海道に住んでいます。 / ぼくは鳥になりたいです。 / 飛行機はこわいです。
+
+# 9-12
+Ken: What would you do if you were the principal?
+Emma: If I were the principal, I would make the summer vacation longer.
+Ken: Good idea! I would put a swimming pool on the roof.
+Emma: That would be fun, but it would cost a lot.
+Ken: You're right.
+? エマが校長先生だったらすることは何ですか？ | 夏休みを長くする | 宿題をなくす / 制服をなくす / 給食をふやす
+? ケンが校長先生だったらすることは何ですか？ | 屋上にプールを作る | 図書館を大きくする / 校庭を広くする / 夏休みを短くする
+? エマは何と言っていましたか？ | 楽しいけど、お金がたくさんかかるでしょう。 | それはお金がかかりません。 / それはつまらないです。 / わたしは校長先生です。
+
+# 9-13
+Yumi: I wish I could speak French.
+Tom: Why?
+Yumi: My favorite singer is French. I wish I understood her songs.
+Tom: You can start learning now. There's a good app for it.
+Yumi: Really? Can you show me?
+? ユミが話せたらいいのにと思っている言語は何ですか？ | フランス語 | 英語 / 中国語 / スペイン語
+? その理由は何ですか？ | 好きな歌手がフランス人だから | フランスに行くから / 学校の授業があるから / 友だちがフランス人だから
+? トムは何と言っていましたか？ | 今から学び始めればいいよ。 | フランス語はむずかしいよ。 / ぼくはフランス語が話せます。 / その歌手は知りません。
+
+# 9-13
+Leo: It's raining again. I wish it were sunny.
+Sara: Me, too. We can't play baseball today.
+Leo: I wish we had an indoor field.
+Sara: Let's go to the gym and play basketball instead.
+Leo: OK. That's a good idea.
+? レオは何ならいいのにと思っていますか？ | 晴れていたら | 雪がふっていたら / 休みだったら / 雨がふっていたら
+? 二人は今日何ができませんか？ | 野球 | バスケットボール / サッカー / テニス
+? サラは何と言っていましたか？ | 代わりに体育館でバスケットボールをしよう。 | 家に帰ろう。 / 雨の中で野球をしよう。 / わたしは晴れがきらいです。
+
+# 9-14
+Mika: My mother wants me to practice the piano every day.
+Ben: Do you like the piano?
+Mika: Yes, but I also want to play soccer.
+Ben: Why don't you ask her to let you join the soccer club?
+Mika: Good idea. Will you help me talk to her?
+? ミカのお母さんはミカに何をしてほしいと思っていますか？ | 毎日ピアノを練習すること | サッカーをすること / 毎日勉強すること / 早く寝ること
+? ミカがやりたいことは何ですか？ | サッカー | テニス / バレエ / 水泳
+? ミカは何と言っていましたか？ | お母さんと話すのを手伝ってくれる？ | ピアノはきらいです。 / サッカーはやめます。 / お母さんはサッカーが好きです。
+
+# 9-14
+Lucas: Can you help me carry these boxes?
+Aya: Sure. What's in them?
+Lucas: Old books. My father asked me to take them to the library.
+Aya: That's nice. The library will let people take them home for free.
+Lucas: I'm glad someone will read them.
+? ルーカスがアヤにたのんだことは何ですか？ | 箱を運ぶのを手伝うこと | 本を読むこと / 図書館へ行くこと / 箱を買うこと
+? 箱の中には何が入っていますか？ | 古い本 | 古い服 / おもちゃ / 食器
+? ルーカスは何と言っていましたか？ | だれかがそれを読んでくれるのはうれしいです。 | 本は売るつもりです。 / 父が運びます。 / 本はすてます。
+
+# 9-15
+Ken: This bag is too heavy for me to carry.
+Sara: Let me help. Wow, it's so heavy that I can't lift it either.
+Ken: It's full of books for the school festival.
+Sara: Let's ask Mr. Brown for a cart.
+Ken: Good idea. He is in the gym now.
+? かばんはどうでしたか？ | 重すぎて運べなかった | 軽かった / 小さすぎた / こわれていた
+? かばんに入っているものは何ですか？ | 文化祭のための本 | 弁当 / 体操服 / 楽器
+? サラは何と言っていましたか？ | ブラウン先生にカートを借りよう。 | わたしなら持てます。 / かばんを置いていこう。 / 本を出そう。
+
+# 9-15
+Emma: I was so tired that I fell asleep on the train.
+Tom: Did you miss your station?
+Emma: Yes. I went two stations too far.
+Tom: Oh, no. Were you late for school?
+Emma: Yes, but only five minutes. The teacher was too kind to get angry.
+? エマは電車の中でどうなりましたか？ | 疲れて眠ってしまった | 気分が悪くなった / 本を読んでいた / 友だちと話していた
+? エマは何駅乗りすごしましたか？ | 2駅 | 1駅 / 3駅 / 5駅
+? エマは何と言っていましたか？ | 先生はとてもやさしくておこりませんでした。 | 先生はとてもおこりました。 / 学校に間に合いました。 / 30分おくれました。

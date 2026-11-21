@@ -41,6 +41,9 @@ beautiful|more beautiful|most beautiful|美しい
 important|more important|most important|大切な`);
   ADJC.forEach((x) => addF(x.slice(0, 3).filter((w) => !/ /.test(w))));
   const jq = (a) => a.replace(/な$/, ""); // 「かんたんな」→「かんたん」
+  // 「〜です」「〜ですか」：「人気がある」は「人気があります」「人気がありますか」にする
+  const desu = (a) => (/ある$/.test(a) ? a.replace(/ある$/, "あります") : jq(a) + "です");
+  const desuka = (a) => (/ある$/.test(a) ? a.replace(/ある$/, "ありますか") : jq(a) + "ですか");
   const PAIR = T(`this bag|that one|このかばん|あのかばん|bag
 this book|that one|この本|あの本|book
 this question|that one|この問題|あの問題|question
@@ -52,15 +55,16 @@ this park|that one|この公園|あの公園|park`);
   const fit = (a, kind) => FIT[a].split(" ").includes(kind);
   const G8 = [
     { n: "未来の文① will", note: "〈will＋動詞の原形〉＝「〜するつもりだ」「〜だろう」。否定は will not（won't）、疑問文は Will 〜?。", gen: (lv) => {
-      const x = pick(FUTP), [t, tj] = pick(FUT), w = pick(W);
-      return lvPick(lv, () => pick([S("I will " + x[0] + " " + t + ".", "わたしは" + tj + fj(x, "dict") + "つもりです。", { alt: ["I'll " + x[0] + " " + t + "."] }), S("It will be " + w[0] + " " + t + ".", tj + "は" + w[1] + "でしょう。")]),
-        () => pick([S("Will you " + x[0] + " " + t + "? Yes, I will.", "あなたは" + tj + fj(x, "dict") + "つもりですか？ はい、そのつもりです。"), S("I won't " + x[0] + " " + t + ".", "わたしは" + tj + fj(x, "dict") + "つもりはありません。", { alt: ["I will not " + x[0] + " " + t + "."] })]),
-        () => pick([S("Will you help me? Sure.", "手伝ってくれますか？ もちろん。"), S("I think it will be " + w[0] + " " + t + ".", tj + "は" + w[1] + "だと思います。")]));
+      // 天気は近い日だけ（「この夏はくもり」は出さない）。Will you 〜? では my を your に
+      const x = pick(FUTP), [t, tj] = pick(FUT), w = pick(W), [wt, wtj] = pick(FUT.filter((z) => /tomorrow|weekend|Sunday/.test(z[0]))), xy = x[0].replace(/\bmy\b/, "your");
+      return lvPick(lv, () => pick([S("I will " + x[0] + " " + t + ".", "わたしは" + tj + fj(x, "dict") + "つもりです。", { alt: ["I'll " + x[0] + " " + t + "."] }), S("It will be " + w[0] + " " + wt + ".", wtj.replace(/に$/, "") + "は" + w[1] + "でしょう。")]),
+        () => pick([S("Will you " + xy + " " + t + "? Yes, I will.", "あなたは" + tj + fj(x, "dict") + "つもりですか？ はい、そのつもりです。"), S("I won't " + x[0] + " " + t + ".", "わたしは" + tj + fj(x, "dict") + "つもりはありません。", { alt: ["I will not " + x[0] + " " + t + "."] })]),
+        () => pick([S("Will you help me? Sure.", "手伝ってくれますか？ もちろん。"), S("I think it will be " + w[0] + " " + wt + ".", wtj.replace(/に$/, "") + "は" + w[1] + "だと思います。")]));
     }, read: (lv, k) => E4.PASS.pick(8, 0, k) },
     { n: "未来の文② be going to", note: "〈be going to＋動詞の原形〉＝「〜する予定だ」。be動詞は主語に合わせる（I am / He is / You are）。", gen: (lv) => {
       const x = pick(FUTP), [t, tj] = pick(FUT), th = pick(THIRD);
       return lvPick(lv, () => S("I'm going to " + x[0] + " " + t + ".", "わたしは" + tj + fj(x, "dict") + "予定です。", { alt: ["I am going to " + x[0] + " " + t + "."] }),
-        () => pick([S(th[0] + " is going to " + x[0] + " " + t + ".", wa(th[1]) + tj + fj(x, "dict") + "予定です。"), S("Are you going to " + x[0] + " " + t + "?", "あなたは" + tj + fj(x, "dict") + "予定ですか？")]),
+        () => pick([S(th[0] + " is going to " + x[0].replace(/\bmy\b/, th[2] === "f" ? "her" : "his") + " " + t + ".", wa(th[1]) + tj + fj(x, "dict") + "予定です。"), S("Are you going to " + x[0].replace(/\bmy\b/, "your") + " " + t + "?", "あなたは" + tj + fj(x, "dict") + "予定ですか？")]),
         () => S("What are you going to do " + t + "? I'm going to " + x[0] + ".", tj + "何をする予定ですか？ " + fj(x, "dict") + "予定です。"));
     }, read: (lv, k) => E4.PASS.pick(8, 1, k) },
     { n: "must / have to", note: "must＝「〜しなければならない」、have to も同じ意味（主語が3人称単数なら has to）。must not＝「〜してはいけない」、don't have to＝「〜しなくてもよい」。", gen: (lv) => {
@@ -94,12 +98,12 @@ ask a question|質問して`), m = pick(M);
         () => pick([S("Shall we go shopping? Yes, let's.", "買い物に行きませんか？ はい、そうしましょう。"), S("You should " + sh[0] + ". You look tired.", sh[1] + "ほうがいいですよ。つかれているようですね。"), S("Could you " + c[0] + "? Sure.", c[1] + "いただけますか？ いいですよ。")]));
     }, read: (lv, k) => E4.PASS.pick(8, 3, k) },
     { n: "不定詞①「〜すること」", note: "〈to＋動詞の原形〉は「〜すること」の意味になる。want to 〜＝「〜したい」、like to 〜＝「〜するのが好き」、start to 〜＝「〜し始める」。", gen: (lv) => {
-      const x = pick(VP), J2 = T(`a doctor|医者
+      const x = pick(VP.filter((z) => !/c/.test(z[5] || ""))), J2 = T(`a doctor|医者
 a teacher|先生
 a pilot|パイロット
 an artist|芸術家
 a scientist|科学者`), j = pick(J2), th = pick(THIRD);
-      return lvPick(lv, () => pick([S("I want to " + vp(x, "b") + ".", "わたしは" + vj(x, "tai") + "です。"), S("I like to " + vp(x, "b") + ".", "わたしは" + vj(x, "dict") + "のが好きです。")]),
+      return lvPick(lv, () => pick([S("I want to " + vp(x, "b") + ".", "わたしは" + vj(x, "tai") + "です。"), (() => { const y = pick(VP.filter((z) => /f/.test(z[5] || ""))); return S("I like to " + vp(y, "b") + ".", "わたしは" + vj(y, "dict") + "のが好きです。"); })()]),
         () => pick([S("I want to be " + j[0] + ".", "わたしは" + j[1] + "になりたいです。"), S(th[0] + " started to " + vp(x, "b") + ".", wa(th[1]) + x[2] + J(x[3], x[4], "stem") + "始めました。")]),
         () => pick([S("My dream is to be " + j[0] + ".", "わたしの夢は" + j[1] + "になることです。"), S("My dream is to travel around the world.", "わたしの夢は世界中を旅行することです。"), S("What do you want to do? I want to " + vp(x, "b") + ".", "何をしたいですか？ " + vj(x, "tai") + "です。")]));
     }, read: (lv, k) => E4.PASS.pick(8, 4, k) },
@@ -110,20 +114,21 @@ the store|buy some milk|店|牛乳を買う
 the station|meet my friend|駅|友だちに会う`), p = pick(P), F = T(`glad|うれしい
 happy|うれしい
 sad|悲しい
-surprised|おどろいた`), f = pick(F), N = T(`a lot of homework to do|やるべき宿題がたくさん
+surprised|おどろきました`), f = pick(F), N = T(`a lot of homework to do|やるべき宿題がたくさん
 something to drink|何か飲むもの
 many places to visit|訪れる場所がたくさん
 no time to watch TV|テレビを見る時間がまったく`), n = pick(N);
       const hasJ = { "a lot of homework to do": "わたしにはやるべき宿題がたくさんあります。", "something to drink": "わたしは何か飲むものがほしいです。", "many places to visit": "京都には訪れる場所がたくさんあります。", "no time to watch TV": "わたしにはテレビを見る時間がまったくありません。" };
       const hasE = { "a lot of homework to do": "I have a lot of homework to do.", "something to drink": "I want something to drink.", "many places to visit": "Kyoto has many places to visit.", "no time to watch TV": "I have no time to watch TV." };
       return lvPick(lv, () => S("I went to " + p[0] + " to " + p[1] + ".", "わたしは" + p[3].replace(/(る|う)$/, (m) => m) + "ために" + p[2] + "へ行きました。"),
-        () => pick([S("I'm " + f[0] + " to hear that.", "それを聞いて" + f[1] + "です。"), S(hasE[n[0]], hasJ[n[0]])]),
-        () => pick([S("Why did you go to " + p[0] + "? To " + p[1] + ".", "なぜ" + p[2] + "へ行ったのですか？ " + p[3] + "ためです。"), S(hasE[n[0]], hasJ[n[0]]), S("I was " + f[0] + " to see the news.", "そのニュースを見て" + f[1].replace(/い$/, "かった").replace(/た$/, "た") + "です。")]));
+        () => pick([S("I'm " + f[0] + " to hear that.", "それを聞いて" + (/ました$/.test(f[1]) ? f[1] : f[1] + "です") + "。"), S(hasE[n[0]], hasJ[n[0]])]),
+        () => pick([S("Why did you go to " + p[0] + "? To " + p[1] + ".", "なぜ" + p[2] + "へ行ったのですか？ " + p[3] + "ためです。"), S(hasE[n[0]], hasJ[n[0]]), S("I was " + f[0] + " to see the news.", "そのニュースを見て" + (/ました$/.test(f[1]) ? f[1] : f[1].replace(/い$/, "かった") + "です") + "。")]));
     }, read: (lv, k) => E4.PASS.pick(8, 5, k) },
     { n: "動名詞（〜ing「〜すること」）", note: "動詞の ing 形は「〜すること」の意味にもなる。enjoy / finish / stop のあとは ing 形。前置詞（at, of など）のあとも ing 形。", gen: (lv) => {
-      const x = pick(VP.filter((z) => z[0] !== "go")), th = pick(THIRD);
+      // 楽しむ・好き・楽しいは f、得意は k の動詞句だけ
+      const x = pick(VP.filter((z) => z[0] !== "go" && /f/.test(z[5] || ""))), xk = pick(VP.filter((z) => /k/.test(z[5] || ""))), xa = pick(VP.filter((z) => z[0] !== "go")), th = pick(THIRD);
       return lvPick(lv, () => pick([S("I enjoy " + vp(x, "ing") + ".", "わたしは" + vj(x, "dict") + "のを楽しみます。"), S("I like " + vp(x, "ing") + ".", "わたしは" + vj(x, "dict") + "のが好きです。")]),
-        () => pick([S(th[0] + " finished " + vp(x, "ing") + ".", wa(th[1]) + x[2] + J(x[3], x[4], "stem") + "終えました。"), S("I'm good at " + vp(x, "ing") + ".", "わたしは" + vj(x, "dict") + "のが得意です。")]),
+        () => pick([S(th[0] + " finished " + vp(xa, "ing") + ".", wa(th[1]) + xa[2] + J(xa[3], xa[4], "stem") + "終えました。"), S("I'm good at " + vp(xk, "ing") + ".", "わたしは" + vj(xk, "dict") + "のが得意です。")]),
         () => pick([S(up(vp(x, "ing")) + " is fun.", vj(x, "dict") + "のは楽しいです。"), S("How about " + vp(x, "ing") + " together?", "いっしょに" + vj(x, "dict") + "のはどうですか？"), S("Thank you for helping me.", "手伝ってくれてありがとう。")]));
     }, read: (lv, k) => E4.PASS.pick(8, 6, k) },
     { n: "接続詞 when / if / because / that", note: "when＝「〜するとき」、if＝「もし〜なら」、because＝「〜なので」、I think that 〜＝「〜だと思う」（that は省略できる）。", gen: (lv) => {
@@ -154,16 +159,17 @@ parks|公園|つ|in this town|この町に|あります|1つも
 students|生徒|人|in the music room|音楽室に|います|1人も
 cups|カップ|個|in the box|箱の中に|あります|1個も
 cats|ねこ|ひき|in the garden|庭に|います|1ぴきも`), o2 = pick(O2);
-      return lvPick(lv, () => S("There is " + o[0] + " " + p[0] + ".", p[1] + o[1] + "あります。".replace("ありま", /ねこ/.test(o[1]) ? "いま" : "ありま")),
+      const OK1 = { "a cat": /table|box|house/, "a big tree": /house/, "a library": /house/, "an old bike": /house/ }, p1 = pick(P.filter((z) => OK1[o[0]].test(z[0])));
+      return lvPick(lv, () => S("There is " + o[0] + " " + p1[0] + ".", p1[1] + o[1] + "あります。".replace("ありま", /ねこ/.test(o[1]) ? "いま" : "ありま")),
         () => pick([S("There are " + E4.numWords(n) + " " + o2[0] + " " + o2[3] + ".", o2[4] + o2[1] + "が" + n + o2[2] + o2[5] + "。"), S("Is there a convenience store near here? Yes, there is.", "この近くにコンビニはありますか？ はい、あります。")]),
         () => pick([S("How many " + o2[0] + " are there " + o2[3] + "?", o2[4] + o2[1] + "は" + (o2[2] === "つ" ? "いくつ" : "何" + o2[2]) + o2[5].replace("ます", "ますか？")), S("There aren't any " + o2[0] + " " + o2[3] + ".", o2[4] + o2[1] + "は" + o2[6] + o2[5].replace("ます", "ません。"), { alt: ["There are no " + o2[0] + " " + o2[3] + "."] })]));
     }, read: (lv, k) => E4.PASS.pick(8, 8, k) },
     { n: "比較級（〜より…）", note: "「AはBより〜」は〈比較級＋than〉。短い語は -er（taller）、長い語は more 〜（more interesting）。Which is 〜er, A or B?＝「AとBではどちらが〜？」", gen: (lv) => {
       const a = pick(ADJC), ps = PAIR.filter((p) => fit(a[0], p[4])); const p = pick(ps);
       const be = "is";
-      return lvPick(lv, () => S(up(p[0]) + " " + be + " " + a[1] + " than " + p[1] + ".", p[2] + "は" + p[3] + "より" + jq(a[3]) + "です。".replace(/いです/, "いです")),
-        () => (p[4] === "person" ? S("Who is " + a[1] + ", " + p[0] + " or " + p[1] + "?", p[2] + "と" + p[3] + "では、どちらが" + jq(a[3]) + "ですか？", { alt: ["Which is " + a[1] + ", " + p[0] + " or " + p[1] + "?"] }) : S("Which is " + a[1] + ", " + p[0] + " or " + p[1] + "?", p[2] + "と" + p[3] + "では、どちらが" + jq(a[3]) + "ですか？")),
-        () => S(up(p[0]) + " " + be + " much " + a[1] + " than " + p[1] + ".", p[2] + "は" + p[3] + "よりずっと" + jq(a[3]) + "です。"));
+      return lvPick(lv, () => S(up(p[0]) + " " + be + " " + a[1] + " than " + p[1] + ".", p[2] + "は" + p[3] + "より" + desu(a[3]) + "。"),
+        () => (p[4] === "person" ? S("Who is " + a[1] + ", " + p[0] + " or " + p[1] + "?", p[2] + "と" + p[3] + "では、どちらが" + desuka(a[3]) + "？", { alt: ["Which is " + a[1] + ", " + p[0] + " or " + p[1] + "?"] }) : S("Which is " + a[1] + ", " + p[0] + " or " + p[1] + "?", p[2] + "と" + p[3] + "では、どちらが" + desuka(a[3]) + "？")),
+        () => S(up(p[0]) + " " + be + " much " + a[1] + " than " + p[1] + ".", p[2] + "は" + p[3] + "よりずっと" + desu(a[3]) + "。"));
     }, read: (lv, k) => E4.PASS.pick(8, 9, k) },
     { n: "最上級（いちばん〜）", note: "「いちばん〜」は〈the＋最上級〉。-est（the tallest）または the most 〜。「〜の中で」は in＋場所・集団、of＋複数（of the five / of all）。", gen: (lv) => {
       const SP = T(`Mt. Fuji is the highest mountain in Japan.|富士山は日本でいちばん高い山です。
@@ -185,7 +191,7 @@ dogs|cats|犬|ねこ
 soccer|baseball|サッカー|野球
 rice|bread|ごはん|パン
 math|science|数学|理科`), l = pick(L);
-      return lvPick(lv, () => S(up(p[0]) + " is as " + a[0] + " as " + p[1] + ".", p[2] + "は" + p[3] + "と同じくらい" + jq(a[3]) + "です。"),
+      return lvPick(lv, () => S(up(p[0]) + " is as " + a[0] + " as " + p[1] + ".", p[2] + "は" + p[3] + "と同じくらい" + desu(a[3]) + "。"),
         () => pick([S("I like " + l[0] + " better than " + l[1] + ".", "わたしは" + l[3] + "より" + l[2] + "が好きです。"), S(up(p[0]) + " is not as " + a[0] + " as " + p[1] + ".", p[2] + "は" + p[3] + "ほど" + jq(a[3]).replace(/い$/, "く").replace(/([^く])$/, "$1では") + "ありません。", { alt: [up(p[0]) + " isn't as " + a[0] + " as " + p[1] + "."] })]),
         () => pick([S("Which do you like better, " + l[0] + " or " + l[1] + "? I like " + l[0] + " better.", l[2] + "と" + l[3] + "ではどちらが好きですか？ " + l[2] + "のほうが好きです。"), S("I like " + l[0] + " the best.", "わたしは" + l[2] + "がいちばん好きです。")]));
     }, read: (lv, k) => E4.PASS.pick(8, 11, k) },

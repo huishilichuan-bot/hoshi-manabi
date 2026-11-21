@@ -8,6 +8,8 @@
   const lvPick = (lv, a, b, c) => (lv < 0.34 || !b ? a : lv < 0.67 || !c ? b : c)();
   const NAMES = [["Ken", "ケン"], ["Emma", "エマ"], ["Yumi", "ユミ"], ["Tom", "トム"], ["Mika", "ミカ"], ["Ben", "ベン"], ["Aya", "アヤ"], ["Lucas", "ルーカス"], ["Sara", "サラ"], ["Leo", "レオ"], ["Riku", "リク"], ["Hana", "ハナ"]];
   E4.NAMES = NAMES;
+  // 名前の性別（He / She を名前に合わせる）
+  E4.SEXOF = { Ken: "m", Tom: "m", Ben: "m", Lucas: "m", Leo: "m", Riku: "m", Emma: "f", Yumi: "f", Mika: "f", Aya: "f", Sara: "f", Hana: "f" };
   // 語形（カードのまぎらわしい語に使う）
   E4.FORMS = E4.FORMS || {};
   const forms = (...gs) => gs.forEach((g) => g.forEach((w) => (E4.FORMS[w.toLowerCase()] = g.filter((x) => x !== w)))) ;
@@ -256,7 +258,7 @@ table|テーブル`);
       const h = R(1, 12);
       return lvPick(lv, () => S("It's " + nW(h) + " o'clock.", h + "時です。", { pic: CLOCK[h], kind: "time" }),
         () => pick([S("It's " + nW(h) + " thirty.", h + "時30分です。", { pic: CLOCK30[h], kind: "time" }), S("What time is it? It's " + nW(h) + " o'clock.", "何時？ " + h + "時です。", { pic: CLOCK[h], kind: "time" })]),
-        () => pick([S("It's time for lunch.", "昼ごはんの時間です。", { kind: "tfor" }), S("It's time for bed.", "ねる時間です。", { kind: "tfor" }), S("It's time for school.", "学校の時間です。", { kind: "tfor" }), S("It's " + nW(h) + " thirty. It's time for lunch.", h + "時30分です。昼ごはんの時間です。", { pic: CLOCK30[h], kind: "time" })]));
+        () => pick([S("It's time for lunch.", "昼ごはんの時間です。", { kind: "tfor" }), S("It's time for bed.", "ねる時間です。", { kind: "tfor" }), S("It's time for school.", "学校の時間です。", { kind: "tfor" }), pick([S("It's twelve o'clock. It's time for lunch.", "12時です。昼ごはんの時間です。", { pic: CLOCK[12], kind: "time" }), S("It's eight o'clock. It's time for school.", "8時です。学校の時間です。", { pic: CLOCK[8], kind: "time" }), S("It's nine o'clock. It's time for bed.", "9時です。ねる時間です。", { pic: CLOCK[9], kind: "time" }), S("It's seven o'clock. It's time for breakfast.", "7時です。朝ごはんの時間です。", { pic: CLOCK[7], kind: "time" })])]));
     } },
     { n: "遊び（Let's play.）", note: "Let's 〜. ＝「〜しよう」。さそわれたら Yes, let's. と答える。", gen: (lv) => {
       const [e, j, pic] = pick(GAME);
@@ -291,7 +293,7 @@ orange juice|オレンジジュース|🧃`));
         () => S(up(f[0]) + ", please. Thank you.", f[1] + "をください。ありがとう。", { pic: f[2], kind: "want" }));
     } },
     { n: "場所（Where is 〜?）", note: "on＝上、under＝下、in＝中、by＝そば。Where is 〜? ＝「〜はどこ？」", gen: (lv) => {
-      const [an, , aj] = pick(ANIMAL.slice(0, 6)), [p, pj] = pick(POS), [f, fj] = pick(FURN), it = pick(ITEM.filter((x) => !/^e/.test(x[0])));
+      const [an, , aj] = pick(ANIMAL.slice(0, 3)), [p, pj] = pick(POS), [f, fj] = p === "in" ? ["box", "箱"] : pick(FURN), it = pick(ITEM.filter((x) => !/^e/.test(x[0])));
       return lvPick(lv, () => S("The " + an + " is " + p + " the " + f + ".", an === "dog" || an === "cat" || an === "rabbit" ? aj + "は" + fj + "の" + pj + "にいます。" : aj + "は" + fj + "の" + pj + "にいます。", { kind: "pos" }),
         () => S("Where is the " + it[0] + "? It's " + p + " the " + f + ".", it[1] + "はどこ？ " + fj + "の" + pj + "にあります。", { kind: "pos" }),
         () => S("My " + it[0] + " is " + p + " the " + f + ".", "わたしの" + it[1] + "は" + fj + "の" + pj + "にあります。", { kind: "pos" }));
@@ -309,10 +311,19 @@ Jump.|ジャンプしてください。`);
         () => { const [e, j] = pick(act.filter((x) => x[0] !== "Jump.")); return S(e.replace(".", "") + " and touch your " + b + ".", j.replace("ください。", "") + "、" + bj + "をさわってください。", { kind: "body" }); });
     } },
     { n: "一日の生活", note: "〈at＋時こく〉で「〜時に」。I get up at six. ＝「6時に起きます」。", gen: (lv) => {
-      const [e, j] = pick(DAILY), h = R(5, 10), h2 = R(1, 9);
+      // 活動ごとに、ふつうの時こくだけを使う（ちょうど／30分）。午後は +12 で順番をくらべる
+      const DT = [["get up", "起きます", [6, 7], [6], 0], ["eat breakfast", "朝ごはんを食べます", [7], [6, 7], 0], ["go to school", "学校に行きます", [7, 8], [7], 0], ["have lunch", "昼ごはんを食べます", [12], [12], 0], ["go home", "家に帰ります", [3, 4, 5], [3, 4], 12], ["do my homework", "宿題をします", [4, 5, 6, 7], [4, 5, 6], 12], ["take a bath", "おふろに入ります", [7, 8, 9], [7, 8], 12], ["go to bed", "ねます", [9, 10], [9], 12]];
+      const [e, j, hs, hh] = pick(DT), h = pick(hs), h2 = pick(hh);
       return lvPick(lv, () => S("I " + e + " at " + nW(h) + ".", "わたしは" + h + "時に" + j + "。", { alt: ["I " + e + " at " + nW(h) + " o'clock."], kind: "daily" }),
         () => S("I " + e + " at " + nW(h2) + " thirty.", "わたしは" + h2 + "時30分に" + j + "。", { alt: ["I " + e + " at " + nW(h2) + "-thirty."], kind: "daily" }),
-        () => S("I get up at " + nW(h) + ". I " + e + " at " + nW(h + 1) + ".", "わたしは" + h + "時に起きます。" + (h + 1) + "時に" + j + "。", { kind: "daily" }));
+        () => {
+          for (let t = 0; t < 20; t++) {
+            const i = R(0, DT.length - 2), k = R(i + 1, DT.length - 1), A = DT[i], B = DT[k], ha = pick(A[2]), hb = pick(B[2]);
+            if (hb + B[4] <= ha + A[4]) continue;
+            return S("I " + A[0] + " at " + nW(ha) + ". I " + B[0] + " at " + nW(hb) + ".", "わたしは" + ha + "時に" + A[1] + "。" + hb + "時に" + B[1] + "。", { kind: "daily" });
+          }
+          return S("I get up at six. I go to school at eight.", "わたしは6時に起きます。8時に学校に行きます。", { kind: "daily" });
+        });
     } },
     { n: "数（〜60）", note: "21〜99は twenty-one のように、10の位と1の位をつなげて言う。", gen: (lv) => {
       const n = R(lv < 0.4 ? 11 : 21, lv < 0.4 ? 30 : 60), it = pick(T(`cards|カード|まい
@@ -395,7 +406,7 @@ curry and rice|カレーライス
 a sandwich|サンドイッチ
 pizza|ピザ`);
   const TRAIT = T(`kind|やさしい
-brave|勇かんな
+brave|勇かん
 funny|おもしろい
 cool|かっこいい
 strong|強い
@@ -499,10 +510,7 @@ behind|後ろ`));
 the Star Festival|七夕|July|7
 New Year's Day|元日|January|1
 Christmas|クリスマス|December|12
-Halloween|ハロウィーン|October|10`)), en = pick(T(`swimming|水泳
-camping|キャンプ
-skiing|スキー
-hiking|ハイキング`));
+Halloween|ハロウィーン|October|10`)), en = pick({ spring: [["the cherry blossoms", "桜"], ["hiking", "ハイキング"]], summer: [["swimming", "水泳"], ["camping", "キャンプ"]], fall: [["hiking", "ハイキング"], ["reading", "読書"]], winter: [["skiing", "スキー"], ["skating", "スケート"]] }[s]);
       return lvPick(lv, () => pick([S("I like " + s + ".", "わたしは" + sj + "が好きです。", { kind: "season" }), S("My favorite season is " + s + ".", "わたしの好きな季節は" + sj + "です。", { kind: "season" })]),
         () => S("We have " + ev[0] + " in " + ev[2] + ".", ev[3] + "月に" + ev[1] + "があります。", { kind: "event" }),
         () => S("I like " + s + ". We can enjoy " + en[0] + ".", "わたしは" + sj + "が好きです。" + en[1] + "を楽しむことができます。", { kind: "season" }));
@@ -514,7 +522,7 @@ hiking|ハイキング`));
 bag|かばん
 watch|うで時計
 cap|ぼうし`)); return pick([S("What color do you like? I like " + co[0] + ".", "何色が好き？ " + co[1] + "が好きです。"), S("I want a new " + w[0] + ".", "わたしは新しい" + w[1] + "がほしいです。")]); },
-        () => S("I like " + an[1] + ". I want " + art(an[0]) + ".", "わたしは" + an[2] + "が好きです。" + an[2] + "がほしいです。"));
+        () => { const pet = pick(ANIMAL.slice(0, 3)); return S("I like " + pet[1] + ". I want " + art(pet[0]) + ".", "わたしは" + pet[2] + "が好きです。" + pet[2] + "がほしいです。"); });
     }, read: (lv, k) => E4.READ.profile(lv, k) },
   ];
   E4.T = T; E4.S = S; E4.lvPick = lvPick;

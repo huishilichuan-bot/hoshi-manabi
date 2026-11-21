@@ -1,0 +1,251 @@
+# 7-0
+Emma: Hi. I'm Emma. Are you a new student?
+Ken: Yes, I am. I'm Ken. I'm from Osaka.
+Emma: Nice to meet you, Ken. I'm in Class 1-B.
+Ken: Me, too! We are classmates.
+? ケンはどこの出身ですか？ | 大阪 | 東京 / 京都 / 神戸
+? エマは何組ですか？ | 1年B組 | 1年A組 / 1年C組 / 2年B組
+? ケンは何と言っていましたか？ | ぼくたちはクラスメートです。 | ぼくは新入生ではありません。 / ぼくは1年A組です。 / ぼくはエマの兄です。
+
+# 7-0
+Tom: Are you hungry, Yumi?
+Yumi: No, I'm not. I'm tired.
+Tom: Are you OK?
+Yumi: Yes. I'm just sleepy. I'm fine.
+? ユミはおなかがすいていますか？ | いいえ、すいていません | はい、すいています / わかりません / のどがかわいています
+? ユミはどんな様子ですか？ | 眠い | おなかがすいている / 悲しい / 寒い
+? トムは何と言っていましたか？ | だいじょうぶですか？ | ぼくもおなかがすいています。 / ぼくは眠いです。 / ぼくはつかれています。
+
+# 7-1
+Sara: Who is that boy?
+Ben: He is Takuya. He is my friend.
+Sara: Is he a basketball player?
+Ben: Yes, he is. He is very tall.
+? あの男の子はだれですか？ | ベンの友だちのタクヤ | ベンの弟 / サラの友だち / 新しい先生
+? タクヤは何の選手ですか？ | バスケットボール | 野球 / サッカー / バレーボール
+? ベンは何と言っていましたか？ | 彼はとても背が高いです。 | 彼は背が低いです。 / 彼はぼくの兄です。 / 彼はサッカー選手です。
+
+# 7-1
+Mika: What is this?
+Leo: This is a photo of my family. This is my mother. She is a nurse.
+Mika: Who is this?
+Leo: This is my sister. She is a high school student.
+? レオのお母さんの仕事は何ですか？ | 看護師 | 先生 / 医者 / 店員
+? レオのお姉さんは何ですか？ | 高校生 | 大学生 / 中学生 / 看護師
+? ミカは何と言っていましたか？ | これはだれですか？ | これはわたしの家族の写真です。 / 彼女は看護師です。 / わたしは高校生です。
+
+# 7-2
+Aya: Do you play any sports, Lucas?
+Lucas: Yes, I do. I play tennis every Saturday.
+Aya: Do you play it at school?
+Lucas: No, I don't. I play it in the park with my father.
+? ルーカスがするスポーツは何ですか？ | テニス | 卓球 / サッカー / 野球
+? ルーカスはいつそれをしますか？ | 毎週土曜日 | 毎週日曜日 / 毎日 / 放課後
+? ルーカスは何と言っていましたか？ | 父と公園でします。 | 学校でします。 / 兄と体育館でします。 / ぼくはスポーツをしません。
+
+# 7-2
+Ken: What do you have in your bag?
+Sara: I have a book and a lunch box.
+Ken: Do you like reading?
+Sara: Yes. I read books on the train every day.
+? サラがかばんに入れているものは何ですか？ | 本と弁当箱 | 本と水とう / ノートと弁当箱 / ラケット
+? サラはどこで本を読みますか？ | 電車の中 | 図書館 / 家 / 公園
+? ケンは何と言っていましたか？ | 読書は好きですか？ | ぼくは本を持っています。 / ぼくは毎日電車に乗ります。 / ぼくは読書が好きです。
+
+# 7-3
+Tom: How many pens do you have?
+Emma: I have five pens. And I have three erasers.
+Tom: Wow. I have only one pen. Can I use one?
+Emma: Sure. Here you are.
+? エマはペンを何本持っていますか？ | 5本 | 3本 / 1本 / 4本
+? エマは消しゴムをいくつ持っていますか？ | 3つ | 5つ / 1つ / 2つ
+? トムは何と言っていましたか？ | 1本使ってもいいですか？ | ぼくはペンを5本持っています。 / どうぞ。 / ぼくは消しゴムを持っていません。
+
+# 7-3
+Yumi: How many students are there in your class?
+Ben: Thirty-two. How about yours?
+Yumi: Twenty-eight. We have fourteen boys and fourteen girls.
+Ben: Nice.
+? ベンのクラスの生徒は何人ですか？ | 32人 | 28人 / 30人 / 23人
+? ユミのクラスの女子は何人ですか？ | 14人 | 28人 / 12人 / 16人
+? ユミは何と言っていましたか？ | 男子が14人、女子が14人です。 | 生徒は32人です。 / 男子が16人です。 / 先生が2人います。
+
+# 7-4
+Mika: This is my brother, Shota. He plays the guitar.
+Leo: Does he play it well?
+Mika: Yes. He practices every night. He wants to be a musician.
+Leo: Cool.
+? ショウタが演奏する楽器は何ですか？ | ギター | ピアノ / ドラム / ベース
+? ショウタはいつ練習しますか？ | 毎晩 | 毎朝 / 毎週日曜日 / 放課後
+? ミカは何と言っていましたか？ | 彼は音楽家になりたいと思っています。 | 彼は先生になりたいと思っています。 / 彼は練習しません。 / 彼はピアノをひきます。
+
+# 7-4
+Aya: My grandfather lives in Nagano.
+Lucas: What does he do?
+Aya: He grows apples. He gets up at five every morning.
+Lucas: He works hard.
+? アヤのおじいさんはどこに住んでいますか？ | 長野 | 青森 / 北海道 / 山形
+? おじいさんは何を育てていますか？ | りんご | もも / 米 / ぶどう
+? ルーカスは何と言っていましたか？ | 彼は一生けんめい働いていますね。 | 彼は5時に起きます。 / ぼくもりんごを育てています。 / ぼくは長野に住んでいます。
+
+# 7-5
+Ken: Does your sister like cats?
+Sara: No, she doesn't. She likes dogs.
+Ken: Does she have a dog?
+Sara: Yes. Its name is Coco.
+? サラのお姉さんが好きな動物は何ですか？ | 犬 | ねこ / うさぎ / 鳥
+? 犬の名前は何ですか？ | ココ | モモ / ポチ / ハナ
+? サラは何と言っていましたか？ | 彼女はねこが好きではありません。 | 彼女はねこが好きです。 / 彼女は犬をかっていません。 / わたしは犬が好きです。
+
+# 7-5
+Emma: Does Tom come to school by bus?
+Ben: No, he doesn't. He walks to school.
+Emma: Does he live near here?
+Ben: Yes. His house is next to the post office.
+? トムはどうやって学校に来ますか？ | 歩いて | バスで / 自転車で / 電車で
+? トムの家はどこにありますか？ | 郵便局のとなり | 駅の前 / 公園のとなり / 学校の後ろ
+? ベンは何と言っていましたか？ | 彼の家は郵便局のとなりです。 | 彼はバスで来ます。 / 彼は遠くに住んでいます。 / ぼくは歩いて来ます。
+
+# 7-6
+Yumi: Where is Mr. Brown?
+Tom: He is in the library.
+Yumi: When does he usually go there?
+Tom: He goes there after lunch.
+? ブラウン先生はどこにいますか？ | 図書館 | 職員室 / 体育館 / 音楽室
+? 先生はいつそこへ行きますか？ | 昼食のあと | 放課後 / 朝 / 授業の前
+? ユミは何と言っていましたか？ | 先生はふだんいつそこへ行きますか？ | 先生は図書館にいます。 / 先生は昼食のあとに来ます。 / 先生はどこの出身ですか？
+
+# 7-6
+Leo: Who is your favorite singer?
+Mika: I like Lisa. She sings very well.
+Leo: What song do you like?
+Mika: I like her song "Blue Sky."
+? ミカの好きな歌手はだれですか？ | リサ | エマ / ミカ / ユミ
+? ミカの好きな曲は何ですか？ | ブルー・スカイ | サンシャイン / ブルー・シー / グリーン・ツリー
+? レオは何と言っていましたか？ | どの歌が好きですか？ | ぼくはリサが好きです。 / 彼女はとても上手に歌います。 / だれが好きですか？
+
+# 7-7
+Lucas: Aya, look at this picture.
+Aya: Wow, it's beautiful. Where is this?
+Lucas: It's Okinawa. Let's go there next summer.
+Aya: Yes, let's.
+? ルーカスはアヤに何をしてと言いましたか？ | この写真を見て | この本を読んで / 窓を開けて / 静かにして
+? 写真の場所はどこですか？ | 沖縄 | 北海道 / 京都 / ハワイ
+? ルーカスは何と言っていましたか？ | 来年の夏そこへ行こう。 | 来年の冬そこへ行こう。 / これは北海道です。 / 写真をとろう。
+
+# 7-7
+Ms. Smith: Please be quiet, everyone. Open your textbooks to page 20.
+Ken: Page 20?
+Ms. Smith: Yes. Don't talk. Listen to the recording.
+Ken: OK.
+? 先生は何ページを開いてと言いましたか？ | 20ページ | 12ページ / 30ページ / 2ページ
+? 先生は何を聞いてと言いましたか？ | 録音（音声） | 先生の話 / 音楽の授業 / 友だちの意見
+? スミス先生は何と言っていましたか？ | 話してはいけません。 | 教科書を閉じなさい。 / 歌いましょう。 / ノートに書きなさい。
+
+# 7-8
+Sara: Can you cook, Ben?
+Ben: Yes, I can. I can make curry.
+Sara: Can you make cakes?
+Ben: No, I can't. Can you teach me?
+? ベンが作れるものは何ですか？ | カレー | ケーキ / パン / クッキー
+? ベンが作れないものは何ですか？ | ケーキ | カレー / サラダ / スープ
+? ベンは何と言っていましたか？ | ぼくに教えてくれますか？ | ぼくはケーキが作れます。 / ぼくは料理ができません。 / いっしょに作ろう。
+
+# 7-8
+Emma: Can I use your dictionary, Tom?
+Tom: Sure. Here you are.
+Emma: Thanks. Can you help me with my homework?
+Tom: Sorry, I can't. I have soccer practice now.
+? エマが借りたものは何ですか？ | 辞書 | ペン / ノート / 消しゴム
+? トムが手伝えない理由は何ですか？ | サッカーの練習があるから | 宿題があるから / 病気だから / 家に帰るから
+? エマは何と言っていましたか？ | 宿題を手伝ってくれますか？ | 辞書を持っています。 / わたしはサッカーの練習があります。 / ごめんなさい。
+
+# 7-9
+Yumi: Hello, Leo. What are you doing now?
+Leo: I'm doing my homework. It's difficult.
+Yumi: Which subject?
+Leo: Math. Can you help me?
+? レオは今何をしていますか？ | 宿題 | 料理 / テレビを見ている / ゲーム
+? 何の教科ですか？ | 数学 | 英語 / 理科 / 国語
+? レオは何と言っていましたか？ | それはむずかしいです。 | それはかんたんです。 / ぼくはテレビを見ています。 / ぼくは今ひまです。
+
+# 7-9
+Mika: Where is Dad?
+Lucas: He is in the garden. He is washing the car.
+Mika: What is Mom doing?
+Lucas: She is cooking dinner in the kitchen.
+? お父さんはどこにいますか？ | 庭 | 台所 / 居間 / 車の中
+? お父さんは何をしていますか？ | 車をあらっている | 夕食を作っている / 犬と遊んでいる / 花に水をやっている
+? ルーカスは何と言っていましたか？ | お母さんは台所で夕食を作っています。 | お母さんは車をあらっています。 / お父さんは料理をしています。 / お母さんは庭にいます。
+
+# 7-10
+Aya: Did you watch the soccer game last night?
+Ken: Yes, I did. Japan played very well.
+Aya: Did Japan win?
+Ken: Yes! They won 2 to 1.
+? ケンはきのうの夜何を見ましたか？ | サッカーの試合 | 野球の試合 / 映画 / ニュース
+? 試合の結果はどうでしたか？ | 日本が2対1で勝った | 日本が1対2で負けた / 引き分けだった / 日本が3対1で勝った
+? アヤは何と言っていましたか？ | 日本は勝ちましたか？ | 日本はとても上手にプレーしました。 / わたしは試合を見ませんでした。 / わたしはサッカーが好きです。
+
+# 7-10
+Ben: What did you do last Sunday, Sara?
+Sara: I visited my grandmother. We cooked lunch together.
+Ben: Sounds nice. What did you cook?
+Sara: We cooked tempura.
+? サラは先週の日曜日にだれをたずねましたか？ | おばあさん | おじいさん / おば / 友だち
+? 二人は何を作りましたか？ | 天ぷら | カレー / すし / うどん
+? ベンは何と言っていましたか？ | 何を作ったのですか？ | ぼくは祖母をたずねました。 / ぼくは天ぷらが好きです。 / いっしょに料理をしました。
+
+# 7-11
+Emma: I went to Tokyo last weekend.
+Tom: What did you do there?
+Emma: I saw a big panda at the zoo. And I ate sushi.
+Tom: That's great.
+? エマは先週末どこへ行きましたか？ | 東京 | 大阪 / 京都 / 横浜
+? エマが動物園で見たものは何ですか？ | 大きなパンダ | ゾウ / コアラ / キリン
+? エマは何と言っていましたか？ | それに、すしを食べました。 | ラーメンを食べました。 / 水族館へ行きました。 / 先週末は家にいました。
+
+# 7-11
+Leo: I had a bad morning today.
+Yumi: What happened?
+Leo: I got up late. So I didn't eat breakfast.
+Yumi: Oh, no. Here, have a banana.
+? レオの朝はどうでしたか？ | よくなかった | とてもよかった / ふつうだった / いそがしくなかった
+? レオが朝ごはんを食べなかった理由は何ですか？ | おそく起きたから | おなかがいたかったから / 朝ごはんがなかったから / 早く家を出たから
+? ユミは何と言っていましたか？ | バナナをどうぞ。 | りんごをどうぞ。 / わたしもおそく起きました。 / 朝ごはんを食べなさい。
+
+# 7-12
+Mika: I called you at eight last night. What were you doing?
+Lucas: I was taking a bath. Sorry.
+Mika: That's OK. Were you busy?
+Lucas: A little. I was studying for the test.
+? ミカが電話したのはいつですか？ | きのうの夜8時 | きのうの夜7時 / けさ8時 / きのうの夕方6時
+? そのときルーカスは何をしていましたか？ | おふろに入っていた | 勉強していた / 寝ていた / 夕食を食べていた
+? ルーカスは何と言っていましたか？ | テストの勉強をしていました。 | 宿題をしていませんでした。 / ぼくはひまでした。 / テレビを見ていました。
+
+# 7-12
+Aya: It was rainy yesterday.
+Ken: Yes. I was at home all day.
+Aya: What were you doing?
+Ken: I was reading a comic book. It was very funny.
+? きのうの天気はどうでしたか？ | 雨 | 晴れ / くもり / 雪
+? ケンは何をしていましたか？ | まんがを読んでいた | テレビを見ていた / 勉強していた / ゲームをしていた
+? ケンは何と言っていましたか？ | それはとてもおもしろかったです。 | それはつまらなかったです。 / ぼくは出かけました。 / ぼくは寝ていました。
+
+# 7-13
+Sara: What do you usually do on weekends, Ben?
+Ben: I usually play soccer. But last weekend, I went fishing with my father.
+Sara: Did you catch any fish?
+Ben: Yes. I caught three fish.
+? ベンが週末にふだんすることは何ですか？ | サッカー | つり / 野球 / 水泳
+? ベンは先週末だれとつりに行きましたか？ | お父さん | お兄さん / 友だち / おじいさん
+? ベンは何と言っていましたか？ | 魚を3匹つりました。 | 魚は1匹もつれませんでした。 / 魚を5匹つりました。 / ふだんはつりに行きます。
+
+# 7-13
+Tom: Look! It's snowing.
+Emma: Wow! I'm from Australia. It's summer there now.
+Tom: Really? What do people do at Christmas there?
+Emma: Some people go to the beach.
+? エマはどこの出身ですか？ | オーストラリア | カナダ / イギリス / アメリカ
+? 今のオーストラリアの季節は何ですか？ | 夏 | 冬 / 春 / 秋
+? エマは何と言っていましたか？ | ビーチへ行く人もいます。 | 雪で遊ぶ人もいます。 / わたしは雪を見たことがあります。 / オーストラリアは今冬です。

@@ -47,7 +47,7 @@ cleaning the house|家をそうじして`);
 for thirty minutes|30分間
 since this morning|今朝から
 since three o'clock|3時から
-for a week|1週間`);
+for an hour|1時間`);
   const PEO = T(`The boy|男の子
 The girl|女の子
 The man|男の人
@@ -61,7 +61,8 @@ singing on the stage|ステージで歌っている`);
   const IS = T(`my brother|わたしの兄
 my friend|わたしの友だち
 our new teacher|わたしたちの新しい先生
-my cousin|わたしのいとこ`);
+my cousin|わたしのいとこ
+my sister|わたしの姉`);
   const PP = T(`a car made in Japan|日本で作られた車
 a book written in English|英語で書かれた本
 a picture taken by my father|父がとった写真
@@ -150,7 +151,8 @@ The bridge is being built now.|その橋は今、建設中です。`);
   const neg = (s) => s.replace(/います$/, "いません").replace(/です$/, "ではありません");
   const G9 = [
     { n: "現在完了①（継続：ずっと〜している）", note: "〈have / has＋過去分詞〉で「（今まで）ずっと〜している」。for＋期間（〜の間）、since＋始まった時（〜から）。How long 〜?＝「どのくらいの間？」", gen: (lv) => {
-      const s = subj(), c = pick(CONT), f = pick(FOR.filter((x) => s[0] === "I" || !/I was/.test(x[0])));
+      // 「いそがしい」は短い期間だけ（「2020年からいそがしい」は出さない）
+      const s = subj(), c = pick(CONT), f = pick(FOR.filter((x) => (s[0] === "I" || !/I was/.test(x[0])) && (c[0] !== "been busy" || /two weeks/.test(x[0]))));
       return lvPick(lv, () => S(s[0] + " " + s[2] + " " + c[0] + " " + f[0] + ".", wa(s[1]) + f[1] + c[1] + "。"),
         () => S("How long have you " + c[0] + "? " + up(f[0]) + ".", "あなたはどのくらいの間" + c[1].replace(/。?$/, "") + "か？ " + f[1] + "です。"),
         () => { const n = pick(T(`seen Ken|ケンに会っていません
@@ -169,7 +171,7 @@ played tennis|テニスをしていません`)), f2 = pick(FOR.filter((x) => /si
       const mine = (x) => (/^(He|Ken)$/.test(s[0]) ? x.replace(/\bmy\b/, "his") : /^(She|My sister)$/.test(s[0]) ? x.replace(/\bmy\b/, "her") : /^We$/.test(s[0]) ? x.replace(/\bmy\b/, "our") : x);
       return lvPick(lv, () => S(s[0] + " " + s[2] + " just " + mine(d[0]) + ".", wa(s[1]) + "ちょうど" + d[1] + "ところです。"),
         () => pick([S(s[0] + " " + s[2] + " already " + mine(d[0]) + ".", wa(s[1]) + "もう" + d[3] + "ました。"), S("Have you " + d[2] + " yet? Yes, I have.", "もう" + d[3] + "ましたか？ はい、" + d[3] + "ました。")]),
-        () => S("I haven't " + d[0] + " yet.", "わたしはまだ" + d[3] + "ていません。".replace("みていません", "んでいません").replace("いていません", "っていません"), { alt: ["I have not " + d[0] + " yet."] }));
+        () => S("I haven't " + d[0] + " yet.", ("わたしはまだ" + d[3] + "ていません。").replace("読みていません", "読んでいません").replace("買いていません", "買っていません").replace("洗いていません", "洗っていません"), { alt: ["I have not " + d[0] + " yet."] }));
     }, read: (lv, k) => E4.PASS.pick(9, 2, k) },
     { n: "現在完了進行形（ずっと〜し続けている）", note: "〈have / has been＋〜ing〉＝「（今まで）ずっと〜し続けている」。動作が今も続いていることを表す。", gen: (lv) => {
       const s = subj(), g = pick(ING), h = pick(HRS);
@@ -179,7 +181,8 @@ played tennis|テニスをしていません`)), f2 = pick(FOR.filter((x) => /si
     }, read: (lv, k) => E4.PASS.pick(9, 3, k) },
     { n: "受け身の発展（be made of / be known to など）", note: "by 以外の前置詞を使う受け身：be made of（材料）／be made from（原料）、be known to（〜に知られている）、be covered with、be interested in、be surprised at。", gen: (lv) => { const p = pick(PASSV); return S(p[0], p[1]); }, read: (lv, k) => E4.PASS.pick(9, 4, k) },
     { n: "名詞を後ろから説明①（〜している…）", note: "〈名詞＋〜ing＋語句〉で「〜している（名詞）」。the boy playing the guitar＝「ギターをひいている男の子」。", gen: (lv) => {
-      const p = pick(PEO), d = pick(DOING), i = pick(IS);
+      // 人と説明を合わせる：兄は男の子・男の人、姉は女の子・女の人、先生はおとなだけ
+      const p = pick(PEO), d = pick(DOING), i = pick(IS.filter((z) => (z[0] !== "my brother" || /boy|man/i.test(p[0]) && !/woman/i.test(p[0])) && (z[0] !== "my sister" || /girl|woman/i.test(p[0])) && (z[0] !== "our new teacher" || /man|woman/i.test(p[0]))));
       return lvPick(lv, () => S("Look at " + p[0].toLowerCase() + " " + d[0] + ".", d[1] + p[1] + "を見て。"),
         () => S(p[0] + " " + d[0] + " is " + i[0] + ".", d[1] + p[1] + "は" + i[1] + "です。"),
         () => S("Who is " + p[0].toLowerCase() + " " + d[0] + "?", d[1] + p[1] + "はだれですか？"));
@@ -205,7 +208,7 @@ played tennis|テニスをしていません`)), f2 = pick(FOR.filter((x) => /si
     { n: "関係代名詞 which / that（主格）", note: "人以外を後ろから説明するときは which、人にも物にも使えるのが that。a bus which goes to the station＝「駅へ行くバス」。", gen: (lv) => {
       const w = pick(WHICH), rel = pick(["which", "that"]);
       return lvPick(lv, () => S("This is " + w[0] + " " + rel + " " + w[1] + ".", "これは" + w[2] + "です。", { alt: ["This is " + w[0] + " " + (rel === "which" ? "that" : "which") + " " + w[1] + "."] }),
-        () => S("I want " + w[0] + " " + rel + " " + w[1] + ".", "わたしは" + w[2] + "がほしいです。", { alt: ["I want " + w[0] + " " + (rel === "which" ? "that" : "which") + " " + w[1] + "."] }),
+        () => (/train|bus/.test(w[0]) ? S("Let's take " + w[0].replace(/^an? /, "the ") + " " + rel + " " + w[1] + ".", w[2] + "に乗りましょう。", { alt: ["Let's take " + w[0].replace(/^an? /, "the ") + " " + (rel === "which" ? "that" : "which") + " " + w[1] + "."] }) : /shop/.test(w[0]) ? S("Let's go to the shop " + rel + " " + w[1] + ".", w[2] + "に行きましょう。", { alt: ["Let's go to the shop " + (rel === "which" ? "that" : "which") + " " + w[1] + "."] }) : S("I want " + w[0] + " " + rel + " " + w[1] + ".", "わたしは" + w[2] + "がほしいです。", { alt: ["I want " + w[0] + " " + (rel === "which" ? "that" : "which") + " " + w[1] + "."] })),
         () => pick([(/dog|robot/.test(w[0]) ? S("Do you have " + w[0] + " " + rel + " " + w[1] + "?", "あなたは" + w[2] + "を持っていますか？", { alt: ["Do you have " + w[0] + " " + (rel === "which" ? "that" : "which") + " " + w[1] + "?"] }) : S("There is " + w[0] + " " + rel + " " + w[1] + ".", w[2] + "があります。", { alt: ["There is " + w[0] + " " + (rel === "which" ? "that" : "which") + " " + w[1] + "."] })), S("Look at " + w[0].replace(/^an? /, "the ") + " " + rel + " " + w[1] + ".", w[2] + "を見て。", { alt: ["Look at " + w[0].replace(/^an? /, "the ") + " " + (rel === "which" ? "that" : "which") + " " + w[1] + "."] }), S("I like stories that have happy endings.", "わたしはハッピーエンドの物語が好きです。", { alt: ["I like stories which have happy endings."] }), S("The dog that is sleeping under the tree is Pochi.", "木の下でねている犬はポチです。", { alt: ["The dog which is sleeping under the tree is Pochi."] })]));
     }, read: (lv, k) => E4.PASS.pick(9, 9, k) },
     { n: "関係代名詞（目的格）which / that", note: "〈名詞＋which / that＋主語＋動詞〉＝「（主語）が〜する（名詞）」。目的格の which / that は省略できる。", gen: (lv) => {

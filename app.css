@@ -1070,3 +1070,6 @@ html.rmotion .mode-sel, html.rmotion .ms-slot { animation: none; }
 .e4-opt:active:not(:disabled) { transform: scale(.97); }
 .fb.skip { background: #f3f0ff; border: 2px solid #c5bdf7; } .fb.skip .fb-h { color: #5b4ce0; }
 .rv.skip { opacity: .75; }
+
+/* v1.6.1: hidden 属性を必ず優先（会話・訳を答える前はかくす） */
+#quiz [hidden], .e4-dlg-l[hidden] { display: none !important; }

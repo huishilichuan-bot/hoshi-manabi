@@ -1,0 +1,282 @@
+# 8-0
+Ken: It's very cloudy. Will it rain this afternoon?
+Sara: Yes. The news says it will rain at three.
+Ken: Oh, no. I didn't bring my umbrella.
+Sara: Don't worry. I have two. I will lend you one.
+Ken: Thank you. You're so kind.
+? 何時に雨がふると言っていますか？ | 3時 | 2時 / 4時 / 5時
+? ケンが持ってこなかったものは何ですか？ | かさ | 弁当 / 宿題 / 体操服
+? サラは何と言っていましたか？ | 1本貸してあげます。 | かさを持っていません。 / 今日は雨はふりません。 / 1本買ってきます。
+
+# 8-0
+Emma: My birthday is next Saturday.
+Tom: Really? What will you do?
+Emma: I will have a party at home. Will you come?
+Tom: Of course. I will make a cake for you.
+Emma: Wow, thank you!
+? エマの誕生日はいつですか？ | 来週の土曜日 | 今週の土曜日 / 来週の日曜日 / あした
+? エマは誕生日に何をしますか？ | 家でパーティーをする | レストランへ行く / 映画を見る / 旅行に行く
+? トムは何と言っていましたか？ | きみのためにケーキを作るよ。 | 行けません。 / プレゼントを買うよ。 / ぼくの誕生日も来週です。
+
+# 8-1
+Yumi: What are you going to do this weekend, Ben?
+Ben: I'm going to visit my uncle in Kobe.
+Yumi: Are you going to stay there?
+Ben: Yes. I'm going to stay for two nights.
+Yumi: Have a nice trip!
+? ベンは週末にだれをたずねますか？ | 神戸のおじさん | 大阪のおばさん / 神戸のおじいさん / 京都のいとこ
+? ベンは何泊しますか？ | 2泊 | 1泊 / 3泊 / 泊まらない
+? ユミは何と言っていましたか？ | よい旅を！ | わたしもいっしょに行きます。 / わたしは神戸へ行きます。 / 早く帰ってきてね。
+
+# 8-1
+Leo: I'm going to make dinner for my family tonight.
+Mika: That's nice. What are you going to make?
+Leo: I'm going to make hamburgers. My mother taught me how.
+Mika: Your family will be happy.
+? レオは今夜何をするつもりですか？ | 家族のために夕食を作る | 外で食事をする / お母さんと買い物に行く / 料理を習う
+? レオは何を作るつもりですか？ | ハンバーグ | カレー / スパゲッティ / オムライス
+? ミカは何と言っていましたか？ | あなたの家族は喜ぶでしょう。 | わたしもハンバーグを作ります。 / あなたのお母さんは料理が上手です。 / わたしも手伝います。
+
+# 8-2
+Lucas: Can we play video games now?
+Aya: No. We must finish our homework first.
+Lucas: But it's Saturday.
+Aya: We have to give it to Mr. Kato on Monday.
+Lucas: OK. Let's do it now.
+? 二人はまず何をしなければなりませんか？ | 宿題を終える | 部屋をそうじする / 買い物に行く / テレビゲームをする
+? 宿題はいつ加藤先生に出しますか？ | 月曜日 | 土曜日 / 日曜日 / 金曜日
+? ルーカスは何と言っていましたか？ | でも、土曜日だよ。 | 宿題はもう終わったよ。 / 月曜日に出そう。 / ゲームはしないよ。
+
+# 8-2
+Sara: You must not eat in the library, Ken.
+Ken: Oh, sorry. I didn't know that.
+Sara: You can eat in the cafeteria.
+Ken: Thanks. Do I have to return this book today?
+Sara: No, you don't have to. You can keep it for two weeks.
+? 図書館でしてはいけないことは何ですか？ | ものを食べること | 本を読むこと / 勉強すること / 本を借りること
+? 本は何週間借りられますか？ | 2週間 | 1週間 / 3週間 / 1か月
+? サラは何と言っていましたか？ | 食堂でなら食べてもいいです。 | 今日返さなければなりません。 / 図書館で食べてもいいです。 / 本は1週間借りられます。
+
+# 8-3
+Tom: May I come in?
+Ms. Brown: Yes, please. What's the matter, Tom?
+Tom: I have a headache.
+Ms. Brown: You should go home and rest. Shall I call your mother?
+Tom: Yes, please.
+? トムの具合はどうですか？ | 頭がいたい | おなかがいたい / 歯がいたい / 熱がある
+? ブラウン先生はトムにどうするべきだと言いましたか？ | 家に帰って休む | 保健室で寝る / 薬を飲む / 授業に出る
+? ブラウン先生は何と言っていましたか？ | お母さんに電話しましょうか？ | お父さんに電話しましょうか？ / 授業にもどりなさい。 / 病院へ行きなさい。
+
+# 8-3
+Emma: Could you open the window, Leo?
+Leo: Sure. It's hot today.
+Emma: Thanks. Shall we go to the pool after school?
+Leo: Good idea. Should I bring a towel?
+Emma: Yes, you should.
+? エマがレオにたのんだことは何ですか？ | 窓を開けること | ドアを閉めること / 電気をつけること / エアコンをつけること
+? 二人は放課後どこへ行きますか？ | プール | 図書館 / 公園 / 海
+? レオは何と言っていましたか？ | タオルを持っていくべきですか？ | 今日は寒いです。 / プールへは行けません。 / 水着を持っていません。
+
+# 8-4
+Mika: What do you want to do in the future, Lucas?
+Lucas: I want to work at a zoo.
+Mika: Why?
+Lucas: Because I like animals. I want to take care of elephants.
+Mika: That's a wonderful dream.
+? ルーカスは将来どこで働きたいですか？ | 動物園 | 水族館 / 病院 / 牧場
+? ルーカスが世話をしたい動物は何ですか？ | ゾウ | ライオン / キリン / パンダ
+? ミカは何と言っていましたか？ | それはすばらしい夢ですね。 | わたしも動物園で働きたいです。 / わたしは動物が苦手です。 / ゾウは大きいです。
+
+# 8-4
+Ken: I started to learn the guitar last month.
+Yumi: Really? Is it easy?
+Ken: No. It's hard. But I try to practice every day.
+Yumi: I hope to hear you play someday.
+? ケンが先月習い始めたものは何ですか？ | ギター | ピアノ / ドラム / バイオリン
+? ケンは毎日何をしようとしていますか？ | 練習すること | 本を読むこと / 走ること / 早く起きること
+? ユミは何と言っていましたか？ | いつかあなたの演奏が聞けるといいな。 | わたしもギターを習っています。 / それはかんたんですね。 / わたしは毎日練習します。
+
+# 8-5
+Aya: Why did you go to the library, Ben?
+Ben: I went there to borrow a book about space.
+Aya: Are you interested in space?
+Ben: Yes. I want to be an astronaut. I need something to read every day.
+? ベンは何のために図書館へ行きましたか？ | 宇宙の本を借りるため | 勉強するため / 本を返すため / 友だちに会うため
+? ベンは何になりたいですか？ | 宇宙飛行士 | 科学者 / パイロット / 先生
+? アヤは何と言っていましたか？ | 宇宙に興味があるのですか？ | わたしも宇宙の本を借りました。 / わたしは図書館へ行きました。 / 宇宙はこわいです。
+
+# 8-5
+Sara: I'm very busy this week.
+Tom: Why?
+Sara: I have a lot of things to do. I have to practice the piano for the concert.
+Tom: You need time to rest, too.
+Sara: You're right. Thank you.
+? サラが今週いそがしいのはなぜですか？ | やることがたくさんあるから | 旅行に行くから / 病気だったから / テストがないから
+? サラは何のためにピアノを練習しますか？ | コンサート | テスト / 授業 / 誕生日会
+? トムは何と言っていましたか？ | 休む時間も必要だよ。 | もっと練習するべきだよ。 / ぼくもいそがしいです。 / コンサートに行くよ。
+
+# 8-6
+Leo: What do you enjoy doing on weekends?
+Emma: I enjoy taking pictures in the park.
+Leo: That sounds fun. What do you take pictures of?
+Emma: Flowers and birds. I finished making a photo book last week.
+? エマが週末に楽しんでいることは何ですか？ | 公園で写真をとること | 公園で走ること / 花を育てること / 絵をかくこと
+? エマは何の写真をとりますか？ | 花と鳥 | 犬とねこ / 山と川 / 友だち
+? エマは何と言っていましたか？ | 先週写真集を作り終えました。 | 先週カメラを買いました。 / 写真をとるのは苦手です。 / 写真集を作り始めました。
+
+# 8-6
+Yumi: My brother is good at cooking.
+Mika: Really? Does he like cooking?
+Yumi: Yes. He likes making Italian food.
+Mika: I love pizza! Making pizza at home sounds fun.
+? ユミのお兄さんが得意なことは何ですか？ | 料理 | 野球 / 歌うこと / 絵をかくこと
+? お兄さんが作るのが好きな料理は何ですか？ | イタリア料理 | 中華料理 / 和食 / フランス料理
+? ミカは何と言っていましたか？ | 家でピザを作るのは楽しそうです。 | わたしは料理が得意です。 / わたしはピザが好きではありません。 / わたしの兄も料理が好きです。
+
+# 8-7
+Ken: When I got home yesterday, my dog was sleeping on my bed.
+Aya: Ha-ha. That's cute.
+Ken: If it's sunny tomorrow, let's take him to the park.
+Aya: OK. I think he will be happy.
+? ケンが家に帰ったとき、犬は何をしていましたか？ | ベッドの上で寝ていた | ほえていた / 庭で遊んでいた / ごはんを食べていた
+? あした晴れたら何をしますか？ | 犬を公園に連れていく | 海へ行く / 犬をあらう / 買い物に行く
+? アヤは何と言っていましたか？ | 犬は喜ぶと思います。 | 雨がふると思います。 / わたしは犬がこわいです。 / わたしも犬をかっています。
+
+# 8-7
+Lucas: I didn't go to school yesterday because I had a cold.
+Sara: Are you OK now?
+Lucas: Yes. I think I'm fine now.
+Sara: Good. If you need the notes, I can show you mine.
+? ルーカスがきのう学校を休んだ理由は何ですか？ | かぜをひいていたから | 旅行に行ったから / ねぼうしたから / けがをしたから
+? ルーカスは今どうですか？ | 元気になった | まだかぜをひいている / 熱がある / 病院にいる
+? サラは何と言っていましたか？ | ノートが必要なら、わたしのを見せてあげます。 | わたしもかぜをひきました。 / 早く寝てください。 / わたしもきのう休みました。
+
+# 8-8
+Tom: Is there a convenience store near here?
+Emma: Yes, there is. There is one next to the bank.
+Tom: Are there any restaurants around here?
+Emma: There are two on Green Street. I like the Italian one.
+? コンビニはどこにありますか？ | 銀行のとなり | 駅の前 / 郵便局の後ろ / 公園の中
+? グリーン通りにレストランはいくつありますか？ | 2つ | 1つ / 3つ / ない
+? エマは何と言っていましたか？ | イタリア料理の店が好きです。 | レストランはありません。 / コンビニはありません。 / 中華料理の店が好きです。
+
+# 8-8
+Ben: How many people are there in your family, Mika?
+Mika: There are five. My parents, my two brothers, and me.
+Ben: Is there a pet in your house?
+Mika: Yes. There is a cat named Tama.
+? ミカの家族は何人ですか？ | 5人 | 4人 / 6人 / 3人
+? ミカの家にいるペットは何ですか？ | ねこ | 犬 / うさぎ / 鳥
+? ベンは何と言っていましたか？ | 家にペットはいますか？ | ぼくの家には犬がいます。 / ぼくはねこをかっています。 / ぼくは5人家族です。
+
+# 8-9
+Yumi: Which is bigger, Japan or the U.K.?
+Leo: I think Japan is bigger.
+Yumi: You're right. And Japan has more people.
+Leo: But the U.K. is older than the U.S.
+? 日本とイギリスでは、どちらが大きいですか？ | 日本 | イギリス / 同じくらい / わからない
+? ユミが付け加えたことは何ですか？ | 日本のほうが人口が多い | イギリスのほうが人口が多い / イギリスのほうが古い / 日本のほうが寒い
+? レオは何と言っていましたか？ | イギリスはアメリカより古いです。 | 日本はイギリスより小さいです。 / アメリカはイギリスより古いです。 / ぼくはイギリスに住んでいます。
+
+# 8-9
+Aya: This bag is too expensive.
+Ken: How about this one? It's cheaper.
+Aya: It's nice, but it's smaller than mine.
+Ken: Then, how about the black one? It's bigger and cheaper.
+Aya: Perfect. I'll take it.
+? アヤが最初に見たかばんはどうでしたか？ | 高すぎた | 小さすぎた / 重すぎた / 古すぎた
+? アヤが最後に選んだかばんは何色ですか？ | 黒 | 白 / 赤 / 青
+? アヤは何と言っていましたか？ | それにします。 | それはいりません。 / わたしのかばんより大きいです。 / もっと高いのがいいです。
+
+# 8-10
+Lucas: Who is the fastest runner in your class?
+Sara: Riku is. He runs the fastest of all.
+Lucas: Who is the tallest?
+Sara: Riku is the tallest, too. He is the most popular boy in our class.
+? クラスでいちばん速く走るのはだれですか？ | リク | サラ / ルーカス / ケン
+? リクについて正しいのはどれですか？ | いちばん背が高い | いちばん背が低い / いちばん勉強ができる / いちばん年上
+? サラは何と言っていましたか？ | 彼はクラスでいちばん人気のある男の子です。 | わたしがいちばん速いです。 / 彼はクラスでいちばん背が低いです。 / 彼はいちばんおもしろいです。
+
+# 8-10
+Emma: What is the highest mountain in Japan?
+Tom: It's Mt. Fuji. It's 3,776 meters high.
+Emma: What is the longest river in Japan?
+Tom: The Shinano River. It's the longest of all.
+? 日本でいちばん高い山はどこですか？ | 富士山 | 北岳 / 浅間山 / 阿蘇山
+? 日本でいちばん長い川は何ですか？ | 信濃川 | 利根川 / 石狩川 / 淀川
+? 富士山の高さは何メートルですか？ | 3776メートル | 3677メートル / 3767メートル / 3376メートル
+
+# 8-11
+Ben: Do you like summer better than winter?
+Yumi: Yes. I like summer better because I can swim.
+Ben: I like winter better. I can ski.
+Yumi: Is skiing as fun as snowboarding?
+Ben: Yes. Both are fun.
+? ユミはどちらの季節のほうが好きですか？ | 夏 | 冬 / 春 / 秋
+? ベンが冬を好きな理由は何ですか？ | スキーができるから | 泳げるから / 雪だるまが作れるから / 暑くないから
+? ベンは何と言っていましたか？ | どちらも楽しいです。 | スキーはスノーボードほど楽しくありません。 / ぼくは夏のほうが好きです。 / スキーはできません。
+
+# 8-11
+Mika: This dictionary is as heavy as a brick!
+Leo: Ha-ha. Use this one. It's not as heavy as yours.
+Mika: Thanks. Which do you like better, paper dictionaries or online dictionaries?
+Leo: I like online ones better. They are faster.
+? ミカの辞書はどのくらい重いですか？ | れんがと同じくらい | 本1冊と同じくらい / とても軽い / 教科書2冊分
+? レオが好きなのはどちらの辞書ですか？ | オンラインの辞書 | 紙の辞書 / どちらも好きではない / 電子辞書
+? レオは何と言っていましたか？ | そのほうが速いです。 | 紙の辞書のほうが好きです。 / ぼくの辞書はきみのより重いです。 / ぼくは辞書を使いません。
+
+# 8-12
+Aya: This temple is very old. It was built about 1,300 years ago.
+Lucas: Wow. Is it visited by many people?
+Aya: Yes. It's visited by many tourists every year.
+Lucas: Can pictures be taken here?
+Aya: Outside, yes. But not inside.
+? このお寺は何年くらい前に建てられましたか？ | 約1300年前 | 約300年前 / 約1000年前 / 約130年前
+? このお寺には毎年だれがたくさん来ますか？ | 観光客 | 生徒 / お坊さん / 留学生
+? アヤは何と言っていましたか？ | 外ではいいですが、中ではだめです。 | 中ではいいですが、外ではだめです。 / 写真はどこでもとれます。 / 写真はとれません。
+
+# 8-12
+Ken: Is this song popular in America?
+Emma: Yes. It is loved by young people.
+Ken: Who wrote it?
+Emma: It was written by a Japanese singer.
+Ken: Really? I didn't know that.
+? この歌はアメリカでだれに好かれていますか？ | 若い人たち | お年寄り / 子どもたち / 先生たち
+? この歌はだれによって書かれましたか？ | 日本人の歌手 | アメリカ人の歌手 / エマ / ケン
+? ケンは何と言っていましたか？ | それは知りませんでした。 | それは知っていました。 / ぼくはその歌手が好きです。 / ぼくはその歌を書きました。
+
+# 8-13
+Sara: My grandfather gave me this watch.
+Tom: It's nice. Was it a birthday present?
+Sara: Yes. He also sent me a letter. It made me very happy.
+Tom: Your grandfather is kind.
+? サラにうで時計をくれたのはだれですか？ | おじいさん | お父さん / おばあさん / お兄さん
+? おじいさんは時計のほかに何を送りましたか？ | 手紙 | 本 / 写真 / 花
+? サラは何と言っていましたか？ | それはわたしをとても幸せにしました。 | それはわたしを悲しくさせました。 / わたしは手紙を送りました。 / それはクリスマスのプレゼントでした。
+
+# 8-13
+Ben: Everyone calls me Benny.
+Yumi: Can I call you Benny, too?
+Ben: Sure. What should I call you?
+Yumi: Please call me Yumi. My friends call me Yu-chan, too.
+? みんなはベンを何とよびますか？ | ベニー | ベンジー / ビッグ・ベン / ベンちゃん
+? ユミの友だちはユミを何とよびますか？ | ユーちゃん | ユミっち / ユンちゃん / ユーミン
+? ユミは何と言っていましたか？ | わたしをユミとよんでください。 | わたしをベニーとよんでください。 / わたしにはあだ名がありません。 / あなたをベンとよびます。
+
+# 8-14
+Lucas: I don't know how to use this machine.
+Aya: It's easy. Push this button first.
+Lucas: And then?
+Aya: Choose what to buy. It is important to check the price.
+? ルーカスがわからないことは何ですか？ | この機械の使い方 | 切符の買い方 / 駅への行き方 / 電話のかけ方
+? 最初に何をしますか？ | このボタンをおす | お金を入れる / 画面にさわる / カードを入れる
+? アヤは何と言っていましたか？ | 値段を確かめることが大切です。 | それはむずかしいです。 / 何を買えばいいかわかりません。 / このボタンはおさないで。
+
+# 8-14
+Mika: It's difficult for me to speak English.
+Leo: Don't worry. It is important to practice every day.
+Mika: Can you tell me what to do?
+Leo: Try to read English books aloud. It's fun to learn new words.
+? ミカにとってむずかしいことは何ですか？ | 英語を話すこと | 英語を書くこと / 英語を聞くこと / 漢字を書くこと
+? レオがすすめたことは何ですか？ | 英語の本を声に出して読むこと | 英語の映画を見ること / 外国へ行くこと / 単語を書くこと
+? レオは何と言っていましたか？ | 毎日練習することが大切です。 | 英語を話すのはかんたんです。 / 毎週練習すればいいです。 / 英語はむずかしいです。
