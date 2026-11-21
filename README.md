@@ -31,7 +31,8 @@ python3 -m http.server 8080 # ローカルで確認
 - 記録をクラウド（Firestore users/{uid}）に保存して、ほかの端末でもつづきから。はじめてのログインでは端末の記録とクラウドの記録を合わせる（⭐は多い方、なかまは両方）
 - クラウドへの書きこみは、ステップの終わり・アプリをかくした／とじたとき・ガチャやボス勝利のあと（3分以内はまとめる）だけ。内容が同じなら書かない（v1.3.1）。オフラインでもOK
 - マイページ：アカウント欄（メール・同期状態・今すぐ保存・ログアウト・アカウント削除）
-- privacy.html（プライバシーポリシー）・terms.html（利用規約）、firestore.rules（本人だけ読み書き）
+- privacy.html（プライバシーポリシー）・terms.html（利用規約）、firestore.rules（本人だけ読み書き・運営者だけ全員を読める）
+- admin.html（運営者の管理画面：利用のようす。運営者の Google アカウントだけ）。テスト：tools/test_rules.js（ルール）・tools/test_admin.py（管理画面、Firebase エミュレーター）
 - 設定は firebase-config.js（enabled:false でログイン機能を止められる）
 
 ## v1.2.0 の主な変更

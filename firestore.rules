@@ -1,12 +1,22 @@
 rules_version = '2';
-// ほしまなび — Firestore セキュリティルール
-// users/{userId} は、ログインした本人（request.auth.uid == userId）だけが読み書きできる。それ以外はすべて拒否。
+// ほしまなび — Firestore セキュリティルール（v1.6.2）
+// ・users/{userId} は、ログインした本人（request.auth.uid == userId）だけが書きこめる・消せる。
+// ・読むのは本人と、運営者（管理者）の Google アカウントだけ。管理者も書きかえ・削除はできない。
+// ・それ以外はすべて拒否。
 service cloud.firestore {
   match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function isOwner(userId) { return signedIn() && request.auth.uid == userId; }
+    function isAdmin() {
+      return signedIn()
+        && request.auth.token.email_verified == true
+        && request.auth.token.email in ['huishilichuan@gmail.com', 'keijitachikawa4@gmail.com'];
+    }
     match /users/{userId} {
-      allow read, delete: if request.auth != null && request.auth.uid == userId;
-      allow create, update: if request.auth != null
-        && request.auth.uid == userId
+      allow get: if isOwner(userId) || isAdmin();
+      allow list: if isAdmin();
+      allow delete: if isOwner(userId);
+      allow create, update: if isOwner(userId)
         && request.resource.data.keys().hasOnly(['data', 'updatedAt', 'v'])
         && request.resource.data.data is string
         && request.resource.data.data.size() <= 800000

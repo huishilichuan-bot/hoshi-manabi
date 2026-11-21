@@ -11,6 +11,7 @@ const isInApp = () => /Line\/|FBAN|FBAV|Instagram|MicroMessenger|Twitter|; wv\)/
 const $ = (s, r = document) => r.querySelector(s);
 const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 const APP = () => window.HM_APP;
+const ADMINS = ["huishilichuan@gmail.com", "keijitachikawa4@gmail.com"]; // 運営者（管理画面を開ける Google アカウント）
 const isStandalone = () => (window.matchMedia && matchMedia("(display-mode: standalone)").matches) || navigator.standalone === true;
 const isIOS = () => /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 
@@ -162,6 +163,7 @@ function listen() {
 function resume(user) {
   S.user = user; S.gen++; S.ready = false; setStatus("syncing");
   if (APP().profileKey() !== ukey(user.uid)) APP().useProfile(ukey(user.uid));
+  try { APP().setAcct && APP().setAcct(user); } catch (e) {}
   const m = readJSON(HASH_KEY(user.uid)) || {}; S.lastHash = m.h || ""; S.cloudSig = m.c || "";
   listen();
 }
@@ -190,6 +192,7 @@ async function newLogin(user) {
     }
     localStorage.setItem(ACTIVE_KEY, user.uid);
     APP().useProfile(ukey(user.uid), account, { home: true });
+    try { APP().setAcct && APP().setAcct(user); } catch (e) {}
     S.cloudSig = doc ? strHash(doc.data) : "";
     S.lastHash = account === remote && remote ? hashOf(APP().exportState()) : "";
     S.ready = true; remember();
@@ -318,7 +321,7 @@ function sectionHtml() {
   let h = '<div class="sec">アカウント</div>';
   if (S.user) {
     const ini = (S.user.email || "?").slice(0, 1).toUpperCase();
-    h += '<div class="acct-card"><div class="acct-row"><span class="acct-av">' + esc(ini) + '</span><div class="grow"><b class="acct-mail">' + esc(S.user.email) + '</b><small>' + (S.user.provider === "google.com" ? "Google でログイン中" : "メールアドレスでログイン中") + '</small></div></div><div class="acct-sync" id="acct-sync">' + statusLine() + '<small class="acct-note">ほかの端末とも自動で同期するよ</small></div><div class="acct-btns"><button type="button" class="btn" data-acct="logout">ログアウト</button></div><button type="button" class="link-btn acct-del" data-acct="delete">アカウントを削除する</button></div>';
+    h += '<div class="acct-card"><div class="acct-row"><span class="acct-av">' + esc(ini) + '</span><div class="grow"><b class="acct-mail">' + esc(S.user.email) + '</b><small>' + (S.user.provider === "google.com" ? "Google でログイン中" : "メールアドレスでログイン中") + '</small></div></div><div class="acct-sync" id="acct-sync">' + statusLine() + '<small class="acct-note">ほかの端末とも自動で同期するよ</small></div><div class="acct-btns"><button type="button" class="btn" data-acct="logout">ログアウト</button>' + (ADMINS.includes(String(S.user.email || "").toLowerCase()) ? '<a class="btn primary" href="./admin.html" data-acct="admin" style="text-align:center;text-decoration:none">📊 管理画面（利用のようす）</a>' : "") + '</div><button type="button" class="link-btn acct-del" data-acct="delete">アカウントを削除する</button></div>';
   } else {
     h += '<div class="acct-card guest"><div class="acct-row"><span class="acct-av g">👤</span><div class="grow"><b>ゲストで使っています</b><small>記録はこの端末の中に保存されています</small></div></div><p class="small">ログインすると、記録がアカウントに保存されて、iPhone・iPad など、どの端末でも同じ記録で遊べるよ。</p><button type="button" class="btn primary block" data-acct="login">ログイン・新規登録</button></div>';
   }

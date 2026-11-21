@@ -72,7 +72,7 @@
   function fresh() {
     return { schema: SCHEMA, created: now(), settings: { sound: true, haptic: true, nick: "", vol: 0.8, bgm: true, bgmVol: 0.5, remind: false, remindAt: "17:00", fs: "m", rmotion: false, grade: 0, hint: true }, days: {}, totalStars: 0, pulls: 0, pullsUsed: 0,
       chars: { mori: { n: 1, shards: 0, star: 0, t: now() } }, partner: "mori", look: { bg: "note", maru: "red", title: "first" },
-      progress: {}, last: null, reports: [], gachaLog: [], games: {}, wrongBox: [], boxGone: {}, bossWins: {}, boxCleared: 0, bestCombo: 0 };
+      progress: {}, last: null, reports: [], gachaLog: [], games: {}, wrongBox: [], boxGone: {}, bossWins: {}, boxCleared: 0, bestCombo: 0, use: {} };
   }
   function migrate(s) {
     if (!s || typeof s !== "object") return fresh();
@@ -83,6 +83,18 @@
     if (!s.chars.mori) s.chars.mori = f.chars.mori;
     s.schema = SCHEMA;
     return s;
+  }
+  // ---------- 利用のようす（日ごと：勉強した時間・答えた数・正解の数・教科ごと）。運営者の管理画面で使う ----------
+  const USE_DAYS = 400, USE_CAP_MS = 120000;
+  function logUse(subj, ok, ms, counted) {
+    try {
+      const u = (state.use = state.use && typeof state.use === "object" ? state.use : {}), k = today();
+      const d = (u[k] = u[k] || { ms: 0, n: 0, ok: 0, s: {} });
+      d.ms += Math.max(0, Math.min(USE_CAP_MS, Math.round(ms || 0)));
+      if (counted) { d.n++; if (ok) d.ok++; const sid = String(subj || "other"); const a = (d.s[sid] = d.s[sid] || [0, 0]); a[0]++; if (ok) a[1]++; }
+      state.lastActive = now();
+      const ks = Object.keys(u); if (ks.length > USE_DAYS) ks.sort().slice(0, ks.length - USE_DAYS).forEach((x) => delete u[x]);
+    } catch (e) {}
   }
   let state;
   try { state = migrate(JSON.parse(localStorage.getItem(KEY) || "null")); } catch (e) { state = fresh(); }
@@ -544,7 +556,7 @@
   }
   // v1.6 スピーキングの「あとで話す」：まちがいにしない（その問題は数に入れない）
   function skipQ(q) {
-    Q.answered = true; Q.skipped = (Q.skipped || 0) + 1;
+    Q.answered = true; Q.skipped = (Q.skipped || 0) + 1; logUse(q.s || Q.s, false, performance.now() - Q.shownAt, false);
     if (Q.mode === "main") { Q.n = Math.max(1, Q.n - 1); Q.need = HM.passNeed(Q.n); Q.results.push({ q, ok: false, skip: true, given: "あとで話す" }); }
     else if (Q.mode === "retry") Q.retryRes.push({ q, ok: false, skip: true, given: "あとで話す" });
     workShowResult(q, null);
@@ -570,6 +582,7 @@
       ok = j.ok;
     }
     Q.answered = true;
+    logUse(q.s || Q.s, ok, performance.now() - Q.shownAt, true);
     if (Q.mode !== "retry") Q.results.push({ q, ok, given: gtext });
     else if (Q.mode === "retry") { Q.retryRes.push({ q, ok, given: gtext }); if (ok) Q.retryCorrect++; }
     afterAnswer(q, ok);
@@ -1331,6 +1344,7 @@
   window.HM_APP = { state: () => state, save, render, today, dkey, setClockOffset: (ms) => { clockOffset = ms; render(); }, GAMES, gachaPull, rates: () => ({ normal: GACHA_RATES.slice(), sr: GACHA_RATES_SR.slice() }), drawRarity, startStep, findStep, judgeNum, passNeed: HM.passNeed, STARS_TO_UNLOCK, READ_MS, starsToday, gamesOpen, pullsLeft, startGame, openGameMenu, gameRank, version: VERSION, quiz: () => Q, showQ: () => showQ(), tab: () => tab, exportState: () => JSON.parse(JSON.stringify(state)), importState: (d) => { state = migrate(JSON.parse(JSON.stringify(d))); try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} render(); },
     // プロフィール（保存場所）を切りかえる。data があればそれを使い、なければその場所の記録を読む
     useProfile: (key, data, opt) => { KEY = key || GUEST_KEY; let d = data; if (d === undefined) { try { d = JSON.parse(localStorage.getItem(KEY) || "null"); } catch (e) { d = null; } } state = migrate(d ? JSON.parse(JSON.stringify(d)) : null); try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} if (Q && !$("#quiz").hidden) { try { quitQuiz(); } catch (e) {} } if (opt && opt.home) { tab = "home"; nav = []; navDir = "tab"; } render(); },
+    setAcct: (a) => { if (!a || !a.uid) return; const cur = state.acct || {}; if (cur.uid === a.uid && cur.email === a.email && cur.name === a.name && cur.provider === a.provider) return; state.acct = { uid: a.uid, email: a.email || "", name: a.name || "", provider: a.provider || "" }; save(); },
     profileKey: () => KEY, GUEST_KEY, charHtml, sound, toast, haptic, openSheet, closeSheet, startBox, startBoss, startStep, speak, canSpeak };
 
   // テスト用：?clock=+86400000 のように時計をずらせる

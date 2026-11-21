@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#14112b">
+<title>管理画面 | ほしまなび</title>
+<link rel="icon" href="./icons/icon-192.png">
+<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+<style>
+:root{--bg:#f3f2fb;--card:#fff;--ink:#1b1d3a;--muted:#6a6d89;--line:#e7e6f3;--brand:#5b4ce0;--brand2:#8b5cf6;--ok:#1f9a62;--warn:#e08a12;--sat:env(safe-area-inset-top);--sab:env(safe-area-inset-bottom)}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;font-size:15px;line-height:1.5}
+button,input,select{font:inherit;color:inherit}
+.top{position:sticky;top:0;z-index:5;background:linear-gradient(135deg,#1b1640,#2b2167);color:#fff;padding:calc(var(--sat) + 10px) 16px 12px;display:flex;align-items:center;gap:10px;box-shadow:0 6px 20px rgba(20,17,43,.25)}
+.top .logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#ffd54a,#ff9f1c);display:grid;place-items:center;font-size:19px;flex:none}
+.top h1{font-size:16px;min-width:0;white-space:nowrap;margin:0;flex:1;line-height:1.2}.top h1 small{display:block;font-size:11.5px;font-weight:500;opacity:.75;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.top .ic{background:rgba(255,255,255,.14);border:0;border-radius:12px;height:36px;min-width:36px;padding:0 10px;color:#fff;cursor:pointer;display:grid;place-items:center;font-size:13px;font-weight:700;white-space:nowrap}.top .ic.r{font-size:18px}
+.top .ic:active{transform:scale(.96)}
+main{max-width:980px;margin:0 auto;padding:14px 14px calc(var(--sab) + 40px)}
+.center{min-height:70vh;display:grid;place-items:center;text-align:center}
+.gate{background:var(--card);border-radius:24px;padding:28px 22px;box-shadow:0 10px 30px rgba(40,30,90,.10);max-width:380px;width:100%}
+.gate .big{font-size:46px}.gate h2{margin:8px 0 4px;font-size:21px}.gate p{color:var(--muted);margin:6px 0 18px;font-size:14px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:14px;padding:12px 18px;font-weight:700;cursor:pointer;background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;box-shadow:0 4px 0 #3b2fa8;width:100%}
+.btn:active{transform:translateY(2px);box-shadow:0 2px 0 #3b2fa8}
+.btn.ghost{background:#efeefa;color:var(--brand);box-shadow:none}
+.btn.g{background:#fff;color:#1f1f1f;border:1.5px solid #dadce0;box-shadow:0 2px 0 #dadce0}
+.who{font-size:13px;color:var(--muted);margin:12px 0 0}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}
+@media(min-width:720px){.kpis{grid-template-columns:repeat(4,1fr)}}
+.kpi{background:var(--card);border-radius:18px;padding:14px;box-shadow:0 4px 14px rgba(30,30,60,.06);position:relative;overflow:hidden}
+.kpi .l{font-size:12.5px;color:var(--muted);font-weight:600}.kpi .v{font-size:26px;font-weight:800;letter-spacing:-.02em;margin-top:2px}.kpi .v small{font-size:13px;font-weight:700;color:var(--muted);margin-left:2px}
+.kpi .e{position:absolute;right:10px;top:10px;font-size:20px;opacity:.9}
+.panel{background:var(--card);border-radius:18px;padding:14px;box-shadow:0 4px 14px rgba(30,30,60,.06);margin-bottom:14px}
+.panel h3{margin:0 0 10px;font-size:15px;display:flex;align-items:center;gap:6px}
+.bars{display:flex;align-items:flex-end;gap:5px;height:110px;padding-top:6px}
+.bars .b{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end;min-width:0}
+.bars .b i{display:block;width:100%;max-width:26px;border-radius:7px 7px 3px 3px;background:linear-gradient(180deg,#8b7bff,#5b4ce0);min-height:3px}
+.bars .b.today i{background:linear-gradient(180deg,#ffcf4a,#ff9f1c)}
+.bars .b span{font-size:10.5px;color:var(--muted);white-space:nowrap}.bars .b em{font-style:normal;font-size:10px;color:var(--ink);font-weight:700;min-height:13px}
+.tools{display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:10px}
+.tools input,.tools select{background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;min-width:0;font-size:15px}
+.tools select{-webkit-appearance:none;appearance:none;padding-right:30px;background:var(--card) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236a6d89' stroke-width='2' fill='none'/%3E%3C/svg%3E") no-repeat right 11px center;max-width:46vw}
+.list{display:grid;gap:10px}
+.u{background:var(--card);border-radius:18px;box-shadow:0 4px 14px rgba(30,30,60,.06);overflow:hidden}
+.u-h{display:flex;gap:12px;align-items:center;padding:13px 14px;cursor:pointer;width:100%;background:none;border:0;text-align:left}
+.av{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:17px;flex:none}
+.u-n{flex:1;min-width:0}.u-n b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:15.5px}
+.u-n small{display:block;color:var(--muted);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#c9c8d8;margin-right:5px;vertical-align:1px}.dot.on{background:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.18)}.dot.wk{background:#f5b301}
+.chev{color:#b3b1c9;font-size:20px;transition:transform .2s}.u.open .chev{transform:rotate(90deg)}
+.u-s{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:0 14px 13px}
+.u-s div{background:#f6f5fd;border-radius:12px;padding:7px 6px;text-align:center}.u-s b{display:block;font-size:14.5px;white-space:nowrap;letter-spacing:-.02em}.u-s span{font-size:11px;color:var(--muted)}
+.u-d{display:none;border-top:1px solid var(--line);padding:12px 14px 14px}.u.open .u-d{display:block}
+.subj{display:grid;gap:8px;margin:4px 0 12px}
+.sj{display:grid;grid-template-columns:78px 1fr;align-items:center;column-gap:10px;row-gap:3px;font-size:13.5px;font-weight:600}.sj small{grid-column:2}
+.sj .track{height:10px;background:#eeedf7;border-radius:6px;overflow:hidden}.sj .track i{display:block;height:100%;border-radius:6px}
+.sj small{color:var(--muted);white-space:nowrap;font-size:12px}
+.meta{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;font-size:12.5px;color:var(--muted)}.meta b{color:var(--ink);font-weight:600}
+.empty{text-align:center;color:var(--muted);padding:30px 10px}
+.spin{width:34px;height:34px;border:4px solid #dcd8ff;border-top-color:var(--brand);border-radius:50%;animation:sp 0.8s linear infinite;margin:0 auto 12px}@keyframes sp{to{transform:rotate(360deg)}}
+.note{font-size:12px;color:var(--muted);text-align:center;margin-top:14px}
+.err{background:#fff4e5;color:#8a4b00;border-radius:14px;padding:12px 14px;font-size:13.5px;margin-bottom:12px;text-align:left}
+.err code{background:#ffe7c2;border-radius:6px;padding:1px 5px;font-size:12px}
+</style>
+</head>
+<body>
+<header class="top"><div class="logo">⭐</div><h1>管理画面<small id="sub">ほしまなび・利用のようす</small></h1><button class="ic r" id="reload" hidden aria-label="更新">↻</button><button class="ic" id="csv" hidden aria-label="CSVで書き出す">CSV</button><button class="ic" id="out" hidden>ログアウト</button></header>
+<main id="main"><div class="center"><div><div class="spin"></div><p style="color:var(--muted)">読みこみ中…</p></div></div></main>
+<script src="./firebase-config.js"></script>
+<script type="module">
+const ADMINS = ["huishilichuan@gmail.com", "keijitachikawa4@gmail.com"];
+const CFG = window.HM_FIREBASE || {};
+const LOCAL = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+const QS = new URLSearchParams(location.search);
+const EMU = LOCAL && QS.get("emu") === "1"; // テスト用（手元のエミュレーターだけ）
+const $ = (s, r = document) => r.querySelector(s);
+const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+const SUBJ = [["math", "算数・数学", "#2f7fd8"], ["ja", "国語", "#d9534f"], ["life", "生活", "#4caf50"], ["sci", "理科", "#8a5cd6"], ["soc", "社会", "#e08a12"], ["en", "英語", "#1f9a82"]];
+const COLORS = ["#5b4ce0", "#e0527a", "#1f9a82", "#e08a12", "#2f7fd8", "#8a5cd6", "#d9534f", "#0e9fb5"];
+const pad = (n) => String(n).padStart(2, "0");
+const dkey = (t) => { const d = new Date(t); return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); };
+const DAY = 86400000;
+const isAdmin = (u) => !!(u && u.email && u.emailVerified !== false && ADMINS.includes(String(u.email).toLowerCase()));
+let base, A, AU, FS, app, auth, db, ROWS = [], OPEN = new Set();
+
+function fmtMin(ms) { const m = Math.round((ms || 0) / 60000); if (m < 60) return m + "分"; const h = Math.floor(m / 60); return h + "時間" + (m % 60 ? (m % 60) + "分" : ""); }
+function ago(t) {
+  if (!t) return "—"; const s = (Date.now() - t) / 1000;
+  if (s < 90) return "たった今"; if (s < 3600) return Math.round(s / 60) + "分前"; if (s < 86400 && dkey(t) === dkey(Date.now())) return Math.round(s / 3600) + "時間前";
+  if (dkey(t) === dkey(Date.now() - DAY)) return "昨日";
+  const d = Math.round((new Date(dkey(Date.now())) - new Date(dkey(t))) / DAY); if (d < 7) return d + "日前";
+  const x = new Date(t); return x.getFullYear() + "/" + (x.getMonth() + 1) + "/" + x.getDate();
+}
+const gradeName = (g) => (!g ? "—" : g <= 6 ? "小" + g : "中" + (g - 6));
+
+// ひとり分の記録から、管理画面で見る数字をつくる
+function summarize(id, doc) {
+  let st = {}; try { st = JSON.parse(doc.data || "{}") || {}; } catch (e) {}
+  const use = st.use && typeof st.use === "object" ? st.use : {}, days = st.days && typeof st.days === "object" ? st.days : {};
+  let ms = 0, n = 0, ok = 0; const bySubj = {};
+  for (const [k, d] of Object.entries(use)) { ms += +d.ms || 0; n += +d.n || 0; ok += +d.ok || 0; for (const [s, a] of Object.entries(d.s || {})) { const b = (bySubj[s] = bySubj[s] || [0, 0]); b[0] += +a[0] || 0; b[1] += +a[1] || 0; } }
+  const active = new Set(); for (const [k, d] of Object.entries(use)) if ((d.n || 0) > 0 || (d.ms || 0) > 0) active.add(k);
+  for (const [k, d] of Object.entries(days)) if ((d && d.stars > 0) || (d && d.steps && Object.keys(d.steps).length)) active.add(k);
+  let streak = 0, t = Date.now(); if (!active.has(dkey(t))) t -= DAY; while (active.has(dkey(t))) { streak++; t -= DAY; }
+  const passed = {}, grades = {};
+  for (const [k, p] of Object.entries(st.progress || {})) { const [s, g] = k.split("|"); if (p && p.passed) passed[s] = (passed[s] || 0) + 1; if (+g) grades[s] = Math.max(grades[s] || 0, +g); }
+  const acct = st.acct || {};
+  const last = Math.max(+st.lastActive || 0, +doc.updatedAt || 0, +st.updatedAt || 0);
+  const name = acct.name || (st.settings && st.settings.nick) || "";
+  return { id, name, nick: (st.settings && st.settings.nick) || "", email: acct.email || "", provider: acct.provider || "", last, ms, n, ok, acc: n ? ok / n : null, streak, activeDays: active.size, stars: +st.totalStars || 0, bySubj, passed, grades, use, grade: st.settings && st.settings.grade, created: +st.created || 0, steps: Object.values(passed).reduce((a, b) => a + b, 0) };
+}
+
+function render() {
+  const today = dkey(Date.now()), wk = Date.now() - 7 * DAY;
+  const rows = ROWS;
+  const actToday = rows.filter((r) => r.last && dkey(r.last) === today).length;
+  const actWeek = rows.filter((r) => r.last >= wk).length;
+  const totMs = rows.reduce((a, r) => a + r.ms, 0), totN = rows.reduce((a, r) => a + r.n, 0), totOk = rows.reduce((a, r) => a + r.ok, 0);
+  // 14日間の合計（分）
+  const days14 = []; for (let i = 13; i >= 0; i--) { const k = dkey(Date.now() - i * DAY); let m = 0, u = 0; rows.forEach((r) => { const d = r.use[k]; if (d) { m += d.ms || 0; if ((d.n || 0) > 0) u++; } }); days14.push({ k, m, u }); }
+  const maxM = Math.max(1, ...days14.map((d) => d.m));
+  const q = ($("#q") && $("#q").value.trim().toLowerCase()) || "", sort = ($("#sort") && $("#sort").value) || "last";
+  let list = rows.filter((r) => !q || (r.name + " " + r.email + " " + r.nick + " " + r.id).toLowerCase().includes(q));
+  const key = { last: (r) => r.last, time: (r) => r.ms, n: (r) => r.n, acc: (r) => (r.acc == null ? -1 : r.acc), streak: (r) => r.streak, stars: (r) => r.stars }[sort];
+  list.sort((a, b) => key(b) - key(a));
+  const kpi = (e, l, v, s) => '<div class="kpi"><span class="e">' + e + '</span><div class="l">' + l + '</div><div class="v">' + v + (s ? "<small>" + s + "</small>" : "") + "</div></div>";
+  let h = '<div class="kpis">' + kpi("👥", "登録ユーザー", rows.length, "人") + kpi("🟢", "今日使った人", actToday, "人") + kpi("📅", "7日以内に使った人", actWeek, "人") + kpi("⏱️", "勉強時間の合計", fmtMin(totMs)) + kpi("✏️", "答えた問題", totN.toLocaleString(), "問") + kpi("🎯", "全体の正答率", totN ? Math.round((totOk / totN) * 100) : "—", totN ? "%" : "") + kpi("⭐", "⭐の合計", rows.reduce((a, r) => a + r.stars, 0).toLocaleString(), "こ") + kpi("🔥", "いちばん長い連続", Math.max(0, ...rows.map((r) => r.streak)), "日") + "</div>";
+  h += '<div class="panel"><h3>📈 14日間の勉強時間（全員の合計）</h3><div class="bars">' + days14.map((d) => '<div class="b' + (d.k === today ? " today" : "") + '" title="' + d.k + "：" + fmtMin(d.m) + "・" + d.u + '人"><em>' + (d.m >= 60000 ? Math.round(d.m / 60000) : "") + '</em><i style="height:' + Math.max(2, Math.round((d.m / maxM) * 82)) + '%"></i><span>' + (+d.k.slice(8)) + "</span></div>").join("") + "</div></div>";
+  h += '<div class="tools"><input id="q" type="search" placeholder="名前・メールでさがす" value="' + esc(q) + '" autocomplete="off"><select id="sort" aria-label="ならべかた">' + [["last", "最近使った順"], ["time", "勉強時間が長い順"], ["n", "答えた数が多い順"], ["acc", "正答率が高い順"], ["streak", "連続日数が長い順"], ["stars", "⭐が多い順"]].map(([v, t]) => '<option value="' + v + '"' + (v === sort ? " selected" : "") + ">" + t + "</option>").join("") + "</select></div>";
+  h += '<div class="list" id="list">' + (list.length ? list.map(userCard).join("") : '<div class="empty">まだユーザーがいません</div>') + "</div>";
+  h += '<p class="note">ログインして使っている人の記録です（' + new Date().toLocaleString("ja-JP") + " 時点）</p>";
+  const qf = document.activeElement && document.activeElement.id === "q";
+  $("#main").innerHTML = h;
+  if (qf) { const i = $("#q"); i.focus(); i.setSelectionRange(i.value.length, i.value.length); }
+  $("#q").addEventListener("input", render); $("#sort").addEventListener("change", render);
+  document.querySelectorAll(".u-h").forEach((b) => b.addEventListener("click", () => { const id = b.dataset.id; OPEN.has(id) ? OPEN.delete(id) : OPEN.add(id); b.parentElement.classList.toggle("open"); }));
+}
+
+function userCard(r) {
+  const i = Math.abs([...r.id].reduce((a, c) => a * 31 + c.charCodeAt(0), 7)) % COLORS.length;
+  const title = r.name || r.email || "名前なし", ini = (title.trim()[0] || "?").toUpperCase();
+  const on = r.last && dkey(r.last) === dkey(Date.now()) ? "on" : r.last >= Date.now() - 7 * DAY ? "wk" : "";
+  const sub = (r.email && r.name ? r.email + " ・ " : "") + (r.provider === "google.com" ? "Google" : r.provider === "password" ? "メール" : "");
+  let h = '<div class="u' + (OPEN.has(r.id) ? " open" : "") + '" data-uid="' + esc(r.id) + '"><button type="button" class="u-h" data-id="' + esc(r.id) + '"><span class="av" style="background:' + COLORS[i] + '">' + esc(ini) + '</span><span class="u-n"><b>' + esc(title) + "</b><small><span class=\"dot " + on + '"></span>' + esc(ago(r.last)) + (sub ? " ・ " + esc(sub) : "") + '</small></span><span class="chev">›</span></button>';
+  h += '<div class="u-s"><div><b>' + fmtMin(r.ms) + "</b><span>勉強時間</span></div><div><b>" + r.n.toLocaleString() + "</b><span>答えた数</span></div><div><b>" + (r.acc == null ? "—" : Math.round(r.acc * 100) + "%") + "</b><span>正答率</span></div><div><b>" + r.streak + "日</b><span>連続</span></div></div>";
+  h += '<div class="u-d"><div class="subj">' + SUBJ.map(([id, nm, c]) => { const a = r.bySubj[id] || [0, 0], p = r.passed[id] || 0; if (!a[0] && !p) return ""; const acc = a[0] ? Math.round((a[1] / a[0]) * 100) : null; return '<div class="sj"><span>' + nm + '</span><span class="track"><i style="width:' + (acc == null ? 0 : acc) + "%;background:" + c + '"></i></span><small>' + (acc == null ? "" : acc + "%・" + a[0] + "問・") + "クリア" + p + (r.grades[id] ? "・" + gradeName(r.grades[id]) + "まで" : "") + "</small></div>"; }).join("") + "</div>";
+  const last14 = []; for (let k = 13; k >= 0; k--) { const key = dkey(Date.now() - k * DAY), d = r.use[key]; last14.push({ key, m: d ? d.ms || 0 : 0 }); }
+  const mx = Math.max(1, ...last14.map((d) => d.m));
+  h += '<div class="bars" style="height:70px;margin-bottom:10px">' + last14.map((d) => '<div class="b' + (d.key === dkey(Date.now()) ? " today" : "") + '"><i style="height:' + Math.max(3, Math.round((d.m / mx) * 80)) + '%"></i><span>' + (+d.key.slice(8)) + "</span></div>").join("") + "</div>";
+  h += '<div class="meta"><div>⭐ 合計 <b>' + r.stars + "こ</b></div><div>クリアしたステップ <b>" + r.steps + "</b></div><div>使った日 <b>" + r.activeDays + "日</b></div><div>学年の設定 <b>" + gradeName(r.grade) + "</b></div><div>ニックネーム <b>" + esc(r.nick || "—") + "</b></div><div>はじめた日 <b>" + (r.created ? new Date(r.created).toLocaleDateString("ja-JP") : "—") + '</b></div><div style="grid-column:1/-1">ID <b style="font-family:ui-monospace,monospace;font-size:11.5px">' + esc(r.id) + "</b></div></div></div></div>";
+  return h;
+}
+
+function gate(html) { $("#main").innerHTML = '<div class="center"><div class="gate">' + html + "</div></div>"; }
+function showLogin(msg) {
+  ["reload", "csv", "out"].forEach((i) => ($("#" + i).hidden = true));
+  gate('<div class="big">🔐</div><h2>管理者ログイン</h2><p>運営者の Google アカウントでログインしてください。</p><button class="btn g" id="go"><svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>Google でログイン</button>' + (msg ? '<p class="who">' + esc(msg) + "</p>" : ""));
+  $("#go").addEventListener("click", login);
+}
+async function login() {
+  const p = new AU.GoogleAuthProvider(); p.setCustomParameters({ prompt: "select_account" });
+  try { await AU.signInWithPopup(auth, p); }
+  catch (e) { if (/popup-blocked|operation-not-supported|internal-error|web-storage-unsupported/.test(e.code || "")) await AU.signInWithRedirect(auth, p); else if (!/popup-closed|cancelled-popup/.test(e.code || "")) showLogin("ログインできませんでした（" + (e.code || e.message) + "）"); }
+}
+function notAdmin(u) {
+  ["reload", "csv"].forEach((i) => ($("#" + i).hidden = true)); $("#out").hidden = false;
+  gate('<div class="big">🙅</div><h2>このページは運営者専用です</h2><p>' + esc(u.email || "") + ' でログインしています。<br>運営者の Google アカウントに切りかえてください。</p><button class="btn ghost" id="sw">アカウントを切りかえる</button><p class="who"><a href="./" style="color:var(--brand);font-weight:700">ほしまなびにもどる</a></p>');
+  $("#sw").addEventListener("click", async () => { await AU.signOut(auth); login(); });
+}
+async function load(u) {
+  ["reload", "csv", "out"].forEach((i) => ($("#" + i).hidden = false)); $("#sub").textContent = u.email;
+  $("#main").innerHTML = '<div class="center"><div><div class="spin"></div><p style="color:var(--muted)">記録を集めています…</p></div></div>';
+  try {
+    const snap = await FS.getDocs(FS.collection(db, "users"));
+    ROWS = snap.docs.map((d) => summarize(d.id, d.data()));
+    render();
+  } catch (e) {
+    if (/permission/.test(e.code || "")) gate('<div class="big">🛠️</div><h2>Firestore のルールを更新してください</h2><div class="err">管理者が全員の記録を読めるルールがまだ公開されていません。Firebase コンソール → Firestore Database → ルール に、リポジトリの <code>firestore.rules</code> の内容を貼りつけて「公開」してください。</div><button class="btn" id="retry">もう一度読みこむ</button>');
+    else gate('<div class="big">📡</div><h2>読みこめませんでした</h2><p>' + esc(e.code || e.message) + '</p><button class="btn" id="retry">もう一度読みこむ</button>');
+    const r = $("#retry"); if (r) r.addEventListener("click", () => load(u));
+  }
+}
+function csv() {
+  const head = ["名前", "メール", "ニックネーム", "ID", "最後に使った日時", "勉強時間（分）", "答えた数", "正解の数", "正答率（%）", "連続日数", "使った日数", "⭐", "クリアしたステップ"];
+  const lines = [head].concat(ROWS.map((r) => [r.name, r.email, r.nick, r.id, r.last ? new Date(r.last).toLocaleString("ja-JP") : "", Math.round(r.ms / 60000), r.n, r.ok, r.acc == null ? "" : Math.round(r.acc * 100), r.streak, r.activeDays, r.stars, r.steps]));
+  const txt = "\ufeff" + lines.map((l) => l.map((v) => '"' + String(v == null ? "" : v).replace(/"/g, '""') + '"').join(",")).join("\r\n");
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([txt], { type: "text/csv" })); a.download = "hoshimanabi-users-" + dkey(Date.now()) + ".csv"; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+(async () => {
+  base = "https://www.gstatic.com/firebasejs/" + (CFG.sdk || "12.6.0") + "/";
+  [A, AU, FS] = await Promise.all([import(base + "firebase-app.js"), import(base + "firebase-auth.js"), import(base + "firebase-firestore.js")]);
+  const conf = EMU ? Object.assign({}, CFG.config, { projectId: QS.get("project") || "demo-hoshi", authDomain: location.host }) : CFG.config;
+  app = A.initializeApp(conf);
+  auth = AU.initializeAuth(app, { persistence: [AU.indexedDBLocalPersistence, AU.browserLocalPersistence], popupRedirectResolver: AU.browserPopupRedirectResolver });
+  auth.languageCode = "ja"; db = FS.getFirestore(app);
+  if (EMU) {
+    AU.connectAuthEmulator(auth, "http://127.0.0.1:9099", { disableWarnings: true }); FS.connectFirestoreEmulator(db, "127.0.0.1", 8080);
+    window.__adminTest = { signInAs: (email) => AU.signInWithCredential(auth, AU.GoogleAuthProvider.credential(JSON.stringify({ sub: "t-" + email.replace(/\W/g, ""), email, email_verified: true }))), signOut: () => AU.signOut(auth), list: async () => { try { return (await FS.getDocs(FS.collection(db, "users"))).size; } catch (e) { return e.code; } } };
+  }
+  $("#out").addEventListener("click", async () => { await AU.signOut(auth); });
+  $("#reload").addEventListener("click", () => auth.currentUser && load(auth.currentUser));
+  $("#csv").addEventListener("click", csv);
+  try { await AU.getRedirectResult(auth); } catch (e) {}
+  AU.onAuthStateChanged(auth, (u) => { if (!u) showLogin(); else if (!isAdmin(u)) notAdmin(u); else load(u); });
+})().catch((e) => gate('<div class="big">📡</div><h2>読みこめませんでした</h2><p>' + esc(e.message) + "</p>"));
+</script>
+</body>
+</html>

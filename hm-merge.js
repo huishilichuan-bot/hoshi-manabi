@@ -51,6 +51,16 @@
     }
     return out;
   }
+  // 利用のようす（日ごと）：同じ日は項目ごとに大きい方（ふたつの端末で同じ記録を二重に数えない）
+  function mergeUse(a, b) {
+    const out = {};
+    for (const k of new Set([...Object.keys(obj(a)), ...Object.keys(obj(b))])) {
+      const x = obj(obj(a)[k]), y = obj(obj(b)[k]), s = {};
+      for (const sid of new Set([...Object.keys(obj(x.s)), ...Object.keys(obj(y.s))])) { const p = arr(obj(x.s)[sid]), q = arr(obj(y.s)[sid]); s[sid] = [max(p[0], q[0]), max(p[1], q[1])]; }
+      out[k] = { ms: max(x.ms, y.ms), n: max(x.n, y.n), ok: max(x.ok, y.ok), s };
+    }
+    return out;
+  }
   // まだ何もしていない端末（はじめて開いただけ）の記録か
   function isBlank(st) {
     const days = Object.values(obj(st.days));
@@ -93,6 +103,9 @@
     out.look = Object.assign({}, obj(newer === L ? C : L).look, obj(newer.look));
     out.partner = out.chars[newer.partner] ? newer.partner : out.chars[L.partner] ? L.partner : Object.keys(out.chars)[0];
     out.last = newer.last || L.last || C.last || null;
+    out.use = mergeUse(L.use, C.use);
+    out.lastActive = max(L.lastActive, C.lastActive);
+    if (L.acct || C.acct) out.acct = obj(newer.acct).uid ? newer.acct : L.acct || C.acct;
     out.updatedAt = Math.max(num(L.updatedAt), num(C.updatedAt));
     return out;
   }
@@ -106,7 +119,7 @@
     while (bytes(json) > limit && arr(s.gachaLog).length) { s.gachaLog.splice(0, Math.max(1, Math.ceil(s.gachaLog.length / 4))); json = JSON.stringify(s); }
     return json;
   }
-  const api = { mergeStates, slimForCloud, isBlank };
+  const api = { mergeStates, slimForCloud, isBlank, mergeUse };
   root.HMMerge = api;
   if (typeof module !== "undefined") module.exports = api;
 })(typeof window !== "undefined" ? window : globalThis);
