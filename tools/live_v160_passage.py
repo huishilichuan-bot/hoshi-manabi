@@ -1,7 +1,7 @@
 # 本番で中3長文（400語以上）のリーディング画面を iPhone / iPad で撮る（紙ふぶきが消えてから）
 import time
 from playwright.sync_api import sync_playwright
-NOAUTH = "try{localStorage.setItem('hoshimanabi:consent',JSON.stringify({v:'2026-11-20',t:1}))}catch(e){}"
+NOAUTH = "try{localStorage.setItem('hoshimanabi:consent',JSON.stringify({v:'2026-11-21',t:1}))}catch(e){}"
 U = "https://huishilichuan-bot.github.io/hoshi-manabi/"; OUT = "/workspace/hoshi-manabi/screenshots/v16"
 with sync_playwright() as p:
     br = p.webkit.launch()

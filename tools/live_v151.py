@@ -1,5 +1,5 @@
 from playwright.sync_api import sync_playwright
-NOAUTH = "try{localStorage.setItem('hoshimanabi:consent',JSON.stringify({v:'2026-11-20',t:1}))}catch(e){}"
+NOAUTH = "try{localStorage.setItem('hoshimanabi:consent',JSON.stringify({v:'2026-11-21',t:1}))}catch(e){}"
 U = "https://huishilichuan-bot.github.io/hoshi-manabi/"
 with sync_playwright() as p:
     br = p.webkit.launch(); ctx = br.new_context(**p.devices["iPhone 14"]); pg = ctx.new_page(); pg.add_init_script(NOAUTH)

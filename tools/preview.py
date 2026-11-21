@@ -2,7 +2,7 @@
 # 使い方: python tools/preview.py math 4 "分度器" 3 [out_dir]
 import subprocess, sys, time, os, json
 from playwright.sync_api import sync_playwright
-NOAUTH = "Object.defineProperty(window, 'HM_FIREBASE', { configurable: true, get() { return { enabled: false }; }, set() {} }); try{localStorage.setItem('hoshimanabi:consent',JSON.stringify({v:'2026-11-20',t:1}))}catch(e){}"
+NOAUTH = "Object.defineProperty(window, 'HM_FIREBASE', { configurable: true, get() { return { enabled: false }; }, set() {} }); try{localStorage.setItem('hoshimanabi:consent',JSON.stringify({v:'2026-11-21',t:1}))}catch(e){}"
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 subj, grade, pat = sys.argv[1], int(sys.argv[2]), sys.argv[3]; n = int(sys.argv[4]) if len(sys.argv) > 4 else 2
 OUT = sys.argv[5] if len(sys.argv) > 5 else "/tmp/prev"; os.makedirs(OUT, exist_ok=True)

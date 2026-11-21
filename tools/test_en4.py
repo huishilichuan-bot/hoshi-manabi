@@ -4,7 +4,7 @@
 # 選択（聞く・会話・絵・長文）／1秒ブロック／スクリーンショット
 import subprocess, sys, time, os, json
 from playwright.sync_api import sync_playwright
-NOAUTH = "Object.defineProperty(window, 'HM_FIREBASE', { configurable: true, get() { return { enabled: false }; }, set() {} }); try{localStorage.setItem('hoshimanabi:consent',JSON.stringify({v:'2026-11-20',t:1}))}catch(e){}"
+NOAUTH = "Object.defineProperty(window, 'HM_FIREBASE', { configurable: true, get() { return { enabled: false }; }, set() {} }); try{localStorage.setItem('hoshimanabi:consent',JSON.stringify({v:'2026-11-21',t:1}))}catch(e){}"
 # 音声認識のにせもの：window.__srSay を「聞こえた言葉」として返す。__srDeny でマイク拒否
 FAKE_SR = """
 (() => { class FakeSR { constructor(){ this.lang=''; this.onresult=null; this.onend=null; this.onerror=null; this._l={}; }
@@ -82,7 +82,7 @@ try:
         ctx = br.new_context(**p.devices[devname]); pg = ctx.new_page(); pg.add_init_script(NOAUTH); pg.add_init_script(FAKE_SR)
         pg.on("pageerror", lambda e: errs.append(str(e)))
         pg.goto(URL + "?v=" + str(time.time()), wait_until="networkidle"); pg.wait_for_timeout(1200)
-        ok(tag + " バージョン 1.6.1", pg.evaluate("HM_APP.version") == "1.6.1")
+        ok(tag + " バージョン 1.6.2", pg.evaluate("HM_APP.version") == "1.6.2")
         info = pg.evaluate("Object.fromEntries(Object.entries(HM.SUBJECTS.en).map(([g, us]) => [g, [us.length, us.reduce((a, u) => a + u.steps.length, 0), us.reduce((a, u) => a + u.steps.reduce((b, s) => b + s.cnt, 0), 0)]]))")
         ok(tag + " 英語の学年・単元・ステップ数", info.get("3") == [10, 30, 360] and info.get("9") == [16, 48, 576], info)
         seen = set()

@@ -3,7 +3,7 @@
    ポリシーの内容を大きく変えたら POLICY_V を上げると、もう一度同意画面が出る。 */
 (function () {
   "use strict";
-  var POLICY_V = "2026-11-20", KEY = "hoshimanabi:consent";
+  var POLICY_V = "2026-11-21", KEY = "hoshimanabi:consent";
   var cur = null; try { cur = JSON.parse(localStorage.getItem(KEY) || "null"); } catch (e) {}
   window.HM_CONSENT = { version: POLICY_V, ok: !!(cur && cur.v === POLICY_V), get: function () { try { return JSON.parse(localStorage.getItem(KEY) || "null"); } catch (e) { return null; } } };
   if (window.HM_CONSENT.ok) return;
@@ -16,7 +16,8 @@
     '<p class="cs-lead">' + (again ? "プライバシーポリシーを新しくしました。" : "はじめる前に、") + 'データのあつかいを<b>おうちの人といっしょに</b>読んでね。</p>' +
     '<ul class="cs-list">' +
     '<li><span>📱</span><div><b>ログインしないとき</b>：勉強の記録は、この端末の中（ブラウザ）だけに保存されます。外には送りません。</div></li>' +
-    '<li><span>☁️</span><div><b>ログインしたとき</b>：メールアドレスと勉強の記録を、Google の Firebase に保存して、ほかの端末と同期します。</div></li>' +
+    '<li><span>☁️</span><div><b>ログインしたとき</b>：メールアドレスと勉強の記録（勉強した時間や正解の数など）を、Google の Firebase（主にアメリカのサーバー）に保存して、ほかの端末と同期します。アプリを良くするために、運営者も記録を見ることができます。</div></li>' +
+    '<li><span>🎤</span><div><b>声に出して言う問題</b>：🎤ボタンをタップしたときだけ、ブラウザの音声認識（Apple や Google など）でマイクを使います。ほしまなびは声を録音も保存もしません。「あとで話す」で話さずに進めます。</div></li>' +
     '<li><span>✍️</span><div><b>漢字の手書き</b>：書いた線はこの端末の中で判定するだけで、保存も送信もしません。</div></li>' +
     '<li><span>🚫</span><div><b>広告・課金・アクセス解析はありません。</b>情報を売ったり、ほかの会社にわたしたりしません。</div></li>' +
     '<li><span>🗑️</span><div>記録やアカウントは、マイページからいつでも消せます。</div></li>' +

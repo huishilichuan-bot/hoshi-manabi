@@ -32,7 +32,7 @@ jobs:
       - name: 公開するファイルだけを _site にまとめる（テスト・開発用の素材は公開しない）
         run: |
           mkdir -p _site
-          rsync -a --exclude '.git' --exclude '.github' --exclude '_site' --exclude 'tools' --exclude 'ref' --exclude 'dlg' --exclude 'screenshots' --exclude 'node_modules' --exclude 'README.md' --exclude '.gitignore' --exclude '*.py' ./ _site/
+          rsync -a --exclude '.git' --exclude '.github' --exclude '_site' --exclude 'tools' --exclude 'ref' --exclude 'dlg' --exclude 'screenshots' --exclude 'node_modules' --exclude 'README.md' --exclude '.gitignore' --exclude '*.py' --exclude '_s.js' ./ _site/
           test -f _site/index.html && test -f _site/sw.js && test -d _site/kanji
       - uses: actions/upload-pages-artifact@v3
         with:

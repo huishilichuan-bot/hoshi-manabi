@@ -16,7 +16,7 @@ try:
     br = p.chromium.launch(executable_path="/usr/bin/google-chrome", args=["--no-sandbox"])
     ctx = br.new_context(viewport={"width": 390, "height": 844}, device_scale_factor=2, is_mobile=True, has_touch=True)
     ctx.add_init_script(MOCK)
-    ctx.add_init_script("try{localStorage.setItem('hoshimanabi:consent',JSON.stringify({v:'2026-11-20',t:1}))}catch(e){}")
+    ctx.add_init_script("try{localStorage.setItem('hoshimanabi:consent',JSON.stringify({v:'2026-11-21',t:1}))}catch(e){}")
     # 本物の Firebase へ行く通信がないことを確かめる
     net = []
     ctx.on("request", lambda r: net.append(r.url) if (not r.url.startswith("http://localhost") and ("googleapis" in r.url or "gstatic" in r.url or "firebase" in r.url)) else None)
@@ -234,7 +234,7 @@ try:
     t = open(os.path.join(ROOT, "privacy.html"), encoding="utf-8").read()
     ok("privacy：Firebase・Google・localStorage・広告なし・販売なし・支払いなし・削除方法", all(k in t for k in ["Firebase", "Google でログイン", "localStorage", "広告は表示しません", "売ったり", "支払い", "アカウントを削除する"]))
     sw = open(os.path.join(ROOT, "sw.js"), encoding="utf-8").read()
-    ok("SW：v1.5.0・Firebase 通信はキャッシュしない", 'hoshi-manabi-v1.6.1' in sw and "googleapis" in sw and "firebase" in sw)
+    ok("SW：v1.5.0・Firebase 通信はキャッシュしない", 'hoshi-manabi-v1.6.2' in sw and "googleapis" in sw and "firebase" in sw)
     ok("本物の Firebase への通信なし（にせものを使用）", not net, net[:3])
     br.close()
 finally:

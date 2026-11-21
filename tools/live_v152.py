@@ -1,7 +1,7 @@
 # 本番（GitHub Pages）で v1.5.2 の計算メモ欄を iPhone / iPad の WebKit で確認
 import time
 from playwright.sync_api import sync_playwright
-NOAUTH = "try{localStorage.setItem('hoshimanabi:consent',JSON.stringify({v:'2026-11-20',t:1}))}catch(e){}"
+NOAUTH = "try{localStorage.setItem('hoshimanabi:consent',JSON.stringify({v:'2026-11-21',t:1}))}catch(e){}"
 U = "https://huishilichuan-bot.github.io/hoshi-manabi/"
 OUT = "/workspace/hoshi-manabi/screenshots/v152"
 with sync_playwright() as p:
