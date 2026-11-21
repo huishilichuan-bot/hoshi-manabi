@@ -21,6 +21,9 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__))); OUT = os.pat
 PORT = 8816
 srv = subprocess.Popen([sys.executable, "-m", "http.server", str(PORT)], cwd=ROOT, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL); time.sleep(0.8)
 fails = []; errs = []; shots = []
+# 本番確認：E4_LIVE=1 で GitHub Pages を開き、スクリーンショット名に live- をつける
+LIVE = os.environ.get("E4_LIVE") == "1"
+URL = "https://huishilichuan-bot.github.io/hoshi-manabi/" if LIVE else f"http://localhost:{PORT}/index.html"
 def ok(name, c, extra=""):
     print(("OK  " if c else "NG  ") + name + (" " + str(extra) if extra != "" else ""), flush=True)
     if not c: fails.append(name)
@@ -36,7 +39,7 @@ def kind(q):
     if q.get("pic"): return "mc-picture"
     return "mc-read"
 def snap(pg, name):
-    p = f"{OUT}/{name}.png"; pg.screenshot(path=p); shots.append(p)
+    p = f"{OUT}/{'live-' if LIVE else ''}{name}.png"; pg.screenshot(path=p); shots.append(p)
 def fb_ok(pg): return pg.evaluate("!!document.querySelector('.fb.ok')")
 def answer_right(pg, q, tag, seen, shoot=True):
     k = kind(q); first = k not in seen; seen.add(k)
@@ -65,7 +68,7 @@ try:
     for devname, tag in [("iPhone 14", "iphone"), ("iPad Pro 11", "ipad")]:
         ctx = br.new_context(**p.devices[devname]); pg = ctx.new_page(); pg.add_init_script(NOAUTH); pg.add_init_script(FAKE_SR)
         pg.on("pageerror", lambda e: errs.append(str(e)))
-        pg.goto(f"http://localhost:{PORT}/index.html"); pg.wait_for_timeout(1200)
+        pg.goto(URL + "?v=" + str(time.time()), wait_until="networkidle"); pg.wait_for_timeout(1200)
         ok(tag + " バージョン 1.6.0", pg.evaluate("HM_APP.version") == "1.6.0")
         info = pg.evaluate("Object.fromEntries(Object.entries(HM.SUBJECTS.en).map(([g, us]) => [g, [us.length, us.reduce((a, u) => a + u.steps.length, 0), us.reduce((a, u) => a + u.steps.reduce((b, s) => b + s.cnt, 0), 0)]]))")
         ok(tag + " 英語の学年・単元・ステップ数", info.get("3") == [10, 30, 360] and info.get("9") == [16, 48, 576], info)
@@ -150,7 +153,7 @@ try:
         # 音声認識がないブラウザ：カードでならべる
         ctx = br.new_context(**p.devices[devname]); pg = ctx.new_page(); pg.add_init_script(NOAUTH); pg.add_init_script(NOSR)
         pg.on("pageerror", lambda e: errs.append(str(e)))
-        pg.goto(f"http://localhost:{PORT}/index.html"); pg.wait_for_timeout(1200)
+        pg.goto(URL + "?v=" + str(time.time()), wait_until="networkidle"); pg.wait_for_timeout(1200)
         q = find(4, lambda q: q["t"] == "sp")
         ok(tag + " 音声認識がないときはカードで答えられる", pg.evaluate("!!document.querySelector('#e4alt .e4-pool') && !document.querySelector('#e4mic')"))
         pg.wait_for_timeout(1050)

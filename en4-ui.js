@@ -25,7 +25,7 @@
     } catch (e) { return false; }
   }
   E4.say = say;
-  const audioBar = (big) => TTS ? '<div class="e4-au' + (big ? " big" : "") + '"><button type="button" class="e4-play" data-e4="play"><span class="e4-wave"><i></i><i></i><i></i></span><b>聞く</b></button><button type="button" class="e4-slow" data-e4="slow" aria-label="ゆっくり聞く">🐢 ゆっくり</button></div>' : "";
+  const audioBar = (big, txt) => !TTS ? (typeof txt === "string" && txt ? '<div class="e4-au-txt say-text" lang="en">' + esc(txt) + "</div>" : "") : TTS ? '<div class="e4-au' + (big ? " big" : "") + '"><button type="button" class="e4-play" data-e4="play"><span class="e4-wave"><i></i><i></i><i></i></span><b>聞く</b></button><button type="button" class="e4-slow" data-e4="slow" aria-label="ゆっくり聞く">🐢 ゆっくり</button></div>' : "";
   function wireAudio(el, getLines) {
     el.querySelectorAll("[data-e4=play],[data-e4=slow]").forEach((b) => b.addEventListener("click", () => {
       const slow = b.dataset.e4 === "slow"; b.classList.add("on"); say(getLines(), slow, () => b.classList.remove("on")); setTimeout(() => b.classList.remove("on"), 8000);
@@ -39,7 +39,7 @@
   // ===== tl：カードをならべて英文を作る（タップでも、ドラッグでも） =====
   F.tl = {
     init: (q) => { const all = q.pieces.concat(q.extra || []); return { all, order: shuf(all.map((_, i) => i)), pick: [] }; },
-    html: (q) => (q.au ? audioBar(true) : "") + '<div class="e4-tl" id="e4tl"></div>',
+    html: (q) => (q.au ? audioBar(true, q.au) : "") + '<div class="e4-tl" id="e4tl"></div>',
     render(q, w, el) {
       const box = el.querySelector("#e4tl");
       const line = '<div class="e4-line" data-zone="line">' + (w.pick.length ? w.pick.map((i, k) => '<button type="button" class="e4-tile on" data-tp="' + k + '">' + esc(w.all[i]) + "</button>").join("") : '<span class="e4-ph">カードをタップ、またはここへドラッグ</span>') + "</div>";
@@ -92,7 +92,7 @@
   // ===== ty：自分で英語を書く（書き取り・和文英訳・1語の書き入れ） =====
   F.ty = {
     init: () => ({ v: "" }),
-    html: (q) => (q.au ? audioBar(true) : "") + '<div class="e4-ty">' + (q.fill ? '<input class="e4-in one" id="e4in" type="text" inputmode="latin" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" lang="en" enterkeyhint="done" placeholder="1語で書こう">' : '<textarea class="e4-in" id="e4in" rows="2" autocomplete="off" autocapitalize="sentences" autocorrect="off" spellcheck="false" lang="en" enterkeyhint="done" placeholder="ここに英語で書こう"></textarea>') + '<div class="e4-meta"><span>' + (q.fill ? "1語" : q.words + "語の文") + '</span><span id="e4cnt">0語</span></div></div>',
+    html: (q) => (q.au ? audioBar(true, q.au) : "") + '<div class="e4-ty">' + (q.fill ? '<input class="e4-in one" id="e4in" type="text" inputmode="latin" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" lang="en" enterkeyhint="done" placeholder="1語で書こう">' : '<textarea class="e4-in" id="e4in" rows="2" autocomplete="off" autocapitalize="sentences" autocorrect="off" spellcheck="false" lang="en" enterkeyhint="done" placeholder="ここに英語で書こう"></textarea>') + '<div class="e4-meta"><span>' + (q.fill ? "1語" : q.words + "語の文") + '</span><span id="e4cnt">0語</span></div></div>',
     mount(q, w, el, api) {
       if (q.au) wireAudio(el, () => q.au);
       const inp = el.querySelector("#e4in"), cnt = el.querySelector("#e4cnt");
@@ -191,8 +191,8 @@
         const P = q.passage, paras = String(P.text).split(/\n\n/);
         h += '<div class="e4-pass"><div class="e4-pass-h"><b>' + esc(P.title) + '</b><span>' + P.words + " 語</span></div>" + (P.au ? audioBar(false) : "") + '<div class="e4-pass-t' + (P.words > 250 ? " long" : "") + '">' + paras.map((x) => "<p>" + esc(x).replace(/^([A-Z][a-zA-Z.]*): /, "<b>$1:</b> ").replace(/ ([A-Z][a-z]+(?: [A-Z][a-z]+)?): /g, "<br><b>$1:</b> ") + "</p>").join("") + "</div></div>";
       } else if (q.dlg) {
-        h += '<div class="e4-dlg">' + audioBar(true) + '<div class="e4-dlg-l" id="e4dlg" hidden>' + q.dlg.map((l, i) => '<div class="e4-bub ' + (i % 2 ? "r" : "l") + '"><b>' + esc(l[0]) + "</b>" + esc(l[1]) + "</div>").join("") + "</div></div>";
-      } else if (q.au) h += audioBar(true) + '<div class="e4-trans" id="e4tr" hidden>' + esc(q.au) + "</div>";
+        h += '<div class="e4-dlg">' + audioBar(true) + '<div class="e4-dlg-l" id="e4dlg"' + (TTS ? " hidden" : "") + '>' + q.dlg.map((l, i) => '<div class="e4-bub ' + (i % 2 ? "r" : "l") + '"><b>' + esc(l[0]) + "</b>" + esc(l[1]) + "</div>").join("") + "</div></div>";
+      } else if (q.au) h += audioBar(true) + '<div class="e4-trans" id="e4tr"' + (TTS ? " hidden" : "") + '>' + esc(q.au) + "</div>";
       else if (q.text) h += '<div class="e4-read">' + esc(q.text) + "</div>";
       if (q.pic) h += '<div class="e4-pic">' + esc(q.pic) + "</div>";
       h += '<div class="e4-opts' + (q.pics ? " pics" : "") + '">' + q.opts.map((o, i) => '<button type="button" class="e4-opt" data-mo="' + i + '">' + esc(o) + "</button>").join("") + "</div>";
