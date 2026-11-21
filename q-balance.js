@@ -95,6 +95,7 @@
   HM.balance = function () {
     const report = {};
     for (const [s, gs] of Object.entries(HM.SUBJECTS)) {
+      if (s === "en") continue; // v1.6：英語は4技能のステップ（12問×3）で量を決めている
       const grades = Object.keys(gs).map(Number).sort((a, b) => a - b); let prev = 0;
       for (const g of grades) {
         const units = gs[g]; let cur = 0; units.forEach((u) => u.steps.forEach((st, k) => (cur += stepSize(st, s + "|" + g + "|" + u.n + "|" + k + "|" + st.n))));

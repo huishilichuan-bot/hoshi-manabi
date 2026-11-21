@@ -1,7 +1,7 @@
 /* ほしまなび — 勉強して⭐を集める学習アプリ（小1〜中3）。課金・お金の機能はありません。 */
 (() => {
   "use strict";
-  const VERSION = "1.5.2";
+  const VERSION = "1.6.0";
   // 記録はプロフィールごとに分けて保存：ゲスト＝"hoshimanabi"、アカウント＝"hoshimanabi:u:<uid>"（ログアウトで消す）
   const GUEST_KEY = "hoshimanabi";
   let KEY = GUEST_KEY;
@@ -387,7 +387,7 @@
     h += '<div class="qz-body">';
     if (Q.mode === "boss") h += bossHtml();
     const src = q.__src || { s: Q.s, g: Q.g, sn: Q.step.n };
-    h += '<div class="qz-meta">' + esc(subjName(src.s, src.g) + " " + gradeName(src.g) + " ／ " + src.sn) + (Q.mode === "retry" ? ' <span class="retry-tag">やり直し</span>' : Q.mode === "box" ? ' <span class="retry-tag box">📦 ボックス</span>' : Q.mode === "boss" ? ' <span class="retry-tag boss">👾 ボス</span>' : "") + "</div>";
+    h += '<div class="qz-meta">' + esc(subjName(src.s, src.g) + " " + gradeName(src.g) + " ／ " + src.sn) + (Q.mode === "retry" ? ' <span class="retry-tag">やり直し</span>' : Q.mode === "box" ? ' <span class="retry-tag box">📦 ボックス</span>' : Q.mode === "boss" ? ' <span class="retry-tag boss">👾 ボス</span>' : "") + (q.skill && window.HMQ && HMQ.skillBadge ? " " + HMQ.skillBadge(q) : "") + "</div>";
     if (q.pass) h += '<details class="passage"' + (Q.passOpen ? " open" : "") + '><summary>📄 文章を読む</summary><div class="ptext">' + esc(q.pass).replace(/\n/g, "<br>") + "</div></details>";
     const say = sayText(q);
     if (q.listen) h += '<div class="qz-q">' + q.q + "</div>" + (canSpeak() ? '<button type="button" class="say-big" data-q="say"><span>🔊</span><b>タップして聞こう</b><small>何回でも聞けるよ</small></button>' : '<div class="say-text">' + esc(say) + "</div>");
@@ -424,6 +424,10 @@
     match: "自信のあるペアからつないで、のこりをへらそう。",
     pair: "同じ意味・同じ答えになるカードをさがそう。",
     tap: "図の中の印（直角マーク・同じ長さの印・数字）をよく見よう。",
+    tl: "まず主語（だれが）を見つけて、次に動詞（何をする）をならべよう。",
+    ty: "主語と動詞を先に書いてから、残りの語をつづけよう。文の最初は大文字にするよ。",
+    sp: "🐢 ゆっくりのお手本を聞いて、まねしてから 🎤 をタップしよう。",
+    mc: "英文の中の、主語・動詞・時を表す語に注目しよう。",
   };
   function hintsFor(q) {
     if (q.__hints) return q.__hints;
@@ -540,10 +544,23 @@
     if (performance.now() - Q.shownAt < READ_MS) { toast("📖 ちゃんと読んでね"); sound("block"); haptic(30); const b = $(".qz-q"); if (b) { b.classList.remove("shake"); void b.offsetWidth; b.classList.add("shake"); } return true; }
     return false;
   }
+  // v1.6 スピーキングの「あとで話す」：まちがいにしない（その問題は数に入れない）
+  function skipQ(q) {
+    Q.answered = true; Q.skipped = (Q.skipped || 0) + 1;
+    if (Q.mode === "main") { Q.n = Math.max(1, Q.n - 1); Q.need = HM.passNeed(Q.n); Q.results.push({ q, ok: false, skip: true, given: "あとで話す" }); }
+    else if (Q.mode === "retry") Q.retryRes.push({ q, ok: false, skip: true, given: "あとで話す" });
+    workShowResult(q, null);
+    let f = '<div class="fb skip"><div class="fb-h">⏭ あとで話そう</div><div class="fb-a">お手本：<b>' + esc(q.a) + "</b></div>";
+    f += '<div class="fb-ex"><b>解説</b><p>' + esc(q.ex || "") + "</p></div>";
+    f += '<div class="fb-act"><button type="button" class="link-btn" data-q="report">この問題おかしい？</button><button type="button" class="btn primary" data-q="next">次へ ›</button></div></div>';
+    $("#qz-foot").innerHTML = f;
+    const nb = $('[data-q="next"]'); if (nb) setTimeout(() => nb.focus && nb.focus({ preventScroll: true }), 50);
+  }
   function answer(given) {
     const q = curList()[Q.i];
     if (Q.answered) return;
-    if (tooFast()) return;
+    if (given && given.skip) return skipQ(q);
+    if (q.t !== "sp" && tooFast()) return;
     let ok, gtext = given;
     if (q.t === "ch") ok = given === q.a;
     else if (q.t === "tap") { ok = given === q.ans; const hl = (q.hits || []).find((x) => x[0] === given); gtext = hl ? hl[1] : given; }
@@ -619,7 +636,7 @@
       save();
     } else {
       // 再挑戦：まちがいリストを更新
-      Q.wrongLeft = Q.retryRes.filter((r) => !r.ok).map((r) => r.q);
+      Q.wrongLeft = Q.retryRes.filter((r) => !r.ok && !r.skip).map((r) => r.q);
     }
     summary();
     try { window.dispatchEvent(new Event("hm-step-end")); } catch (e) {}
@@ -659,7 +676,7 @@
     let line = pick(PRAISE[kind]);
     if (Q.mode === "main" && Q.prevBest != null && Q.baseCorrect > Q.prevBest) line = pick(PRAISE.up) + " " + line;
     if (SPECIAL[p.rarity] && passed) line += " " + SPECIAL[p.rarity];
-    const wrong = Q.mode === "main" ? Q.results.filter((r) => !r.ok).map((r) => r.q) : Q.wrongLeft;
+    const wrong = Q.mode === "main" ? Q.results.filter((r) => !r.ok && !r.skip).map((r) => r.q) : Q.wrongLeft;
     const pct = Math.round((combined / Q.n) * 100);
     let h = '<div class="sum">';
     h += '<div class="sum-top"><div class="ring" style="--p:' + pct + '"><div><b class="num">' + combined + "</b><small>/" + Q.n + "</small></div></div>";
@@ -676,7 +693,7 @@
     const nx = findStep(Q.s, Q.g, Q.ui, Q.si + 1);
     if (nx) h += '<button type="button" class="btn ' + (passed ? "primary" : "") + ' block" data-q="nextstep">次のステップ：' + esc(nx.step.n) + " ›</button>";
     h += '<button type="button" class="btn block" data-q="again">もう一度このステップ</button><button type="button" class="btn ghost block" data-q="quit">単元にもどる</button></div>';
-    if (Q.results.length) h += '<details class="review"><summary>問題をふりかえる</summary>' + Q.results.map((r, i) => '<div class="rv ' + (r.ok ? "ok" : "ng") + '"><b>' + (i + 1) + ". " + (r.ok ? "⭕" : "✖") + '</b> <span class="rq">' + strip(r.q.q).slice(0, 80) + "</span><br><span class=\"small\">正解：" + esc(r.q.a) + "</span></div>").join("") + "</details>";
+    if (Q.results.length) h += '<details class="review"><summary>問題をふりかえる</summary>' + Q.results.map((r, i) => '<div class="rv ' + (r.ok ? "ok" : r.skip ? "skip" : "ng") + '"><b>' + (i + 1) + ". " + (r.ok ? "⭕" : r.skip ? "⏭" : "✖") + '</b> <span class="rq">' + strip(r.q.q).slice(0, 80) + "</span><br><span class=\"small\">正解：" + esc(r.q.a) + "</span></div>").join("") + "</details>";
     h += "</div>";
     Q.wrongForRetry = wrong;
     $("#quiz").innerHTML = h; $("#quiz").scrollTop = 0;
@@ -686,6 +703,7 @@
   const CARD_LINES = ["今日のポイントはこれ！ れいを見てからいこう。", "まずはここをおさえよう。", "れいの考え方をまねすれば大丈夫！", "ポイントを見たら、さっそくチャレンジ！", "ここが分かれば、ぐっと楽になるよ。"];
   function exampleFor(step, qs) {
     try {
+      if (step.en4 && step.example) { for (let t = 0; t < 10; t++) { const e = step.example(); if (e && e.en) return { q: esc(e.ja), a: e.en, ex: "「" + e.ja + "」は英語で「" + e.en + "」。🎧聞く・🗣話す・✏️書く・📖読む の4つで練習するよ。" }; } return null; }
       if (typeof step.src === "function") { for (let t = 0; t < 30; t++) { const c = step.src(0.3, 1); if (c && !qs.some((q) => q.q === c.q && q.a === c.a)) return c; } return null; }
       const all = step.src.map((x) => (typeof x === "string" ? HM.parseBankLine(x) : x));
       const unused = all.filter((c) => !qs.some((q) => q.q === c.q && q.a === c.a));
@@ -826,12 +844,12 @@
     h += "</div>";
     h += '<div class="sum-char">' + charHtml(p.id, 110, "bob r" + p.rarity) + '<div class="bubble">' + esc(line) + "</div></div>";
     h += '<div class="sum-act"><button type="button" class="btn ' + (win ? "" : "primary") + ' block" data-q="boss-again">👾 もう一度ボスと戦う</button><button type="button" class="btn ghost block" data-q="quit">マップにもどる</button></div>';
-    if (Q.results.length) h += '<details class="review"><summary>問題をふりかえる</summary>' + Q.results.map((r, i) => '<div class="rv ' + (r.ok ? "ok" : "ng") + '"><b>' + (i + 1) + ". " + (r.ok ? "⭕" : "✖") + '</b> <span class="rq">' + strip(r.q.q).slice(0, 80) + "</span><br><span class=\"small\">正解：" + esc(r.q.a) + "</span></div>").join("") + "</details>";
+    if (Q.results.length) h += '<details class="review"><summary>問題をふりかえる</summary>' + Q.results.map((r, i) => '<div class="rv ' + (r.ok ? "ok" : r.skip ? "skip" : "ng") + '"><b>' + (i + 1) + ". " + (r.ok ? "⭕" : r.skip ? "⏭" : "✖") + '</b> <span class="rq">' + strip(r.q.q).slice(0, 80) + "</span><br><span class=\"small\">正解：" + esc(r.q.a) + "</span></div>").join("") + "</details>";
     h += "</div>";
     $("#quiz").innerHTML = h; $("#quiz").scrollTop = 0;
     if (win) { confetti(80); sound("fanfare"); }
   }
-  function sayText(q) { return q.say || (typeof q.en === "string" && /^[A-Za-z][A-Za-z .,'?!-]*$/.test(q.en) ? q.en : null); }
+  function sayText(q) { if (q.skill) return null; return q.say || (typeof q.en === "string" && /^[A-Za-z][A-Za-z .,'?!-]*$/.test(q.en) ? q.en : null); }
   const strip = (html) => esc(String(html).replace(/<svg[\s\S]*?<\/svg>/g, "［図］").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim());
   function startRetry() {
     const w = Q.wrongForRetry || []; if (!w.length) return;

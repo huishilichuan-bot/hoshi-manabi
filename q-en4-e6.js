@@ -173,7 +173,7 @@ the chorus|合唱`);
       const [s, sj] = pick(D.SPORT), [d, dj] = pick(D.DAY.slice(5));
       return lvPick(lv, () => pick([S("I like watching " + s + ".", "わたしは" + sj + "を見るのが好きです。"), S("My favorite sport is " + s + ".", "わたしの好きなスポーツは" + sj + "です。")]),
         () => pick([S("I play " + s + " every " + d + ".", "わたしは毎週" + dj + "に" + sj + "をします。"), S("Let's play " + s + " together.", "いっしょに" + sj + "をしよう。")]),
-        () => S("I like watching " + s + " on TV. I want to see a game at the stadium.", "わたしはテレビで" + sj + "を見るのが好きです。スタジアムで試合を見たいです。"));
+        () => pick([S("I like watching " + s + " on TV.", "わたしはテレビで" + sj + "を見るのが好きです。"), S("I want to see a " + s + " game at the stadium.", "わたしはスタジアムで" + sj + "の試合を見たいです。"), S("My favorite sport is " + s + ". I play it every " + d + ".", "わたしの好きなスポーツは" + sj + "です。毎週" + dj + "にします。")]));
     }, read: (lv, k) => E4.READ.profile6(lv, k) },
     { n: "生き物と地球（Where do they live?）", note: "〈live in 〜〉＝「〜に住んでいる」。〈We can 〜.〉＝「わたしたちは〜できる」。", gen: (lv) => {
       const [a, p, aj, pj] = pick(LIVE), [b, f, bj, fj] = pick(EAT), [c, cj] = pick(CANDO);

@@ -127,14 +127,14 @@
     const out = [en].concat(alt || []), seen = new Set(out.map(ck));
     for (const s of out.slice()) {
       const m = TIME_TAIL.exec(s);
-      if (m && !/\?$/.test(s)) { const head = s.slice(0, m.index); const v = m[1].charAt(0).toUpperCase() + m[1].slice(1) + ", " + head.charAt(0).toLowerCase().replace(/^i$/, "I") + head.slice(1) + m[2]; const fixd = v.replace(/, i /, ", I ").replace(/, i'/, ", I'"); if (!seen.has(ck(fixd))) { seen.add(ck(fixd)); out.push(fixd); } }
+      if (m && !/\?$/.test(s)) { const head = s.slice(0, m.index); const w0 = head.split(" ")[0], low = /^(You|We|They|He|She|It|My|Our|Your|His|Her|Their|The|This|That|These|Those|There|A|An|Let's|Please)$/.test(w0); const v = m[1].charAt(0).toUpperCase() + m[1].slice(1) + ", " + (low ? head.charAt(0).toLowerCase() : head.charAt(0)) + head.slice(1) + m[2]; const fixd = v.replace(/, i /, ", I ").replace(/, i'/, ", I'"); if (!seen.has(ck(fixd))) { seen.add(ck(fixd)); out.push(fixd); } }
     }
     return out;
   }
   E4.variants = variants;
   const firstUp = (s) => s.charAt(0).toUpperCase() + s.slice(1);
   E4.firstUp = firstUp;
-  const art = (w) => (/^(apple|egg|orange|umbrella|onion|ant|eraser|elephant|octopus|ice|hour|old|interesting|English|exciting|easy|eagle|igloo|owl|ox|art)/i.test(w) ? "an " : "a ") + w;
+  const art = (w) => (/^(uni|one|use|euro)/i.test(w) ? "a " : /^(hour|honest)/i.test(w) || /^[aeiou]/i.test(w) ? "an " : "a ") + w;
   E4.art = art;
 
   // ===== 問題を作る =====

@@ -188,7 +188,7 @@ played tennis|テニスをしていません`)), f2 = pick(FOR.filter((x) => /si
       const h = pick(["I have", "This is", "I want"]), p = pick(h === "This is" ? PP : PP.filter((x) => /car|book|picture|letter/.test(x[0]))), hj = { "I have": ["わたしは", "を持っています"], "This is": ["これは", "です"], "I want": ["わたしは", "がほしいです"] }[h];
       return lvPick(lv, () => S(h + " " + p[0] + ".", hj[0] + p[1] + hj[1] + "。"),
         () => S(h + " " + p[0] + ".", hj[0] + p[1] + hj[1] + "。"),
-        () => pick([S("The language spoken in Brazil is Portuguese.", "ブラジルで話されている言語はポルトガル語です。"), S("The pictures taken by my father are beautiful.", "父がとった写真は美しいです。"), S("I read a book written in English.", "わたしは英語で書かれた本を読みました。")]));
+        () => pick([S("The language spoken in Brazil is Portuguese.", "ブラジルで話されている言語はポルトガル語です。"), S("The pictures taken by my father are beautiful.", "父がとった写真は美しいです。"), S("I read a book written in English.", "わたしは英語で書かれた本を読みました。"), S("Kyoto has many temples built long ago.", "京都には昔建てられたお寺がたくさんあります。"), S("Is this a car made in Japan?", "これは日本で作られた車ですか？"), S(h + " " + p[0] + ".", hj[0] + p[1] + hj[1] + "。"), S(h + " " + p[0] + ".", hj[0] + p[1] + hj[1] + "。")]));
     }, read: (lv, k) => E4.PASS.pick(9, 6, k) },
     { n: "名詞を後ろから説明③（主語＋動詞が続く形）", note: "〈名詞＋主語＋動詞〉で「（主語）が〜する（名詞）」。the book I bought＝「わたしが買った本」。", gen: (lv) => {
       const c = pick(CONTACT), E2 = { book: "was interesting|おもしろかったです", movie: "was great|すばらしかったです", cake: "was delicious|おいしかったです", song: "is very old|とても古いです", bag: "was blue|青色でした", picture: "is beautiful|美しいです" }[c[0].split(" ")[1]].split("|");
@@ -206,7 +206,7 @@ played tennis|テニスをしていません`)), f2 = pick(FOR.filter((x) => /si
       const w = pick(WHICH), rel = pick(["which", "that"]);
       return lvPick(lv, () => S("This is " + w[0] + " " + rel + " " + w[1] + ".", "これは" + w[2] + "です。", { alt: ["This is " + w[0] + " " + (rel === "which" ? "that" : "which") + " " + w[1] + "."] }),
         () => S("I want " + w[0] + " " + rel + " " + w[1] + ".", "わたしは" + w[2] + "がほしいです。", { alt: ["I want " + w[0] + " " + (rel === "which" ? "that" : "which") + " " + w[1] + "."] }),
-        () => pick([S("I like stories that have happy endings.", "わたしはハッピーエンドの物語が好きです。", { alt: ["I like stories which have happy endings."] }), S("The dog that is sleeping under the tree is Pochi.", "木の下でねている犬はポチです。", { alt: ["The dog which is sleeping under the tree is Pochi."] })]));
+        () => pick([(/dog|robot/.test(w[0]) ? S("Do you have " + w[0] + " " + rel + " " + w[1] + "?", "あなたは" + w[2] + "を持っていますか？", { alt: ["Do you have " + w[0] + " " + (rel === "which" ? "that" : "which") + " " + w[1] + "?"] }) : S("There is " + w[0] + " " + rel + " " + w[1] + ".", w[2] + "があります。", { alt: ["There is " + w[0] + " " + (rel === "which" ? "that" : "which") + " " + w[1] + "."] })), S("Look at " + w[0].replace(/^an? /, "the ") + " " + rel + " " + w[1] + ".", w[2] + "を見て。", { alt: ["Look at " + w[0].replace(/^an? /, "the ") + " " + (rel === "which" ? "that" : "which") + " " + w[1] + "."] }), S("I like stories that have happy endings.", "わたしはハッピーエンドの物語が好きです。", { alt: ["I like stories which have happy endings."] }), S("The dog that is sleeping under the tree is Pochi.", "木の下でねている犬はポチです。", { alt: ["The dog which is sleeping under the tree is Pochi."] })]));
     }, read: (lv, k) => E4.PASS.pick(9, 9, k) },
     { n: "関係代名詞（目的格）which / that", note: "〈名詞＋which / that＋主語＋動詞〉＝「（主語）が〜する（名詞）」。目的格の which / that は省略できる。", gen: (lv) => {
       const o = pick(OBJ), rel = o[0] === "the singer" || o[0] === "the man" ? "that" : pick(["which", "that"]);

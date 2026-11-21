@@ -237,7 +237,7 @@ run fast|速く走る|5
 speak Chinese|中国語を話す|5
 ride a unicycle|一輪車に乗る|5
 cook curry|カレーを作る|5
-play the drums|ドラムをたたく|5`), k2 = pick(K);
+play the drums|ドラムを演奏する|s`), k2 = pick(K);
       const kj = (f) => k2[1].slice(0, -1) + { masu: "", koto: "" }[f];
       return lvPick(lv, () => pick([S("I can " + k2[0] + ".", "わたしは" + k2[1] + "ことができます。"), S(t[0] + " can " + vp(x, "b") + ".", wa(t[1]) + vj(x, "dict") + "ことができます。")]),
         () => pick([S("Can you " + k2[0] + "? Yes, I can.", "あなたは" + k2[1] + "ことができますか？ はい、できます。"), S(t[0] + " can't " + k2[0] + ".", wa(t[1]) + k2[1] + "ことができません。", { alt: [t[0] + " cannot " + k2[0] + "."] })]),

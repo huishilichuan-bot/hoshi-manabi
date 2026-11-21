@@ -217,6 +217,59 @@ function langCheck(q, where) {
     if (/yesterday\.$/.test(q.q) && !/ than | as /.test(q.q) && !["was", "were"].includes(q.a)) { const v = HM.EN.VB.find((x) => x[2] === q.a); if (!v) fail("過去形が表にない"); for (const o of q.o) if (HM.EN.VB.some((x) => x[2] === o && x[0] === v[0])) fail("まちがい選択肢も過去形"); }
   }
 }
+
+// ---- v1.6 英語4技能のチェック（形式ごと＋英文の文法チェック） ----
+const E4 = HM.EN4;
+const LINT_3S = /(^|[.?!,] )(He|She|It|Ken|Emma|Tom|Yumi|My (brother|sister|father|mother)|Our teacher) (play|like|have|go|do|watch|study|eat|want|live|cook|make|use|walk|clean|take|speak|draw|drink)\b/;
+const LINT_PL = /(^|[.?!,] )(I|You|We|They) (plays|likes|has|goes|does|watches|studies|wants|lives|cooks|makes|uses|walks|cleans|takes|speaks|reads|eats)\b/;
+const LINT_AUX = /\b(doesn't|didn't|does not|did not|can't|cannot|can|won't|will|must|should|could|would|may|to) (plays|likes|has|goes|watches|studies|wants|lives|cooks|makes|uses|played|went|ate|liked|studied|watched|made|wanted)\b/i;
+function lintEn(s, where, fail) {
+  if (!s) return;
+  const t = String(s);
+  if (!/^[A-Z"]/.test(t)) fail("英文が大文字で始まっていない: " + t);
+  if (!/[.?!"]$/.test(t)) fail("英文の終わりに . ? ! がない: " + t);
+  if (/\s{2,}| [.,?!]|undefined|NaN/.test(t)) fail("英文の空白・値が不正: " + t);
+  if (/\ba [aeiou]/i.test(t.replace(/\ba (uni|one|use|Euro)/gi, ""))) fail("a / an のまちがい: " + t);
+  if (/\ban [^aeiou\s"]/i.test(t.replace(/\ban (hour|honest)/gi, ""))) fail("a / an のまちがい: " + t);
+  if (LINT_3S.test(t)) fail("3人称単数の s がない: " + t);
+  if (LINT_PL.test(t)) fail("主語と動詞の形が合わない: " + t);
+  if (LINT_AUX.test(t)) fail("助動詞・to のあとが原形でない: " + t);
+  if (/[ぁ-んァ-ン一-龥]/.test(t)) fail("英文に日本語がまざっている: " + t);
+}
+const PASS_MIN = { 5: 15, 6: 25, 7: 60, 8: 130, 9: 380 };
+function en4Check(q, where, g) {
+  const fail = (m) => problems.push(where + " :: " + m + " :: " + String(q.q).replace(/<[^>]+>/g, " ").slice(0, 80) + " => " + q.a);
+  stats["en4_" + q.t] = (stats["en4_" + q.t] || 0) + 1;
+  if (!/^[LSWR]$/.test(q.skill)) return fail("スキルの印がない");
+  if (q.t === "tl") {
+    if (!Array.isArray(q.pieces) || q.pieces.length < 2) return fail("カードがたりない");
+    if (q.a !== q.pieces.join(" ")) fail("カードの並びと答えがちがう");
+    if (!(q.acc || []).includes(q.a)) fail("正解が受けつけリストにない");
+    for (const x of q.extra || []) if (q.pieces.some((p) => p.toLowerCase() === x.toLowerCase())) fail("まぎらわしいカードが正解のカードと同じ " + x);
+    if (!q.au && !q.jp) fail("音声も日本語もない");
+    if (q.au && q.au !== q.en) fail("音声と答えの文がちがう");
+    lintEn(q.en, where, fail);
+  } else if (q.t === "ty") {
+    const r = E4.judgeText(q.a, q.acc || []); if (!r.ok || r.close) fail("正解そのものが正解と判定されない");
+    if (!q.words) fail("語数のめやすがない");
+    if (q.au && E4.ck(q.au) !== E4.ck(q.a)) fail("書き取りの音声と答えがちがう");
+    if (q.fill) { if (!E4.tokens(q.full).includes(q.a)) fail("（ ）の答えが元の文にない"); if (!/\( \)/.test(q.shown)) fail("（ ）がない"); lintEn(q.full, where, fail); const r2 = E4.judgeText("zzzz", q.acc); if (r2.ok) fail("でたらめな答えが正解になる"); }
+    else { lintEn(q.a, where, fail); const half = E4.tokens(q.a).slice(0, Math.max(1, Math.floor(E4.tokens(q.a).length / 2))).join(" "); if (E4.tokens(q.a).length >= 3 && E4.judgeText(half, q.acc).ok) fail("半分だけの答えが正解になる"); }
+  } else if (q.t === "sp") {
+    const r = E4.judgeSpeech([q.a], q.a, q.key); if (!r.ok) fail("お手本どおり言っても合格にならない");
+    const toks = E4.tokens(q.a); if (toks.length >= 3) { const r2 = E4.judgeSpeech([toks.slice(0, Math.ceil(toks.length / 2)).join(" ")], q.a, q.key); if (r2.ok) fail("半分だけ言っても合格になる"); }
+    const can = new Set(E4.canon(q.a)); for (const k of q.key || []) if (!E4.canon(k).every((w) => can.has(w))) fail("大事な語が文にない " + k);
+    if (!q.ja) fail("日本語の意味がない");
+    lintEn(q.a, where, fail);
+  } else if (q.t === "mc") {
+    const o = q.opts || []; if (o.length < 3) fail("選択肢がたりない"); if (o.filter((x) => x === q.a).length !== 1) fail("正解が選択肢に1つだけ入っていない"); if (new Set(o).size !== o.length) fail("選択肢が重複");
+    if (q.passage) { const n = q.passage.words, need = PASS_MIN[g] || 20; if (n < need) fail("文章が短い " + n + "語（" + need + "語以上）"); stats["en4_passage_g" + g] = Math.max(stats["en4_passage_g" + g] || 0, n); for (const para of q.passage.text.split("\n\n")) for (const sen of para.split(/(?<=[.?!])\s+(?=[A-Z"])/)) if (sen.length > 1 && !/^(Dear|Love|Your friend|Me at)/.test(sen)) { if (LINT_3S.test(sen) || LINT_AUX.test(sen)) fail("文章の英文に文法のうたがい: " + sen); } }
+    if (q.text) lintEn(q.text, where, fail);
+    if (q.au) lintEn(q.au, where, fail);
+    if (q.dlg) q.dlg.forEach((l) => lintEn(l[1], where, fail));
+    if (/^[A-Z]/.test(q.a)) lintEn(q.a, where, fail);
+  } else fail("英語4技能の形式が不明 " + q.t);
+}
 const cover = {};
 let total = 0, uniq = 0;
 const uniqSet = new Set();
@@ -227,7 +280,7 @@ for (const [subj, grades] of Object.entries(HM.SUBJECTS)) for (const [g, units] 
     const where = subj + " " + g + " / " + u.n + " / " + st.n;
     if (typeof st.src === "function") {
       c.gen++; c.filled++;
-      for (let k = 0; k < SEEDS; k++) { let set; try { set = HM.makeSet(st, k * 7919 + 13); } catch (e) { problems.push(where + " :: 生成エラー " + e.message); break; } if (set.length < 2) problems.push(where + " :: 問題数がたりない " + set.length + "/" + st.cnt); else if (set.length < st.cnt) W("short_set", where + " " + set.length + "/" + st.cnt); const qs = new Set(); set.forEach((q) => { total++; const key = q.q + "|" + q.a; if (!uniqSet.has(where + key)) { uniqSet.add(where + key); uniq++; } if (qs.has(key)) W("dup_in_set", where); qs.add(key); check(q, where); langCheck(q, where); }); }
+      for (let k = 0; k < SEEDS; k++) { let set; try { set = HM.makeSet(st, k * 7919 + 13); } catch (e) { problems.push(where + " :: 生成エラー " + e.message); break; } if (set.length < 2) problems.push(where + " :: 問題数がたりない " + set.length + "/" + st.cnt); else if (set.length < st.cnt) W("short_set", where + " " + set.length + "/" + st.cnt); const qs = new Set(); set.forEach((q) => { total++; const key = q.q + "|" + q.a; if (!uniqSet.has(where + key)) { uniqSet.add(where + key); uniq++; } if (qs.has(key)) W("dup_in_set", where); qs.add(key); check(q, where); langCheck(q, where); if (st.en4) en4Check(q, where, +g); }); if (st.en4 && set.length === 12) { const sk = { L: 0, S: 0, W: 0, R: 0 }; set.forEach((q) => sk[q.skill]++); if (Object.values(sk).some((v) => v !== 3)) problems.push(where + " :: 4技能が3問ずつになっていない " + JSON.stringify(sk)); } else if (st.en4) problems.push(where + " :: 英語のステップが12問でない " + set.length); }
     } else if (Array.isArray(st.src) && st.src.length) {
       c.bank++; c.filled++; c.bankQ += st.src.length;
       st.src.forEach((line) => { let q; try { q = typeof line === "string" ? HM.parseBankLine(line) : line; } catch (e) { problems.push(where + " :: バンク行エラー " + e.message); return; } q.bank = 1; total++; uniq++; check(q, where); });

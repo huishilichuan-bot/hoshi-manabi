@@ -463,7 +463,7 @@ a puppy|子犬`));
       const [p, pj] = pick(PLACE), lr = pick([["right", "右"], ["left", "左"]]), nth = pick([["first", "1つ目"], ["second", "2つ目"], ["third", "3つ目"]]), b = R(2, 4);
       return lvPick(lv, () => pick([S("Go straight.", "まっすぐ行ってください。", { kind: "way" }), S("Turn " + lr[0] + ".", lr[1] + "に曲がってください。", { kind: "way" }), S("Where is the " + p + "?", pj + "はどこですか？", { kind: "wayQ" })]),
         () => pick([S("Turn " + lr[0] + " at the " + nth[0] + " corner.", nth[1] + "の角を" + lr[1] + "に曲がってください。", { kind: "way" }), S("Go straight for " + nW(b) + " blocks.", b + "ブロックまっすぐ行ってください。", { kind: "way" })]),
-        () => S("Go straight and turn " + lr[0] + ". You can see the " + p + " on your " + lr[0] + ".", "まっすぐ行って" + lr[1] + "に曲がってください。" + lr[1] + "に" + pj + "が見えます。", { kind: "way" }));
+        () => { const sd = pick([["right", "右"], ["left", "左"]]); return pick([S("Turn " + lr[0] + " at the " + nth[0] + " corner. It's on your " + sd[0] + ".", nth[1] + "の角を" + lr[1] + "に曲がってください。" + sd[1] + "側にあります。", { kind: "way" }), S("Go straight. The " + p + " is on your " + sd[0] + ".", "まっすぐ行ってください。" + pj + "は" + sd[1] + "側にあります。", { kind: "way" })]); });
     }, read: (lv, k) => E4.READ.trip(lv, k) },
     { n: "注文（What would you like?）", note: "What would you like? ＝「何になさいますか」。I'd like 〜. ＝「〜をお願いします」（I would like のちぢめた形）。", gen: (lv) => {
       const [f, fj] = pick(MENU), p = R(2, 9) * 100 + pick([0, 50]);

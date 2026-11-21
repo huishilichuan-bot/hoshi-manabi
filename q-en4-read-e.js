@@ -102,7 +102,7 @@ beautiful stars|きれいな星
 a rainbow|にじ`)), x = pick(T(`fun|楽しかった
 exciting|わくわくした
 great|すばらしかった`));
-    const text = "My Summer Vacation. I went to " + w[0] + " with " + who[0] + ". I enjoyed " + en[0] + ". I ate " + a[0] + ". It was delicious. At night, I saw " + sw[0] + ". It was " + x[0] + ".";
+    const text = "I went to " + w[0] + " with " + who[0] + ". I enjoyed " + en[0] + ". I ate " + a[0] + ". It was delicious. At night, I saw " + sw[0] + ". It was " + x[0] + ". I want to go there again next summer.";
     return { id: "s6", title: "My Summer Vacation", text, au: 1, qs: [Q("筆者はどこに行きましたか？", w[1], ["海", "山", "祖父母の家", "沖縄", "京都"], "I went to " + w[0] + ". ＝「" + w[1] + "に行った」。"), Q("だれといっしょに行きましたか？", who[1], ["家族", "友だち", "いとこたち", "先生"], "with " + who[0] + " ＝「" + who[1] + "と」。"), Q("筆者が楽しんだことは何ですか？", en[1], ["泳ぐこと", "キャンプ", "つり", "ハイキング", "買い物"], "I enjoyed " + en[0] + ". ＝「" + en[1] + "を楽しんだ」。"), Q("筆者が食べたものは何ですか？", a[1], ["すいか", "かき氷", "焼き魚", "とうもろこし", "カレー"], "I ate " + a[0] + ". ＝「" + a[1] + "を食べた」。"), Q("夜に見たものは何ですか？", sw[1], ["花火", "きれいな星", "にじ", "クジラ"], "I saw " + sw[0] + ". ＝「" + sw[1] + "を見た」。")] };
   };
   // 小6：将来の夢
@@ -120,7 +120,7 @@ the tennis team|テニス部`)), s = pick(T(`English|英語
 math|数学
 science|理科
 music|音楽`)), n = pick(E4.DATA.NAMES);
-    const text = "My Dream. Hello, I'm " + n[0] + ". I want to be " + E4.art(j[0]) + ". I like " + j[2] + ". In junior high school, I want to join " + c[0] + ". I want to study " + s[0] + " hard. Thank you for listening.";
+    const text = "Hello, I'm " + n[0] + ". I want to be " + E4.art(j[0]) + ". I like " + j[2] + ". In junior high school, I want to join " + c[0] + ". I want to study " + s[0] + " hard. Thank you for listening.";
     return { id: "m6", title: "My Dream", text, au: 1, qs: [Q(n[1] + "は何になりたいですか？", j[1], ["獣医", "料理人", "パイロット", "先生", "パン屋さん", "科学者"], "I want to be " + E4.art(j[0]) + ". ＝「" + j[1] + "になりたい」。"), Q(n[1] + "が好きなものは何ですか？", j[3], ["動物", "料理", "飛行機", "子ども", "パン", "理科"], "I like " + j[2] + ". ＝「" + j[3] + "が好き」。"), Q("中学校で入りたい部活は何ですか？", c[1], ["科学部", "吹奏楽部", "美術部", "サッカー部", "テニス部"], "I want to join " + c[0] + ". ＝「" + c[1] + "に入りたい」。"), Q("一生けんめい勉強したい教科は何ですか？", s[1], ["英語", "数学", "理科", "音楽", "社会"], "I want to study " + s[0] + " hard. ＝「" + s[1] + "を一生けんめい勉強したい」。")] };
   };
 })(typeof window !== "undefined" ? window : globalThis);
