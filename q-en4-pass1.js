@@ -3,7 +3,7 @@
   "use strict";
   const HM = root.HM, U = HM.U, E4 = HM.EN4, { R } = U;
   const PASS = (E4.PASS = E4.PASS || { list: {} });
-  PASS.add = (g, id, title, text, qs) => { (PASS.list[g] = PASS.list[g] || []).push({ id, title, text: text.replace(/\s+/g, " ").trim(), qs: qs.map(([q, a, o, ex]) => ({ q, a, o, ex })) }); };
+  PASS.add = (g, id, title, text, qs) => { (PASS.list[g] = PASS.list[g] || []).push({ id, title, text: text.replace(/[ \t]*\n[ \t]*\n\s*/g, "\n\n").replace(/[ \t]*(?<!\n)\n(?!\n)[ \t]*/g, " ").replace(/[ \t]+/g, " ").trim(), qs: qs.map(([q, a, o, ex]) => ({ q, a, o, ex })) }); };
   // 単元の番号とステップから文章をえらぶ（同じ単元でもステップごとに別の文章になりやすい）
   PASS.pick = (g, ui, k) => { const L = PASS.list[g]; if (!L || !L.length) return null; return L[(ui * 3 + k + R(0, 1) * 5) % L.length]; };
   const A = PASS.add.bind(null, 7);
