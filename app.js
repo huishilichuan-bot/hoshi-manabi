@@ -1,7 +1,7 @@
 /* ほしまなび — 勉強して⭐を集める学習アプリ（小1〜中3）。課金・お金の機能はありません。 */
 (() => {
   "use strict";
-  const VERSION = "1.6.2";
+  const VERSION = "1.6.3";
   // 記録はプロフィールごとに分けて保存：ゲスト＝"hoshimanabi"、アカウント＝"hoshimanabi:u:<uid>"（ログアウトで消す）
   const GUEST_KEY = "hoshimanabi";
   let KEY = GUEST_KEY;
@@ -1350,5 +1350,27 @@
   // テスト用：?clock=+86400000 のように時計をずらせる
   try { const c = new URLSearchParams(location.search).get("clock"); if (c) clockOffset = +c || 0; } catch (e) {}
   render();
-  if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("./sw.js").catch(() => {});
+  // 新しい版：見つけたらすぐ入れかえる。勉強中・ゲーム中なら終わってから（すぐ更新するボタンも出す）
+  if ("serviceWorker" in navigator && location.protocol === "https:") {
+    const hadCtl = !!navigator.serviceWorker.controller; let reloading = false, pending = false;
+    const busy = () => { const q = $("#quiz"), g = $(".game-layer"); return !!((q && !q.hidden) || (g && !g.hidden) || $("#consent")); };
+    const apply = () => { if (reloading) return; reloading = true; try { if (window.HMSync) HMSync.flush("hidden"); } catch (e) {} setTimeout(() => location.reload(), 150); };
+    const bar = () => {
+      if ($("#upd-bar")) return;
+      const d = document.createElement("div"); d.id = "upd-bar"; d.className = "upd-bar"; d.setAttribute("role", "status");
+      d.innerHTML = '<span>✨ 新しいバージョンがあります</span><button type="button" class="upd-go">更新する</button>';
+      d.querySelector(".upd-go").addEventListener("click", apply); document.body.appendChild(d);
+    };
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if (!hadCtl || reloading) return;
+      if (!busy()) return apply();
+      pending = true; bar();
+      const iv = setInterval(() => { if (pending && !busy()) { clearInterval(iv); apply(); } }, 1500);
+    });
+    navigator.serviceWorker.register("./sw.js").then((reg) => {
+      const chk = () => { try { reg.update().catch(() => {}); } catch (e) {} };
+      document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") chk(); });
+      setInterval(chk, 20 * 60000);
+    }).catch(() => {});
+  }
 })();

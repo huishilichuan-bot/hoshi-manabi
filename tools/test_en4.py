@@ -4,7 +4,7 @@
 # 選択（聞く・会話・絵・長文）／1秒ブロック／スクリーンショット
 import subprocess, sys, time, os, json
 from playwright.sync_api import sync_playwright
-NOAUTH = "Object.defineProperty(window, 'HM_FIREBASE', { configurable: true, get() { return { enabled: false }; }, set() {} }); try{localStorage.setItem('hoshimanabi:consent',JSON.stringify({v:'2026-11-21',t:1}))}catch(e){}"
+NOAUTH = "window.__HM_NO_AUDIO = true; Object.defineProperty(window, 'HM_FIREBASE', { configurable: true, get() { return { enabled: false }; }, set() {} }); try{localStorage.setItem('hoshimanabi:consent',JSON.stringify({v:'2026-11-21',t:1}))}catch(e){}"
 # 音声認識のにせもの：window.__srSay を「聞こえた言葉」として返す。__srDeny でマイク拒否
 FAKE_SR = """
 (() => { class FakeSR { constructor(){ this.lang=''; this.onresult=null; this.onend=null; this.onerror=null; this._l={}; }
@@ -31,6 +31,7 @@ FAKE_TTS = """
 """
 NOSR = "try{ delete window.webkitSpeechRecognition; delete window.SpeechRecognition; window.webkitSpeechRecognition=undefined; window.SpeechRecognition=undefined; }catch(e){}"
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__))); OUT = os.path.join(ROOT, "screenshots", "v16"); os.makedirs(OUT, exist_ok=True)
+os.makedirs(os.path.join(ROOT, "screenshots", "v163"), exist_ok=True)
 PORT = 8816
 srv = subprocess.Popen([sys.executable, "-m", "http.server", str(PORT)], cwd=ROOT, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL); time.sleep(0.8)
 fails = []; errs = []; shots = []
@@ -60,7 +61,7 @@ def answer_right(pg, q, tag, seen, shoot=True):
     if first and shoot: snap(pg, f"{tag}-{k}-q")
     if q["t"] == "tl":
         for piece in q["pieces"]:
-            pg.evaluate("(p) => { const b = [...document.querySelectorAll('.e4-pool [data-tw]')].find(x => x.textContent === p); b.dispatchEvent(new PointerEvent('pointerdown', {bubbles:true, clientX:1, clientY:1})); window.dispatchEvent(new PointerEvent('pointerup', {bubbles:true, clientX:1, clientY:1})); }", piece)
+            pg.evaluate("(p) => { const b = [...document.querySelectorAll('.e4-pool [data-tw]')].find(x => x.textContent === p); if (!b) throw new Error('piece ' + p + ' not in ' + [...document.querySelectorAll('.e4-pool [data-tw]')].map(x => x.textContent).join('|') + ' :: ' + (document.querySelector('#quiz') || {}).innerText); b.dispatchEvent(new PointerEvent('pointerdown', {bubbles:true, clientX:1, clientY:1})); window.dispatchEvent(new PointerEvent('pointerup', {bubbles:true, clientX:1, clientY:1})); }", piece)
         pg.click("#work-ok")
     elif q["t"] == "ty":
         pg.fill("#e4in", q["a"]); pg.click("#work-ok")
@@ -80,9 +81,9 @@ try:
     br = p.webkit.launch()
     for devname, tag in [("iPhone 14", "iphone"), ("iPad Pro 11", "ipad")]:
         ctx = br.new_context(**p.devices[devname]); pg = ctx.new_page(); pg.add_init_script(NOAUTH); pg.add_init_script(FAKE_SR)
-        pg.on("pageerror", lambda e: errs.append(str(e)))
+        pg.on("pageerror", lambda e: (errs.append(str(e)), print("PAGEERR", e, flush=True)))
         pg.goto(URL + "?v=" + str(time.time()), wait_until="networkidle"); pg.wait_for_timeout(1200)
-        ok(tag + " バージョン 1.6.2", pg.evaluate("HM_APP.version") == "1.6.2")
+        ok(tag + " バージョン 1.6.3", pg.evaluate("HM_APP.version") == "1.6.3")
         info = pg.evaluate("Object.fromEntries(Object.entries(HM.SUBJECTS.en).map(([g, us]) => [g, [us.length, us.reduce((a, u) => a + u.steps.length, 0), us.reduce((a, u) => a + u.steps.reduce((b, s) => b + s.cnt, 0), 0)]]))")
         ok(tag + " 英語の学年・単元・ステップ数", info.get("3") == [10, 30, 360] and info.get("9") == [16, 48, 576], info)
         seen = set()
@@ -169,12 +170,12 @@ try:
         pg.goto(URL + "?v=" + str(time.time()), wait_until="networkidle"); pg.wait_for_timeout(1200)
         q = find(8, lambda q: bool(q.get("dlg")))
         ok(tag + " 会話は手書きの一覧から（did あり・2人が交互に話す）", bool(q) and bool(q.get("did")) and all(q["dlg"][i][0] != q["dlg"][i - 1][0] for i in range(1, len(q["dlg"]))), q and q.get("did"))
-        hidden = pg.evaluate("(() => { const d = document.querySelector('#e4dlg'); return !!d && d.hidden && !document.querySelector('#quiz').innerText.includes(%s); })()" % json.dumps(q["dlg"][0][1]))
-        ok(tag + " 答える前は会話の英文が見えない", hidden)
-        for k in range(3):
-            hb = pg.locator('.hint-btn:not([disabled])')
-            if hb.count(): hb.first.click(); pg.wait_for_timeout(150)
-        ok(tag + " ヒントに会話の英文が出ない", all(l[1] not in pg.inner_text("#quiz") for l in q["dlg"]))
+        shown = pg.evaluate("(() => { const d = document.querySelector('#e4dlg'); const bs = [...document.querySelectorAll('#e4dlg .e4-bub')]; return !!d && !d.hidden && d.offsetHeight > 0 && bs.map(b => [b.querySelector('b').innerText, b.querySelector('span').innerText]); })()")
+        ok(tag + " 会話の英文は、はじめから全部見える（名前＋英文）", shown and [list(x) for x in shown] == [[l[0], l[1]] for l in q["dlg"]], shown)
+        pg.evaluate("window.__said = []"); pg.click('#e4dlg .e4-bub[data-line="1"]'); pg.wait_for_timeout(700)
+        s1 = [x for x in pg.evaluate("window.__said") if x["text"].strip()]
+        ok(tag + " ふきだしをタップすると、その文だけ聞ける", len(s1) == 1 and s1[0]["text"] == q["dlg"][1][1] and (s1[0]["voice"] == "Tom") == (q["dlg"][1][2] == "m"), s1)
+        pg.screenshot(path=os.path.join(ROOT, "screenshots", "v163", f"{'live-' if LIVE else ''}{tag}-dialog-before-answer.png"))
         pg.evaluate("window.__said = []"); pg.click(".e4-dlg .e4-play"); pg.wait_for_timeout(400 + 520 * len(q["dlg"]))
         said = pg.evaluate("window.__said")
         sexes = {l[0]: l[2] for l in q["dlg"]}
@@ -184,9 +185,9 @@ try:
         pg.evaluate("window.__said = []"); pg.click(".e4-dlg .e4-slow"); pg.wait_for_timeout(400 + 520 * len(q["dlg"]))
         ok(tag + " 🐢 ゆっくりは速さ0.6", all(x["rate"] == 0.6 for x in pg.evaluate("window.__said")) and len(pg.evaluate("window.__said")) == len(q["dlg"]))
         pg.wait_for_timeout(1050); pg.click(f'[data-mo="{q["opts"].index(q["a"])}"]'); pg.wait_for_selector(".fb")
-        ok(tag + " 答えたあとは会話が出る", pg.evaluate("!document.querySelector('#e4dlg').hidden") and fb_ok(pg))
+        ok(tag + " 答えたあとも会話が出ている", pg.evaluate("!document.querySelector('#e4dlg').hidden") and fb_ok(pg))
         pg.evaluate("document.querySelector('#e4dlg').scrollIntoView({block:'center'})"); pg.wait_for_timeout(2600)
-        OUT161 = os.path.join(ROOT, "screenshots", "v161"); os.makedirs(OUT161, exist_ok=True)
+        OUT161 = os.path.join(ROOT, "screenshots", "v163"); os.makedirs(OUT161, exist_ok=True)
         pg.screenshot(path=os.path.join(OUT161, f"{'live-' if LIVE else ''}{tag}-dialog-answered.png"))
         ctx.close()
         # 声の一覧があとから届く端末：届いてから自然な声で読む
@@ -198,6 +199,55 @@ try:
         pg.evaluate("window.__said = []"); pg.click(".e4-play"); pg.wait_for_timeout(200); pg.evaluate("window.__voicesNow()"); pg.wait_for_timeout(600)
         said = [x for x in pg.evaluate("window.__said") if x["text"].strip()]
         ok(tag + " 声の一覧を待ってから Samantha で読む", len(said) == 1 and said[0]["voice"] == "Samantha", said)
+        ctx.close()
+        # 録音した声（audio/*.m4a）：会話は1文ずつ、女の人 af_heart・男の人 am_michael のファイル。ゆっくりは 0.75 倍。ないときは端末の読み上げ
+        NOAUTH_A = NOAUTH.replace("window.__HM_NO_AUDIO = true; ", "")
+        PLAYREC = "window.__played = []; (() => { const P = HTMLMediaElement.prototype.play; HTMLMediaElement.prototype.play = function () { window.__played.push([decodeURIComponent(this.src.split('/audio/')[1] || this.src), this.playbackRate]); return P.call(this); }; })();"
+        def swap_to(pg, g, ui, si, pred_js):
+            start(pg, g, ui, si)
+            return pg.evaluate("(() => { const Q = HM_APP.quiz(); const k = Q.qs.findIndex(" + pred_js + "); if (k < 0) return null; const t = Q.qs[k]; Q.qs[k] = Q.qs[0]; Q.qs[0] = t; HM_APP.showQ(); return t; })()")
+        def wait_idle(pg, ms=30000):
+            t = 0
+            while t < ms and pg.evaluate("!!document.querySelector('[data-e4].on') || !!document.querySelector('.e4-bub.say')"): pg.wait_for_timeout(200); t += 200
+        ctx = br.new_context(**p.devices[devname]); pg = ctx.new_page(); pg.add_init_script(NOAUTH_A); pg.add_init_script(FAKE_TTS); pg.add_init_script(PLAYREC)
+        pg.on("pageerror", lambda e: errs.append(str(e)))
+        aud = []; pg.on("request", lambda r: aud.append(r.url.split("/audio/")[1]) if "/audio/" in r.url else None)
+        pg.goto(URL + "?v=" + str(time.time()), wait_until="networkidle"); pg.wait_for_timeout(1000)
+        ok(tag + " 録音の一覧が読みこまれている（5000ファイル以上）", pg.evaluate("HMAudio.ok() && HM.EN4.AUDIO.split(' ').length") >= 5000, pg.evaluate("HM.EN4.AUDIO.split(' ').length"))
+        q = None
+        for ui in range(6):
+            q = swap_to(pg, 8, ui, 1, "q => q.dlg")
+            if q: break
+        pg.wait_for_timeout(300)
+        exp = pg.evaluate("(d) => d.map(l => HMAudio.url(l[1], l[2]).split('/audio/')[1])", q["dlg"])
+        pg.evaluate("window.__played = []; window.__said = []"); pg.click(".e4-dlg .e4-play"); pg.wait_for_timeout(500); wait_idle(pg)
+        played = pg.evaluate("window.__played")
+        ok(tag + " 会話は録音で1文ずつ順に（女の人・男の人で別のファイル）", [x[0] for x in played] == exp and all(x[1] == 1 for x in played), [played, exp])
+        ok(tag + " 録音があるときは端末の読み上げを使わない", len([x for x in pg.evaluate("window.__said") if x["text"].strip()]) == 0)
+        ok(tag + " 女の人と男の人で声がちがう（同じ文でもファイルがちがう）", pg.evaluate("HMAudio.key('Hello.', 'f') !== HMAudio.key('Hello.', 'm')"))
+        pg.evaluate("window.__played = []"); pg.click(".e4-dlg .e4-slow"); pg.wait_for_timeout(500); wait_idle(pg)
+        ok(tag + " 🐢 ゆっくりは 0.75 倍", [x[1] for x in pg.evaluate("window.__played")] == [0.75] * len(q["dlg"]), pg.evaluate("window.__played"))
+        pg.evaluate("window.__played = []"); pg.click('#e4dlg .e4-bub[data-line="2"]'); pg.wait_for_timeout(400); wait_idle(pg)
+        ok(tag + " ふきだしタップはその文の録音だけ", [x[0] for x in pg.evaluate("window.__played")] == [exp[2]])
+        ok(tag + " 録音ファイルは m4a（AAC）", all(x.endswith(".m4a") for x in exp))
+        # 1文のリスニングとスピーキングのお手本
+        q = swap_to(pg, 5, 0, 0, "q => q.skill === 'L' && q.au && !q.dlg"); pg.wait_for_timeout(300)
+        pg.evaluate("window.__played = []"); pg.click(".e4-play"); pg.wait_for_timeout(500); wait_idle(pg)
+        ok(tag + " 1文のリスニングも録音", [x[0] for x in pg.evaluate("window.__played")] == [pg.evaluate("(t) => HMAudio.url(t, 'f').split('/audio/')[1]", q["au"])])
+        q = swap_to(pg, 6, 1, 0, "q => q.t === 'sp'"); pg.wait_for_timeout(300)
+        pg.evaluate("window.__played = []"); pg.click(".e4-play"); pg.wait_for_timeout(500); wait_idle(pg)
+        ok(tag + " スピーキングのお手本も録音", [x[0] for x in pg.evaluate("window.__played")] == [pg.evaluate("(t) => HMAudio.url(t, 'f').split('/audio/')[1]", q["a"])])
+        ctx.close()
+        # 録音が読みこめないとき（オフラインで未保存など）は、端末の読み上げで最後まで
+        ctx = br.new_context(**p.devices[devname]); pg = ctx.new_page(); pg.add_init_script(NOAUTH_A); pg.add_init_script(FAKE_TTS)
+        pg.route("**/audio/**", lambda r: r.fulfill(status=404, body="")); pg.on("pageerror", lambda e: errs.append(str(e)))
+        pg.goto(URL + "?v=" + str(time.time()), wait_until="networkidle"); pg.wait_for_timeout(1000)
+        for ui in range(6):
+            q = swap_to(pg, 8, ui, 1, "q => q.dlg")
+            if q: break
+        pg.wait_for_timeout(300); pg.evaluate("window.__said = []"); pg.click(".e4-dlg .e4-play"); pg.wait_for_timeout(1200 + 600 * len(q["dlg"]))
+        said = [x["text"] for x in pg.evaluate("window.__said") if x["text"].strip()]
+        ok(tag + " 録音が読めないときは端末の読み上げで全部読む", said == [l[1] for l in q["dlg"]], said)
         ctx.close()
         # 音声認識がないブラウザ：カードでならべる
         ctx = br.new_context(**p.devices[devname]); pg = ctx.new_page(); pg.add_init_script(NOAUTH); pg.add_init_script(NOSR)

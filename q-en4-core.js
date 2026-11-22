@@ -244,6 +244,16 @@
     return "rx";
   }
   E4.fmt = fmt;
+  // ---- 録音のある文のプール（tools/build_audio.js → q-en4-pool.js）。[種, lv] から同じ文を作りなおす ----
+  const AUDIO_F = { lt: 1, ld: 1, lm: 1, sp: 1 };
+  E4.AUDIO_F = AUDIO_F;
+  E4.withSeed = (seed, fn) => { const r0 = HM.getRng(); HM.setRng(HM.mulberry(seed)); try { return fn(); } finally { HM.setRng(r0); } };
+  function poolPick(list, lv) { const near = list.filter((e) => Math.abs(e[1] - lv) <= 0.25); const L = near.length >= 3 ? near : list; return L[Math.floor(HM.getRng()() * L.length)]; }
+  function readPooled(g, ui, k, lv, u) {
+    const list = E4.POOL && E4.POOL["R|" + g + "|" + ui + "|" + k];
+    if (list && list.length) { const e = poolPick(list, lv); const s = E4.withSeed(e[0], () => u.read(e[1], k)); if (s) return s; }
+    return u.read(lv, k);
+  }
   const SN = ["①", "②", "③"], SNAME = ["はじめよう", "なれよう", "チャレンジ"];
   // 単元：{ n, note, gen(lv) → { en, ja, alt?, key?, pic?, kind?, blank? }, read?(lv, ctx) }
   E4.addGrade = function (g, units) {
@@ -259,19 +269,35 @@
           const lv = Math.min(1, k * 0.34 + d * 0.5);
           const f = fmt(g, skill, slot, k), c = { g, lv, k, slot, ui };
           if (f === "rx") {
-            if (!ctx.rd) { const set0 = u.read ? u.read(lv, k) : null; ctx.rd = { set: set0, order: set0 ? shuf(set0.qs) : [], used: [] }; }
+            if (!ctx.rd) { const set0 = u.read ? readPooled(g, ui, k, lv, u) : null; ctx.rd = { set: set0, order: set0 ? shuf(set0.qs) : [], used: [] }; }
+            if (ctx.rd.set && !ctx.rd.order.some((x) => !ctx.rd.used.includes(x.q))) { const set1 = readPooled(g, ui, k, lv, u); if (set1 && set1.text !== ctx.rd.set.text) ctx.rd = { set: set1, order: shuf(set1.qs), used: ctx.rd.used }; }
             const set = ctx.rd.set; if (!set) return null;
             const left = ctx.rd.order.filter((x) => !ctx.rd.used.includes(x.q)); if (!left.length) return null;
             const x = left[0]; ctx.rd.used.push(x.q);
             return { t: "mc", skill: "R", q: x.q, passage: { title: set.title, text: set.text, au: set.au ? 1 : 0, words: set.text.split(/\s+/).length }, a: x.a, opts: shuf([x.a].concat(x.o)), ex: x.ex, rid: set.id };
           }
-          for (let t = 0; t < 6; t++) { const S = u.gen(lv); if (!S) continue; const q = B[f](S, u, c); if (q) return q; }
+          // 声に出す文（聞く・話す）は、録音のある文（E4.POOL）からえらぶ
+          if (i === 0 || !ctx.used) ctx.used = new Set();
+          const tryF = (f) => {
+            if (AUDIO_F[f] && E4.POOL) {
+              const list = E4.POOL[g + "|" + ui + "|" + k];
+              if (list && list.length) for (let t = 0; t < 16; t++) {
+                const e = poolPick(list, lv); const S = E4.withSeed(e[0], () => u.gen(e[1])); if (!S || ctx.used.has(f + "|" + S.en)) continue;
+                const q = B[f](S, u, c); if (q) { ctx.used.add(f + "|" + S.en); return q; }
+              }
+            }
+            for (let t = 0; t < 6; t++) { const S = u.gen(lv); if (!S) continue; const q = B[f](S, u, c); if (q) return q; }
+            return null;
+          };
+          const q0 = tryF(f); if (q0) return q0;
+          // その形式で新しい文が作れないときは、同じ技能の別の形式でつくる
+          for (let s2 = 0; s2 < 3; s2++) { const f2 = fmt(g, skill, s2, k); if (f2 === f || f2 === "rx") continue; const q2 = tryF(f2); if (q2) return q2; }
           return null;
         };
         return { n: SN[k] + " " + SNAME[k], src, cnt: 12, en4: true, example: () => u.gen(0.2) };
       });
       HM.POINTS = HM.POINTS || {}; if (u.note) HM.POINTS[u.n] = u.note;
-      return { n: u.n, steps, expanded: true, en4: true, gen: u.gen };
+      return { n: u.n, steps, expanded: true, en4: true, gen: u.gen, read: u.read };
     });
     HM.SUBJECTS.en = HM.SUBJECTS.en || {};
     HM.SUBJECTS.en[g] = out;

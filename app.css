@@ -1056,7 +1056,14 @@ html.rmotion .mode-sel, html.rmotion .ms-slot { animation: none; }
 .e4-pass-t.long { max-height: 52vh; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-right: 6px; border-top: 1px solid #f0e6c8; border-bottom: 1px solid #f0e6c8; }
 .e4-pass-t p { margin: .4em 0 .7em; }
 .e4-dlg-l { display: grid; gap: 8px; margin: 4px 0 10px; }
-.e4-bub { max-width: 85%; padding: 8px 12px; border-radius: 16px; background: #e7f5ff; font-size: 16px; }
+.e4-bub { max-width: 88%; padding: 9px 34px 9px 13px; border-radius: 16px; background: #e7f5ff; font-size: 17px; line-height: 1.45; text-align: left; border: 2px solid transparent; position: relative; color: var(--ink, #1b1d3a); font-family: inherit; cursor: pointer; transition: transform .12s, border-color .15s, box-shadow .15s; -webkit-tap-highlight-color: transparent; }
+.e4-bub:active { transform: scale(.98); }
+.e4-bub span { display: block; }
+.e4-bub-ic { position: absolute; right: 9px; top: 50%; transform: translateY(-50%); font-style: normal; font-size: 14px; opacity: .55; }
+.e4-bub.say { border-color: #4dabf7; box-shadow: 0 0 0 4px rgba(77,171,247,.18); }
+.e4-bub.r.say { border-color: #f783ac; box-shadow: 0 0 0 4px rgba(247,131,172,.18); }
+.e4-bub.say .e4-bub-ic { opacity: 1; animation: e4pulse .8s ease-in-out infinite; }
+@keyframes e4pulse { 50% { transform: translateY(-50%) scale(1.25); } }
 .e4-bub b { display: block; font-size: 12px; color: #1971c2; }
 .e4-bub.r { justify-self: end; background: #fff0f6; } .e4-bub.r b { color: #c2255c; }
 .e4-trans { text-align: center; font-weight: 700; color: #3b2fb0; margin: -4px 0 10px; }
@@ -1073,3 +1080,8 @@ html.rmotion .mode-sel, html.rmotion .ms-slot { animation: none; }
 
 /* v1.6.1: hidden 属性を必ず優先（会話・訳を答える前はかくす） */
 #quiz [hidden], .e4-dlg-l[hidden] { display: none !important; }
+
+/* v1.6.3: 新しいバージョンのおしらせ */
+.upd-bar { position: fixed; left: 50%; bottom: calc(var(--sab, 0px) + 18px); transform: translateX(-50%); z-index: 9000; display: flex; align-items: center; gap: 12px; padding: 10px 10px 10px 18px; border-radius: 999px; background: rgba(27,22,64,.94); color: #fff; font-weight: 700; font-size: 14.5px; box-shadow: 0 10px 30px rgba(20,17,43,.35); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); animation: updIn .35s cubic-bezier(.2,.9,.3,1.2) both; white-space: nowrap; }
+.upd-go { border: 0; border-radius: 999px; padding: 8px 16px; font: inherit; font-weight: 800; color: #1b1640; background: linear-gradient(135deg, #ffd54a, #ff9f1c); cursor: pointer; }
+@keyframes updIn { from { opacity: 0; transform: translate(-50%, 20px); } }

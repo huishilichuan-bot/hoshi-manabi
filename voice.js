@@ -59,6 +59,7 @@
       const next = () => {
         if (my !== token) return;
         if (i >= list.length) { if (opt.onEnd) opt.onEnd(); return; }
+        if (opt.onLine) { try { opt.onLine(i); } catch (e) {} }
         const [, text, sex] = list[i++];
         const u = new SpeechSynthesisUtterance(text);
         u.lang = "en-US"; u.rate = opt.slow ? 0.6 : 0.9; u.pitch = 1; u.volume = opt.vol == null ? 0.8 : opt.vol;

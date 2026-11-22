@@ -1,7 +1,7 @@
 {
  "seeds": 40,
  "generatedChecked": 1039888,
- "uniqueQuestions": 487084,
+ "uniqueQuestions": 480480,
  "stats": {
   "chk": 430095,
   "qx": 65639,
@@ -20,10 +20,10 @@
   "tiles": 21760,
   "kanji": 40544,
   "en4_tl": 32560,
-  "en4_mc": 43680,
+  "en4_mc": 43775,
   "en4_sp": 32760,
   "en4_passage_g5": 40,
-  "en4_ty": 22040,
+  "en4_ty": 21945,
   "en4_passage_g6": 40,
   "en4_passage_g7": 78,
   "en4_passage_g8": 177,

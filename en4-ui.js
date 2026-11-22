@@ -10,19 +10,32 @@
   const TTS = typeof window.speechSynthesis !== "undefined" && typeof window.SpeechSynthesisUtterance !== "undefined";
   const vol = () => { try { const v = root.HM_APP && root.HM_APP.state().settings.vol; return Math.max(0.2, v == null ? 0.8 : +v); } catch (e) { return 0.8; } };
   // 声えらびと読み上げは voice.js（HMVoice）：自然な en-US の声・会話は女の子と男の子で別の声
-  function say(lines, slow, onEnd) {
-    if (!TTS || !root.HMVoice) return false;
+  // 録音した声（audio.js / HMAudio）があればそれを使い、なければ端末の読み上げ（voice.js / HMVoice）
+  function say(lines, slow, onEnd, onLine) {
     const list = typeof lines === "string" ? lines : lines.map((l) => [l[0], l[1], l[2]]);
-    return root.HMVoice.speak(list, { slow, vol: vol(), onEnd });
+    if (root.HMAudio && root.HMAudio.speak(list, { slow, vol: vol(), onEnd, onLine })) return true;
+    if (!TTS || !root.HMVoice) return false;
+    return root.HMVoice.speak(list, { slow, vol: vol(), onEnd, onLine });
   }
+  const canSay = () => TTS || !!(root.HMAudio && root.HMAudio.ok());
   E4.say = say;
-  const audioBar = (big, txt) => !TTS ? (typeof txt === "string" && txt ? '<div class="e4-au-txt say-text" lang="en">' + esc(txt) + "</div>" : "") : TTS ? '<div class="e4-au' + (big ? " big" : "") + '"><button type="button" class="e4-play" data-e4="play"><span class="e4-wave"><i></i><i></i><i></i></span><b>聞く</b></button><button type="button" class="e4-slow" data-e4="slow" aria-label="ゆっくり聞く">🐢 ゆっくり</button></div>' : "";
+  const audioBar = (big, txt) => !canSay() ? (typeof txt === "string" && txt ? '<div class="e4-au-txt say-text" lang="en">' + esc(txt) + "</div>" : "") : '<div class="e4-au' + (big ? " big" : "") + '"><button type="button" class="e4-play" data-e4="play"><span class="e4-wave"><i></i><i></i><i></i></span><b>聞く</b></button><button type="button" class="e4-slow" data-e4="slow" aria-label="ゆっくり聞く">🐢 ゆっくり</button></div>';
   function wireAudio(el, getLines) {
+    try { if (root.HMAudio) root.HMAudio.prefetch(getLines()); } catch (e) {}
+    const bubs = () => el.querySelectorAll(".e4-bub");
+    const mark = (i) => bubs().forEach((x, k) => x.classList.toggle("say", k === i));
     el.querySelectorAll("[data-e4=play],[data-e4=slow]").forEach((b) => b.addEventListener("click", () => {
-      const slow = b.dataset.e4 === "slow"; b.classList.add("on"); say(getLines(), slow, () => b.classList.remove("on")); setTimeout(() => b.classList.remove("on"), 8000);
+      const slow = b.dataset.e4 === "slow"; el.querySelectorAll("[data-e4]").forEach((x) => x.classList.remove("on")); b.classList.add("on");
+      say(getLines(), slow, () => { b.classList.remove("on"); mark(-1); }, mark); setTimeout(() => b.classList.remove("on"), 30000);
+    }));
+    // 会話：ふきだしをタップすると、その文だけもう一度
+    el.querySelectorAll(".e4-bub[data-line]").forEach((b) => b.addEventListener("click", () => {
+      const all = getLines(), i = +b.dataset.line; if (!Array.isArray(all) || !all[i]) return;
+      el.querySelectorAll("[data-e4]").forEach((x) => x.classList.remove("on")); mark(i);
+      say([all[i]], false, () => mark(-1));
     }));
   }
-  const stopTTS = () => { try { if (root.HMVoice) root.HMVoice.stop(); else if (TTS) speechSynthesis.cancel(); } catch (e) {} };
+  const stopTTS = () => { try { if (root.HMAudio) root.HMAudio.stop(); } catch (e) {} try { if (root.HMVoice) root.HMVoice.stop(); else if (TTS) speechSynthesis.cancel(); } catch (e) {} };
   const SK = { L: "🎧 リスニング", S: "🗣 スピーキング", W: "✏️ ライティング", R: "📖 リーディング" };
   root.HMQ.skillBadge = (q) => (q && q.skill && SK[q.skill] ? '<span class="e4-skill sk-' + q.skill + '">' + SK[q.skill] + "</span>" : "");
   const same = (a, b) => E4.ck(a) === E4.ck(b);
@@ -182,8 +195,9 @@
         const P = q.passage, paras = String(P.text).split(/\n\n/);
         h += '<div class="e4-pass"><div class="e4-pass-h"><b>' + esc(P.title) + '</b><span>' + P.words + " 語</span></div>" + (P.au ? audioBar(false) : "") + '<div class="e4-pass-t' + (P.words > 250 ? " long" : "") + '">' + paras.map((x) => "<p>" + esc(x).replace(/^([A-Z][a-zA-Z.]*): /, "<b>$1:</b> ").replace(/ ([A-Z][a-z]+(?: [A-Z][a-z]+)?): /g, "<br><b>$1:</b> ") + "</p>").join("") + "</div></div>";
       } else if (q.dlg) {
-        h += '<div class="e4-dlg">' + audioBar(true) + '<div class="e4-dlg-l" id="e4dlg"' + (TTS ? " hidden" : "") + '>' + q.dlg.map((l, i) => '<div class="e4-bub ' + (i % 2 ? "r" : "l") + '"><b>' + esc(l[0]) + "</b>" + esc(l[1]) + "</div>").join("") + "</div></div>";
-      } else if (q.au) h += audioBar(true) + '<div class="e4-trans" id="e4tr"' + (TTS ? " hidden" : "") + '>' + esc(q.au) + "</div>";
+        // 会話の英文は、はじめから全部見せる（聞きながら読める）。ふきだしをタップすると、その文だけ聞ける
+        h += '<div class="e4-dlg">' + audioBar(true) + '<div class="e4-dlg-l" id="e4dlg">' + q.dlg.map((l, i) => '<button type="button" class="e4-bub ' + (i % 2 ? "r" : "l") + '" data-line="' + i + '" lang="en"><b>' + esc(l[0]) + "</b><span>" + esc(l[1]) + '</span>' + (canSay() ? '<i class="e4-bub-ic" aria-hidden="true">🔊</i>' : "") + "</button>").join("") + "</div></div>";
+      } else if (q.au) h += audioBar(true) + '<div class="e4-trans" id="e4tr"' + (canSay() ? " hidden" : "") + '>' + esc(q.au) + "</div>";
       else if (q.text) h += '<div class="e4-read">' + esc(q.text) + "</div>";
       if (q.pic) h += '<div class="e4-pic">' + esc(q.pic) + "</div>";
       h += '<div class="e4-opts' + (q.pics ? " pics" : "") + '">' + q.opts.map((o, i) => '<button type="button" class="e4-opt" data-mo="' + i + '">' + esc(o) + "</button>").join("") + "</div>";
