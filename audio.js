@@ -53,16 +53,17 @@
     if (!list.length || !list.every((l) => api.has(l[1], l[2]))) return false;
     api.stop();
     const my = token, a = player();
-    let i = 0;
+    let i = 0, fell = false;
     const fallback = (from) => {
       // 読みこめなかった：のこりを端末の読み上げで
       if (my !== token) return;
+      if (fell) return; fell = true; clearTimeout(timer); try { a.onended = a.onerror = null; a.pause(); } catch (e) {}
       const rest = list.slice(from);
       if (root.HMVoice && root.HMVoice.speak(rest, { slow: opt.slow, vol: opt.vol, onEnd: opt.onEnd, onLine: opt.onLine ? (k) => opt.onLine(from + k) : null })) return;
       if (opt.onEnd) opt.onEnd();
     };
     const next = () => {
-      if (my !== token) return;
+      if (my !== token || fell) return;
       if (i >= list.length) { if (opt.onEnd) opt.onEnd(); return; }
       const k = i++, l = list[k];
       if (opt.onLine) { try { opt.onLine(k); } catch (e) {} }
