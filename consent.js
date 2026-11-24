@@ -22,7 +22,7 @@
     '<li><span>🚫</span><div><b>広告・課金・アクセス解析はありません。</b>情報を売ったり、ほかの会社にわたしたりしません。</div></li>' +
     '<li><span>🗑️</span><div>記録やアカウントは、マイページからいつでも消せます。</div></li>' +
     "</ul>" +
-    '<p class="cs-links"><a href="./privacy.html">プライバシーポリシー（全文）</a> ・ <a href="./terms.html">利用規約</a></p>' +
+    '<p class="cs-links"><a href="./privacy.html">プライバシーポリシー（全文）</a> ・ <a href="./terms.html">利用規約</a> ・ <a href="./parents.html">保護者の方へ</a></p>' +
     '<label class="cs-check"><input type="checkbox" id="cs-agree"><span>プライバシーポリシーと利用規約を読んで、同意します（小学生・中学生の人は、おうちの人に確認してもらってね）</span></label>' +
     '<button type="button" class="cs-btn" id="cs-ok" disabled>同意してはじめる</button>' +
     "</div>";
