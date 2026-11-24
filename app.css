@@ -1085,3 +1085,22 @@ html.rmotion .mode-sel, html.rmotion .ms-slot { animation: none; }
 .upd-bar { position: fixed; left: 50%; bottom: calc(var(--sab, 0px) + 18px); transform: translateX(-50%); z-index: 9000; display: flex; align-items: center; gap: 12px; padding: 10px 10px 10px 18px; border-radius: 999px; background: rgba(27,22,64,.94); color: #fff; font-weight: 700; font-size: 14.5px; box-shadow: 0 10px 30px rgba(20,17,43,.35); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); animation: updIn .35s cubic-bezier(.2,.9,.3,1.2) both; white-space: nowrap; }
 .upd-go { border: 0; border-radius: 999px; padding: 8px 16px; font: inherit; font-weight: 800; color: #1b1640; background: linear-gradient(135deg, #ffd54a, #ff9f1c); cursor: pointer; }
 @keyframes updIn { from { opacity: 0; transform: translate(-50%, 20px); } }
+
+/* v1.6.4 友だち招待 */
+.ref-card { background: #fff; border-radius: 16px; padding: 14px 14px 12px; margin: 0 0 14px; box-shadow: 0 2px 10px rgba(40,30,110,.06); }
+.ref-hero { font-size: 34px; text-align: center; }
+.ref-lead { text-align: center; line-height: 1.7; margin: 4px 0 2px; font-size: 14px; }
+.ref-top { display: flex; align-items: center; gap: 10px; } .ref-top b { display: block; font-size: 15.5px; } .ref-top small { color: var(--muted); font-size: 12.5px; }
+.ref-gift { font-size: 30px; animation: refGift 2.6s ease-in-out infinite; } @keyframes refGift { 0%,100% { transform: rotate(0); } 10% { transform: rotate(-10deg) scale(1.08); } 20% { transform: rotate(8deg); } 30% { transform: none; } }
+.ref-code { display: flex; justify-content: center; gap: 6px; margin: 14px 0 12px; }
+.ref-code i { font-style: normal; width: 38px; height: 46px; display: grid; place-items: center; border-radius: 10px; font: 800 24px/1 ui-monospace, "SF Mono", Menlo, monospace; color: #3b2f9e; background: linear-gradient(180deg, #f3f0ff, #e5dbff); box-shadow: inset 0 -2px 0 rgba(59,47,158,.15); }
+.ref-wait { color: var(--muted); font-size: 13px; }
+.ref-btns { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+.ref-stat { margin: 10px 0 0; font-size: 13px; text-align: center; } .ref-stat small { display: block; color: var(--muted); font-size: 11.5px; }
+.ref-in { margin-top: 12px; padding-top: 12px; border-top: 1px dashed #e3dff5; } .ref-in label { font-size: 13px; font-weight: 700; display: block; margin-bottom: 6px; }
+.ref-row { display: flex; gap: 8px; } .ref-row input { flex: 1; min-width: 0; font: 700 20px/1 ui-monospace, Menlo, monospace; letter-spacing: .18em; text-transform: uppercase; padding: 10px 12px; border-radius: 12px; border: 2px solid #e3dff5; } .ref-row input:focus { outline: none; border-color: #7950f2; }
+.ref-used { margin: 10px 0 0; font-size: 13px; color: #2b8a3e; text-align: center; font-weight: 700; }
+.ref-msg { margin: 8px 0 0; font-size: 13px; color: #7048e8; text-align: center; font-weight: 700; }
+
+/* v1.6.4 漢字練習のステップ名 */
+.kj-ls { display: block; margin-top: 2px; font-size: 13px; font-weight: 700; letter-spacing: .02em; opacity: .85; line-height: 1.35; } .kj-ls span { display: block; white-space: nowrap; }

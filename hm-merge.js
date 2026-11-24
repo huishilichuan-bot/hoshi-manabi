@@ -106,6 +106,7 @@
     out.use = mergeUse(L.use, C.use);
     out.lastActive = max(L.lastActive, C.lastActive);
     if (L.acct || C.acct) out.acct = obj(newer.acct).uid ? newer.acct : L.acct || C.acct;
+    if (L.ref || C.ref) { const a = obj(L.ref), b = obj(C.ref), cl = Array.from(new Set([...arr(a.claimed), ...arr(b.claimed)])); out.ref = { code: obj(newer.ref).code || a.code || b.code || "", by: a.by || b.by || "", claimed: cl, n: Math.min(cl.length, Math.max(num(a.n), num(b.n))) }; }
     out.updatedAt = Math.max(num(L.updatedAt), num(C.updatedAt));
     return out;
   }

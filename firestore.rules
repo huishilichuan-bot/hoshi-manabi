@@ -1,7 +1,9 @@
 rules_version = '2';
-// ほしまなび — Firestore セキュリティルール（v1.6.2）
+// ほしまなび — Firestore セキュリティルール（v1.6.4）
 // ・users/{userId} は、ログインした本人（request.auth.uid == userId）だけが書きこめる・消せる。
 // ・読むのは本人と、運営者（管理者）の Google アカウントだけ。管理者も書きかえ・削除はできない。
+// ・invites/{code}：友だち招待コード（中身はコードの持ち主の uid と作った時刻だけ）。ログインした人は1件ずつ読める。作れるのは本人だけ。書きかえ不可。
+// ・redeems/{uid}：招待コードを使った記録（1人1回だけ・自分のコードは不可）。読めるのは使った本人と、招待した人だけ。書きかえ・削除は不可。
 // ・それ以外はすべて拒否。
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -22,6 +24,29 @@ service cloud.firestore {
         && request.resource.data.data.size() <= 800000
         && request.resource.data.updatedAt is int
         && request.resource.data.v is int;
+    }
+    match /invites/{code} {
+      allow get: if signedIn();
+      allow list: if false;
+      allow create: if signedIn()
+        && code.matches('^[A-HJ-NP-Z2-9]{6}$')
+        && request.resource.data.keys().hasOnly(['uid', 't'])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.t is int;
+      allow delete: if signedIn() && resource.data.uid == request.auth.uid;
+      allow update: if false;
+    }
+    match /redeems/{uid} {
+      allow get: if signedIn() && (request.auth.uid == uid || resource.data.inviter == request.auth.uid);
+      allow list: if signedIn() && resource.data.inviter == request.auth.uid;
+      allow create: if isOwner(uid)
+        && request.resource.data.keys().hasOnly(['code', 'inviter', 't'])
+        && request.resource.data.code is string
+        && exists(/databases/$(database)/documents/invites/$(request.resource.data.code))
+        && get(/databases/$(database)/documents/invites/$(request.resource.data.code)).data.uid == request.resource.data.inviter
+        && request.resource.data.inviter != request.auth.uid
+        && request.resource.data.t is int;
+      allow update, delete: if false;
     }
     match /{document=**} {
       allow read, write: if false;
